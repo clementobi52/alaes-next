@@ -319,13 +319,16 @@ export const NAV: NavModule[] = [
     label: 'Sectional Titling',
     icon: Layers,
     children: [
-      { label: 'Overview' },
-      { label: 'ST FileNo Management' },
+      { label: 'Overview', href: '/sectional-titling' },
+      { label: 'ST FileNo Management', href: '/sectional-titling/file-management' },
       { label: 'Commission New ST FileNo' },
       {
         label: 'Applications',
         children: [
-          { label: 'Primary Applications' },
+          {
+            label: 'Primary Applications',
+            href: '/sectional-titling/applications/primary',
+          },
           {
             label: 'Unit Applications',
             children: leaves('Parented Units', 'Standalone Units'),
