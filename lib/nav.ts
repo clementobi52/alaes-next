@@ -22,6 +22,8 @@ import {
  */
 export type NavNode = {
   label: string
+  /** When set, the leaf navigates to this route instead of only highlighting. */
+  href?: string
   children?: NavNode[]
 }
 
@@ -38,7 +40,7 @@ const leaves = (...labels: string[]): NavNode[] =>
  * Top-level modules carry an icon; every level below is nested.
  */
 export const NAV: NavModule[] = [
-  { label: 'Dashboard', icon: Home },
+  { label: 'Dashboard', icon: Home, href: '/' },
 
   {
     label: 'Customer Relationship Management',
@@ -375,15 +377,44 @@ export const NAV: NavModule[] = [
   {
     label: 'System Admin',
     icon: ShieldCheck,
-    children: leaves(
-      'Activity Logs',
-      'Activity Monitoring',
-      'User Account',
-      'Departments',
-      'User Roles',
-      'Digital Signature Control',
-      'System Settings',
-      'Folder Watcher',
-    ),
+    children: [
+      { label: 'Activity Logs', href: '/system-admin/activity-logs' },
+      { label: 'Activity Monitoring', href: '/system-admin/activity-monitoring' },
+      { label: 'User Account', href: '/system-admin/user-accounts' },
+      { label: 'Departments', href: '/system-admin/departments' },
+      { label: 'User Roles', href: '/system-admin/user-roles' },
+      {
+        label: 'Digital Signature Control',
+        href: '/system-admin/digital-signature-control',
+      },
+      { label: 'System Settings', href: '/system-admin/system-settings' },
+      { label: 'Database Connection', href: '/system-admin/database' },
+      { label: 'Folder Watcher', href: '/system-admin/folder-watcher' },
+    ],
   },
 ]
+
+/**
+ * Walk the tree and return the full label-path chain (leaf-first) whose leaf
+ * `href` matches `pathname`. Used by the sidebar to auto-expand ancestors and
+ * highlight the active route.
+ */
+export function findActiveChain(pathname: string): string[] {
+  const chain: string[] = []
+  const walk = (nodes: NavNode[], parentPath: string): boolean => {
+    for (const node of nodes) {
+      const path = parentPath ? `${parentPath}/${node.label}` : node.label
+      if (node.href && node.href === pathname) {
+        chain.push(path)
+        return true
+      }
+      if (node.children && walk(node.children, path)) {
+        chain.push(path)
+        return true
+      }
+    }
+    return false
+  }
+  walk(NAV, '')
+  return chain
+}
