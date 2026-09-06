@@ -3,12 +3,23 @@
 import { useState } from 'react'
 import { ChevronDown, LogOut } from 'lucide-react'
 import { AlaesLogo } from '@/components/alaes-logo'
-import { NAV } from '@/lib/nav'
+import { NAV, type NavModule, type NavNode } from '@/lib/nav'
 import { cn } from '@/lib/utils'
 
 export function Sidebar({ open }: { open: boolean }) {
+  // Active leaf path and the set of expanded group paths, keyed by full path
+  // so repeated labels (e.g. two "DMS Update") never collide.
   const [active, setActive] = useState('Dashboard')
-  const [expanded, setExpanded] = useState<string | null>(null)
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+
+  const toggle = (path: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(path)) next.delete(path)
+      else next.add(path)
+      return next
+    })
+  }
 
   return (
     <aside
@@ -23,63 +34,16 @@ export function Sidebar({ open }: { open: boolean }) {
 
       <nav className="scrollbar-thin flex-1 overflow-y-auto px-3 py-4">
         <ul className="flex flex-col gap-1">
-          {NAV.map((item) => {
-            const isActive = active === item.label
-            const isOpen = expanded === item.label
-            const hasChildren = !!item.children?.length
-            return (
-              <li key={item.label}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActive(item.label)
-                    if (hasChildren) {
-                      setExpanded(isOpen ? null : item.label)
-                    } else {
-                      setExpanded(null)
-                    }
-                  }}
-                  className={cn(
-                    'group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-sidebar-accent text-primary'
-                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
-                  )}
-                >
-                  <item.icon
-                    className={cn(
-                      'h-[18px] w-[18px] shrink-0',
-                      isActive ? 'text-primary' : 'text-sidebar-foreground/60',
-                    )}
-                  />
-                  <span className="flex-1 truncate">{item.label}</span>
-                  {hasChildren && (
-                    <ChevronDown
-                      className={cn(
-                        'h-4 w-4 shrink-0 text-sidebar-foreground/50 transition-transform',
-                        isOpen && 'rotate-180',
-                      )}
-                    />
-                  )}
-                </button>
-
-                {hasChildren && isOpen && (
-                  <ul className="mb-1 mt-1 flex flex-col gap-0.5 border-l border-sidebar-border pl-4 ms-5">
-                    {item.children!.map((child) => (
-                      <li key={child}>
-                        <button
-                          type="button"
-                          className="w-full truncate rounded-lg px-3 py-2 text-left text-[13px] text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-                        >
-                          {child}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            )
-          })}
+          {NAV.map((mod) => (
+            <ModuleItem
+              key={mod.label}
+              module={mod}
+              active={active}
+              expanded={expanded}
+              setActive={setActive}
+              toggle={toggle}
+            />
+          ))}
         </ul>
       </nav>
 
@@ -104,5 +68,123 @@ export function Sidebar({ open }: { open: boolean }) {
         </button>
       </div>
     </aside>
+  )
+}
+
+type SharedProps = {
+  active: string
+  expanded: Set<string>
+  setActive: (path: string) => void
+  toggle: (path: string) => void
+}
+
+function ModuleItem({ module, ...shared }: { module: NavModule } & SharedProps) {
+  const { active, expanded, setActive, toggle } = shared
+  const path = module.label
+  const hasChildren = !!module.children?.length
+  const isOpen = expanded.has(path)
+  const isActive = active === path
+
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={() => {
+          if (hasChildren) toggle(path)
+          else setActive(path)
+        }}
+        className={cn(
+          'group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors',
+          isActive
+            ? 'bg-sidebar-accent text-primary'
+            : 'text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+        )}
+      >
+        <module.icon
+          className={cn(
+            'h-[18px] w-[18px] shrink-0',
+            isActive ? 'text-primary' : 'text-sidebar-foreground/60',
+          )}
+        />
+        <span className="flex-1 truncate">{module.label}</span>
+        {hasChildren && (
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 shrink-0 text-sidebar-foreground/50 transition-transform',
+              isOpen && 'rotate-180',
+            )}
+          />
+        )}
+      </button>
+
+      {hasChildren && isOpen && (
+        <ul className="mb-1 ms-5 mt-1 flex flex-col gap-0.5 border-l border-sidebar-border pl-2">
+          {module.children!.map((child) => (
+            <NavBranch
+              key={child.label}
+              node={child}
+              parentPath={path}
+              depth={1}
+              {...shared}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
+  )
+}
+
+function NavBranch({
+  node,
+  parentPath,
+  depth,
+  ...shared
+}: { node: NavNode; parentPath: string; depth: number } & SharedProps) {
+  const { active, expanded, setActive, toggle } = shared
+  const path = `${parentPath}/${node.label}`
+  const hasChildren = !!node.children?.length
+  const isOpen = expanded.has(path)
+  const isActive = active === path
+
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={() => {
+          if (hasChildren) toggle(path)
+          else setActive(path)
+        }}
+        className={cn(
+          'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[13px] transition-colors',
+          isActive
+            ? 'bg-sidebar-accent/70 text-primary'
+            : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+        )}
+      >
+        <span className="flex-1 truncate">{node.label}</span>
+        {hasChildren && (
+          <ChevronDown
+            className={cn(
+              'h-3.5 w-3.5 shrink-0 text-sidebar-foreground/40 transition-transform',
+              isOpen && 'rotate-180',
+            )}
+          />
+        )}
+      </button>
+
+      {hasChildren && isOpen && (
+        <ul className="ms-3 mt-0.5 flex flex-col gap-0.5 border-l border-sidebar-border pl-2">
+          {node.children!.map((child) => (
+            <NavBranch
+              key={child.label}
+              node={child}
+              parentPath={path}
+              depth={depth + 1}
+              {...shared}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
   )
 }

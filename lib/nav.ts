@@ -15,167 +15,367 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-export type NavItem = {
+/**
+ * A navigation node is either a leaf link (no children) or a collapsible
+ * group. `children` may itself contain nested groups, so the tree supports
+ * arbitrary depth and the sidebar renders it recursively.
+ */
+export type NavNode = {
   label: string
-  icon: LucideIcon
-  children?: string[]
+  children?: NavNode[]
 }
 
+export type NavModule = NavNode & {
+  icon: LucideIcon
+}
+
+/** Convenience: build leaf nodes from plain strings. */
+const leaves = (...labels: string[]): NavNode[] =>
+  labels.map((label) => ({ label }))
+
 /**
- * ALAES module tree, transcribed from the enterprise-system spec document.
- * Top-level modules map to sidebar sections; children render as sub-links.
+ * ALAES module tree, transcribed from the authoritative sidebar IA.
+ * Top-level modules carry an icon; every level below is nested.
  */
-export const NAV: NavItem[] = [
+export const NAV: NavModule[] = [
   { label: 'Dashboard', icon: Home },
+
   {
     label: 'Customer Relationship Management',
     icon: Users,
     children: [
-      'Person',
-      'Individual',
-      'Group',
-      'Multiple Owners',
-      'Corporate',
-      'Customer Manager',
-      'Appointment',
-      'Appointment Calendar',
+      { label: 'Person', children: leaves('Individual', 'Group', 'Multiple Owners') },
+      { label: 'Corporate' },
+      {
+        label: 'Customer Manager',
+        children: leaves('Appointment', 'Appointment Calendar'),
+      },
     ],
   },
+
   {
     label: 'DMS',
     icon: FolderOpen,
     children: [
-      'Indexing',
-      'File Indexing Assistant',
-      'File History View',
-      'SerialNo Grouping',
-      'Print Files Label',
-      'Print Sign In & Out Sheet',
-      'Blind Scanning',
-      'Scanning',
-      'Upload Indexed Files',
-      'Upload Unindexed Files',
-      'Document Page Types',
-      'PageTyping',
-      'PT Quality Control',
-      'DMS Update',
-      'Activity Monitoring',
+      {
+        label: 'Indexing',
+        children: [
+          {
+            label: 'File Indexing Assistant',
+            children: leaves(
+              'Match OP',
+              'OP → File Property ID',
+              'Missing Files',
+              'Indexing Duplicates',
+              'Indexing Activity Log',
+            ),
+          },
+          { label: 'File History View' },
+          {
+            label: 'File SerialNo Grouping',
+            children: leaves('SerialNo Grouping', 'Print Files Label'),
+          },
+        ],
+      },
+      { label: 'Print Sign In & Out Sheet' },
+      { label: 'Blind Scanning' },
+      {
+        label: 'Scanning',
+        children: leaves('Upload Indexed Files', 'Upload Unindexed Files'),
+      },
+      { label: 'Document Page Types', children: leaves('PageTyping') },
+      { label: 'PT Quality Control' },
+      { label: 'DMS Update', children: leaves('Scan More', 'More Pages') },
+      { label: 'Activity Monitoring' },
     ],
   },
+
   {
     label: 'Digital File Archive',
     icon: Archive,
-    children: ['File Digital Library – Doc-WARE', 'DMS Update'],
+    children: [
+      { label: 'File Digital Library - Doc-WARE' },
+      { label: 'DMS Update', children: leaves('Scan More', 'Type More') },
+    ],
   },
+
   {
     label: 'File Tracking (Web & Mobile)',
     icon: Compass,
-    children: [
+    children: leaves(
       'File Tracker Dashboard',
-      'File Tracker (Archive)',
+      'Track File',
       'Quick Search',
       'Log a File',
-    ],
+      'Mobile Sync & Activity Logs',
+    ),
   },
+
   {
     label: 'Programmes',
     icon: ListChecks,
     children: [
-      'Allocation',
-      'Resettlement / Compensation',
-      'Recertification',
-      'Conversion / Regularization',
-      'Land Property Enumeration',
-      'Data Repository',
-      'Migrate Data',
+      { label: 'Allocation', children: leaves('Governors List', 'Commissioners List') },
+      {
+        label: 'Resettlement/Compensation',
+        children: leaves('Governors List', 'Commissioners List'),
+      },
+      { label: 'Recertification' },
+      { label: 'Conversion/Regularization' },
+      {
+        label: 'First Registration (SLTR)',
+        children: leaves(
+          'SLTR Form & Field Data',
+          'Planning Recommendation',
+          'SLTR Memo',
+          'Certificates',
+        ),
+      },
+      {
+        label: 'Valuation for Compensation',
+        children: leaves(
+          'Monetary Compensation',
+          'Field Data Capture (Web & Mobile App)',
+        ),
+      },
+      {
+        label: 'Land Property Enumeration',
+        children: leaves('Data Repository', 'Migrate Data'),
+      },
     ],
   },
+
   {
-    label: 'Information Products (RofO / CofO)',
+    label: 'Information Products (RofO)',
     icon: Info,
-    children: [
-      'Letter of Grant / RofO',
-      'Site Plan / Parcel Plan',
+    children: leaves(
+      'Letter of Grant/RofO',
+      'Occupancy Permit (OP)',
+      'Site Plan/Parcel Plan',
       'Certificate of Occupancy',
-    ],
+    ),
   },
+
   {
     label: 'ALAES REV-M',
     icon: Database,
     children: [
-      'Automated Billing',
-      'Legacy Billing',
-      'Generate Receipt',
-      'Land Use Charge (LUC)',
-      'Transaction Token Control',
+      { label: 'Billing', children: leaves('Automated Billing', 'Legacy Billing') },
+      { label: 'Generate Receipt' },
+      { label: 'Land Use Charge (LUC)' },
+      { label: 'Transaction Token Control' },
     ],
   },
+
   {
     label: 'Deeds',
     icon: Stamp,
     children: [
-      'PRA',
-      'AI PRA (File Transactions)',
-      'Deeds Registration',
-      'Instrument Capture (New Records)',
-      'Instrument Registration',
-      'Encumbrance Management',
-      'Parcel / Title Management',
-      'Activity Monitoring',
+      {
+        label: 'PRA',
+        children: leaves(
+          'PRA & PIC User Output Tracking',
+          'Property Records Assistant (Legacy Records)',
+          'AI PRA (File Transactions)',
+        ),
+      },
+      {
+        label: 'Deeds Registration',
+        children: leaves(
+          'Instrument Capture (New Records)',
+          'Instrument Registration (New Registration)',
+          'Instrument Registration Reports',
+        ),
+      },
+      {
+        label: 'Encumbrance Management',
+        children: leaves('Caveat', 'Mortgage', 'Surrender & Release', 'Lien'),
+      },
+      {
+        label: 'Parcel/Title Management',
+        children: [
+          { label: 'Change of Purpose' },
+          {
+            label: 'Parcel Update - New',
+            children: leaves(
+              'Plot Subdivision',
+              'Plot Merger',
+              'Plot Extension',
+              'Plot Separation',
+            ),
+          },
+          { label: 'Parcel Update - Legacy' },
+          { label: 'Title Status Update' },
+        ],
+      },
+      { label: 'Activity Monitoring' },
     ],
   },
+
   {
     label: 'Legal Search',
     icon: Search,
     children: [
-      'Property Records',
-      'On-Premise Legal Search',
-      'Legal Search Reports',
-      'Online Legal Search',
-      'PHS Portal Admin',
-      'Feedback & Complaints',
+      { label: 'Property Records' },
+      {
+        label: 'On-Premise Legal Search',
+        children: leaves(
+          'Official (for filing purpose)',
+          'On-Premise',
+          'Legal Search Reports',
+        ),
+      },
+      { label: 'Transaction Token Control' },
+      {
+        label: 'Online Legal Search',
+        children: leaves(
+          'Online',
+          'Online Legal Search Admin',
+          'Feedback & Complaints',
+        ),
+      },
+      {
+        label: 'PHS Portal Admin',
+        children: [
+          { label: 'Onboarding Requests' },
+          { label: 'Pending Invoice' },
+          { label: 'Subscriptions' },
+          { label: 'Usage and Revenue' },
+          { label: 'Packages' },
+          { label: 'Token Top-up', children: leaves('Wallets') },
+          { label: 'Legal Department' },
+          { label: 'Feedback & Complaints' },
+        ],
+      },
     ],
   },
+
   {
     label: 'Land',
     icon: LandPlot,
     children: [
-      'Allocation List',
-      'Generate New FileNo (MLSFileNo)',
-      'New Applications (Existing OP)',
-      'Capture / Manage an Existing File',
-      'File Decommissioning',
-      'Letter of Grant (RofO)',
-      'Re-grant Files',
-      'File History',
-      'File Search',
-      'Digital Archive',
-      'Parcel / Title Management',
-      'LAAS Portal',
+      {
+        label: 'Land',
+        children: leaves(
+          'Allocation List',
+          'Generate New FileNo (MLSFileNo)',
+          'New Applications (Existing OP)',
+          'Bill',
+          'Capture/Manage an Existing File',
+          'File Decommissioning',
+        ),
+      },
+      {
+        label: 'Letter of Grant (RofO)',
+        children: leaves('Land Recommendation', 'RofO', 'Re-grant Files'),
+      },
+      {
+        label: 'File History',
+        children: [
+          { label: 'History View' },
+          { label: 'Related Files' },
+          { label: 'File Search', children: leaves('Scans') },
+        ],
+      },
+      { label: 'Problem Files' },
+      {
+        label: 'Digital Archive',
+        children: leaves(
+          'File Tracker Dashboard',
+          'File Tracker (Archive)',
+          'Quick Search',
+          'Log a File',
+          'File Digital Library – Doc-WARE',
+          'DMS Update',
+        ),
+      },
+      {
+        label: 'Parcel/Title Management',
+        children: [
+          { label: 'Change of Purpose' },
+          { label: 'Loss of Document' },
+          { label: 'Temporary File' },
+          {
+            label: 'Parcel Update - New',
+            children: leaves(
+              'Plot Subdivision',
+              'Plot Merger',
+              'Plot Extension',
+              'Plot Separation',
+              'Parcel Update - Legacy',
+            ),
+          },
+          { label: 'Title Status Update' },
+        ],
+      },
+      { label: 'EDMS Update' },
+      { label: 'LAAS Portal', children: leaves('Applications', 'Applicants') },
     ],
   },
+
   {
     label: 'Sectional Titling',
     icon: Layers,
     children: [
-      'Overview',
-      'Commission New ST FileNo',
-      'Applications',
-      'Field Data Integration',
-      'Bills & Payments',
-      'Approvals (Other Departments)',
-      'Director’s Approval',
-      'Final Conveyance',
-      'Digital Archive',
-      'e-Registry',
-      'Survey',
-      'Reports',
+      { label: 'Overview' },
+      { label: 'ST FileNo Management' },
+      { label: 'Commission New ST FileNo' },
+      {
+        label: 'Applications',
+        children: [
+          { label: 'Primary Applications' },
+          {
+            label: 'Unit Applications',
+            children: leaves('Parented Units', 'Standalone Units'),
+          },
+        ],
+      },
+      { label: 'Field Data Integration' },
+      {
+        label: 'Bills & Payments',
+        children: leaves('Bills', 'Payments', 'Payments Report'),
+      },
+      {
+        label: 'Approvals (Other Departments)',
+        children: leaves(
+          'ST Deeds Registration View',
+          'Planning Recommendation',
+          'Other Departments',
+        ),
+      },
+      { label: "Director's Approval" },
+      {
+        label: 'ST Memo',
+        children: leaves('Primary', 'Unit (Scheme)', 'Unit (Non-Scheme)'),
+      },
+      { label: 'Final Conveyance' },
+      { label: 'Certificate', children: leaves('RofO', 'CofO') },
+      {
+        label: 'Digital Archive',
+        children: [
+          { label: 'File Tracker Dashboard' },
+          { label: 'File Tracker (Archive)' },
+          { label: 'Quick Search' },
+          { label: 'Log a File' },
+          { label: 'File Digital Library – Doc-WARE' },
+          {
+            label: 'e-Registry',
+            children: leaves('Files', 'Print File Label'),
+          },
+          { label: 'DMS Update' },
+        ],
+      },
+      { label: 'Survey', children: leaves('Attribution') },
+      { label: 'GIS', children: leaves('Attribution') },
+      { label: 'Sectional Titling BaseMap' },
+      { label: 'Reports' },
     ],
   },
+
   {
     label: 'System Admin',
     icon: ShieldCheck,
-    children: [
+    children: leaves(
       'Activity Logs',
       'Activity Monitoring',
       'User Account',
@@ -184,6 +384,6 @@ export const NAV: NavItem[] = [
       'Digital Signature Control',
       'System Settings',
       'Folder Watcher',
-    ],
+    ),
   },
 ]
