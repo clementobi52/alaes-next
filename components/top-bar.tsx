@@ -3,13 +3,25 @@
 import { Bell, Menu, Settings } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
-const METRICS = [
-  { label: 'Interviews', value: '15%', tone: 'plain' as const },
-  { label: 'Hired', value: '60%', tone: 'primary' as const },
-  { label: 'Project time', value: '10%', tone: 'plain' as const },
+export type Metric = { label: string; value: string; tone: 'plain' | 'primary' }
+
+const DEFAULT_METRICS: Metric[] = [
+  { label: 'Interviews', value: '15%', tone: 'plain' },
+  { label: 'Hired', value: '60%', tone: 'primary' },
+  { label: 'Project time', value: '10%', tone: 'plain' },
 ]
 
-export function TopBar({ onMenu }: { onMenu: () => void }) {
+export function TopBar({
+  onMenu,
+  title = 'Welcome back, Admin',
+  subtitle = "Here's what's happening with your land registry today.",
+  metrics = DEFAULT_METRICS,
+}: {
+  onMenu: () => void
+  title?: string
+  subtitle?: string
+  metrics?: Metric[]
+}) {
   return (
     <header className="sticky top-0 z-30 flex flex-col gap-4 border-b border-border bg-background/80 px-4 py-4 backdrop-blur-md md:flex-row md:items-center md:justify-between md:px-6 lg:px-8">
       <div className="flex items-center gap-3">
@@ -31,19 +43,18 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
         </button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-balance md:text-3xl">
-            Welcome back, Admin
+            {title}
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Here&apos;s what&apos;s happening with your land registry today.
-          </p>
+          <p className="text-sm text-muted-foreground text-pretty">{subtitle}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
         <ThemeToggle />
 
+        {metrics.length > 0 && (
         <div className="hidden items-center gap-4 rounded-xl border border-border bg-card/60 px-4 py-2.5 xl:flex">
-          {METRICS.map((m) => (
+          {metrics.map((m) => (
             <div key={m.label} className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">{m.label}</span>
               <span
@@ -58,6 +69,7 @@ export function TopBar({ onMenu }: { onMenu: () => void }) {
             </div>
           ))}
         </div>
+        )}
 
         <button
           type="button"

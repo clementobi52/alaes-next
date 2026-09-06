@@ -1,0 +1,268 @@
+/**
+ * Mock data + types for the ALAES System Admin module.
+ * All screens read their seed data from here and then manage it in local
+ * component state (no backend yet).
+ */
+
+export type UserStatus = 'active' | 'suspended' | 'invited'
+
+export type StaffUser = {
+  id: string
+  name: string
+  email: string
+  department: string
+  role: string
+  status: UserStatus
+  lastActive: string
+}
+
+export type Department = {
+  id: string
+  name: string
+  code: string
+  head: string
+  members: number
+  description: string
+}
+
+/** Modules used across the role permission matrix. */
+export const PERMISSION_MODULES = [
+  'Dashboard',
+  'Customer Relationship',
+  'DMS',
+  'Digital File Archive',
+  'File Tracking',
+  'Programmes',
+  'Deeds',
+  'Legal Search',
+  'Land',
+  'Sectional Titling',
+  'ALAES REV-M',
+  'System Admin',
+] as const
+
+export type PermissionModule = (typeof PERMISSION_MODULES)[number]
+export type PermissionAction = 'view' | 'create' | 'edit' | 'delete'
+export type PermissionSet = Record<PermissionModule, Record<PermissionAction, boolean>>
+
+export type Role = {
+  id: string
+  name: string
+  description: string
+  users: number
+  permissions: PermissionSet
+}
+
+export type LogStatus = 'success' | 'failed' | 'warning'
+export type ActivityLog = {
+  id: string
+  time: string
+  user: string
+  action: string
+  module: string
+  ip: string
+  status: LogStatus
+}
+
+export type LiveSession = {
+  id: string
+  user: string
+  role: string
+  module: string
+  device: string
+  ip: string
+  minutes: number
+  status: 'active' | 'idle'
+}
+
+export type SignatureStatus = 'enrolled' | 'pending' | 'revoked'
+export type Signatory = {
+  id: string
+  name: string
+  role: string
+  department: string
+  status: SignatureStatus
+  enabled: boolean
+  lastUsed: string
+  expires: string
+}
+
+export type FolderWatcher = {
+  id: string
+  name: string
+  path: string
+  status: 'watching' | 'paused'
+  files: number
+  lastScan: string
+  intervalSec: number
+  autoIndex: boolean
+}
+
+/* ---------------------------------- seeds --------------------------------- */
+
+export const DEPARTMENTS: Department[] = [
+  { id: 'd1', name: 'Land Registry', code: 'LR', head: 'Adaeze Okoro', members: 24, description: 'Plot allocation, registration and title custody.' },
+  { id: 'd2', name: 'Deeds & Instruments', code: 'DI', head: 'Emeka Uche', members: 16, description: 'Instrument capture and deeds registration.' },
+  { id: 'd3', name: 'Survey & GIS', code: 'SG', head: 'Uche Okonkwo', members: 12, description: 'Field survey, parcel mapping and base maps.' },
+  { id: 'd4', name: 'Legal Search', code: 'LS', head: 'Ada Amaka', members: 9, description: 'Official and online legal search services.' },
+  { id: 'd5', name: 'Revenue (REV-M)', code: 'RV', head: 'Ngozi Adaeze', members: 11, description: 'Billing, receipts and land use charge.' },
+  { id: 'd6', name: 'ICT / System Admin', code: 'ICT', head: 'Chukwueze John', members: 7, description: 'System administration and digital archive.' },
+]
+
+export const USERS: StaffUser[] = [
+  { id: 'u1', name: 'Adaeze Okoro', email: 'a.okoro@alaes.ab.gov.ng', department: 'Land Registry', role: 'Senior Land Registrar', status: 'active', lastActive: '2 min ago' },
+  { id: 'u2', name: 'Emeka Uche', email: 'e.uche@alaes.ab.gov.ng', department: 'Deeds & Instruments', role: 'Deeds Officer', status: 'active', lastActive: '18 min ago' },
+  { id: 'u3', name: 'Uche Okonkwo', email: 'u.okonkwo@alaes.ab.gov.ng', department: 'Survey & GIS', role: 'Survey Officer', status: 'active', lastActive: '1 hr ago' },
+  { id: 'u4', name: 'Ada Amaka', email: 'a.amaka@alaes.ab.gov.ng', department: 'Legal Search', role: 'Legal Search Officer', status: 'active', lastActive: '3 hr ago' },
+  { id: 'u5', name: 'Ngozi Adaeze', email: 'n.adaeze@alaes.ab.gov.ng', department: 'Revenue (REV-M)', role: 'Revenue Officer', status: 'suspended', lastActive: '2 days ago' },
+  { id: 'u6', name: 'Chukwuemeka Obi', email: 'c.obi@alaes.ab.gov.ng', department: 'Land Registry', role: 'Records Clerk', status: 'active', lastActive: '25 min ago' },
+  { id: 'u7', name: 'Chukwueze John', email: 'c.john@alaes.ab.gov.ng', department: 'ICT / System Admin', role: 'System Administrator', status: 'active', lastActive: 'Online now' },
+  { id: 'u8', name: 'Ifeoma Nwosu', email: 'i.nwosu@alaes.ab.gov.ng', department: 'Deeds & Instruments', role: 'Records Clerk', status: 'invited', lastActive: 'Never' },
+]
+
+const fullPerm = (v: boolean) => ({ view: v, create: v, edit: v, delete: v })
+
+function buildPerm(overrides: Partial<Record<PermissionModule, Partial<Record<PermissionAction, boolean>>>>, base = false): PermissionSet {
+  const set = {} as PermissionSet
+  for (const m of PERMISSION_MODULES) {
+    set[m] = { ...fullPerm(base), ...(overrides[m] ?? {}) }
+  }
+  return set
+}
+
+export const ROLES: Role[] = [
+  {
+    id: 'r1',
+    name: 'System Administrator',
+    description: 'Full, unrestricted access to every module and setting.',
+    users: 2,
+    permissions: buildPerm({}, true),
+  },
+  {
+    id: 'r2',
+    name: 'Senior Land Registrar',
+    description: 'Approves land transactions and manages registry records.',
+    users: 5,
+    permissions: buildPerm({
+      Dashboard: fullPerm(true),
+      Land: fullPerm(true),
+      'Sectional Titling': fullPerm(true),
+      Deeds: { view: true, create: true, edit: true },
+      DMS: { view: true, edit: true },
+      'Digital File Archive': { view: true },
+      'File Tracking': { view: true, edit: true },
+    }),
+  },
+  {
+    id: 'r3',
+    name: 'Deeds Officer',
+    description: 'Captures and registers instruments and encumbrances.',
+    users: 8,
+    permissions: buildPerm({
+      Dashboard: { view: true },
+      Deeds: fullPerm(true),
+      'Legal Search': { view: true },
+      DMS: { view: true, create: true },
+      'File Tracking': { view: true },
+    }),
+  },
+  {
+    id: 'r4',
+    name: 'Revenue Officer',
+    description: 'Generates bills and receipts under ALAES REV-M.',
+    users: 6,
+    permissions: buildPerm({
+      Dashboard: { view: true },
+      'ALAES REV-M': fullPerm(true),
+      Land: { view: true },
+    }),
+  },
+  {
+    id: 'r5',
+    name: 'Records Clerk',
+    description: 'Indexes, scans and tracks physical file movement.',
+    users: 14,
+    permissions: buildPerm({
+      Dashboard: { view: true },
+      DMS: { view: true, create: true, edit: true },
+      'Digital File Archive': { view: true, create: true },
+      'File Tracking': { view: true, create: true, edit: true },
+    }),
+  },
+]
+
+export const ACTIVITY_LOGS: ActivityLog[] = [
+  { id: 'l1', time: 'Sep 06, 2026 14:32', user: 'Chukwueze John', action: 'Updated system settings', module: 'System Admin', ip: '10.12.4.18', status: 'success' },
+  { id: 'l2', time: 'Sep 06, 2026 14:20', user: 'Adaeze Okoro', action: "Approved RofO for LABA/157", module: 'Land', ip: '10.12.4.7', status: 'success' },
+  { id: 'l3', time: 'Sep 06, 2026 13:58', user: 'Ngozi Adaeze', action: 'Failed login attempt', module: 'Authentication', ip: '197.210.44.9', status: 'failed' },
+  { id: 'l4', time: 'Sep 06, 2026 13:41', user: 'Emeka Uche', action: 'Registered instrument LABA/138', module: 'Deeds', ip: '10.12.4.11', status: 'success' },
+  { id: 'l5', time: 'Sep 06, 2026 13:15', user: 'Ada Amaka', action: 'Generated legal search report', module: 'Legal Search', ip: '10.12.4.22', status: 'success' },
+  { id: 'l6', time: 'Sep 06, 2026 12:47', user: 'Uche Okonkwo', action: 'Bulk import exceeded quota', module: 'Survey & GIS', ip: '10.12.4.31', status: 'warning' },
+  { id: 'l7', time: 'Sep 06, 2026 12:30', user: 'Chukwuemeka Obi', action: 'Indexed 42 files (Zone A)', module: 'DMS', ip: '10.12.4.14', status: 'success' },
+  { id: 'l8', time: 'Sep 06, 2026 11:58', user: 'Chukwueze John', action: 'Created user account: Ifeoma Nwosu', module: 'System Admin', ip: '10.12.4.18', status: 'success' },
+  { id: 'l9', time: 'Sep 06, 2026 11:22', user: 'System', action: 'Scheduled backup completed', module: 'System', ip: 'localhost', status: 'success' },
+  { id: 'l10', time: 'Sep 06, 2026 10:49', user: 'Ngozi Adaeze', action: 'Voided receipt RCP/2291', module: 'ALAES REV-M', ip: '10.12.4.9', status: 'warning' },
+  { id: 'l11', time: 'Sep 06, 2026 10:15', user: 'Ada Amaka', action: 'Exported search log (CSV)', module: 'Legal Search', ip: '10.12.4.22', status: 'success' },
+  { id: 'l12', time: 'Sep 06, 2026 09:40', user: 'Unknown', action: 'Blocked SQL injection attempt', module: 'Security', ip: '45.146.164.2', status: 'failed' },
+]
+
+export const LIVE_SESSIONS: LiveSession[] = [
+  { id: 's1', user: 'Chukwueze John', role: 'System Administrator', module: 'System Admin', device: 'Chrome · Windows', ip: '10.12.4.18', minutes: 128, status: 'active' },
+  { id: 's2', user: 'Adaeze Okoro', role: 'Senior Land Registrar', module: 'Land', device: 'Edge · Windows', ip: '10.12.4.7', minutes: 54, status: 'active' },
+  { id: 's3', user: 'Emeka Uche', role: 'Deeds Officer', module: 'Deeds', device: 'Chrome · macOS', ip: '10.12.4.11', minutes: 33, status: 'active' },
+  { id: 's4', user: 'Ada Amaka', role: 'Legal Search Officer', module: 'Legal Search', device: 'Firefox · Ubuntu', ip: '10.12.4.22', minutes: 12, status: 'idle' },
+  { id: 's5', user: 'Chukwuemeka Obi', role: 'Records Clerk', module: 'DMS', device: 'ALAES Mobile · Android', ip: '10.12.5.4', minutes: 7, status: 'active' },
+]
+
+export const SIGNATORIES: Signatory[] = [
+  { id: 'g1', name: 'Adaeze Okoro', role: 'Senior Land Registrar', department: 'Land Registry', status: 'enrolled', enabled: true, lastUsed: 'Sep 06, 2026', expires: 'Dec 31, 2026' },
+  { id: 'g2', name: 'Emeka Uche', role: 'Deeds Officer', department: 'Deeds & Instruments', status: 'enrolled', enabled: true, lastUsed: 'Sep 05, 2026', expires: 'Nov 15, 2026' },
+  { id: 'g3', name: 'Barr. Chidi Eze', role: 'Director of Lands', department: "Director's Office", status: 'enrolled', enabled: false, lastUsed: 'Aug 28, 2026', expires: 'Oct 02, 2026' },
+  { id: 'g4', name: 'Ngozi Adaeze', role: 'Revenue Officer', department: 'Revenue (REV-M)', status: 'pending', enabled: false, lastUsed: 'Never', expires: '—' },
+  { id: 'g5', name: 'Uche Okonkwo', role: 'Survey Officer', department: 'Survey & GIS', status: 'revoked', enabled: false, lastUsed: 'Jul 19, 2026', expires: 'Expired' },
+]
+
+export const FOLDER_WATCHERS: FolderWatcher[] = [
+  { id: 'f1', name: 'Blind Scanning Drop', path: '/mnt/alaes/scans/blind', status: 'watching', files: 1284, lastScan: '2 min ago', intervalSec: 30, autoIndex: true },
+  { id: 'f2', name: 'Indexed Uploads', path: '/mnt/alaes/scans/indexed', status: 'watching', files: 4297, lastScan: '5 min ago', intervalSec: 60, autoIndex: true },
+  { id: 'f3', name: 'Doc-WARE Archive', path: '/mnt/alaes/docware/incoming', status: 'paused', files: 902, lastScan: '3 hr ago', intervalSec: 120, autoIndex: false },
+  { id: 'f4', name: 'Survey Field Data', path: '/mnt/alaes/gis/field', status: 'watching', files: 361, lastScan: '11 min ago', intervalSec: 300, autoIndex: false },
+]
+
+export type SystemSettings = {
+  orgName: string
+  registryZone: string
+  supportEmail: string
+  timezone: string
+  currency: string
+  dateFormat: string
+  sessionTimeout: number
+  enforce2fa: boolean
+  passwordExpiryDays: number
+  ipAllowlist: boolean
+  auditRetentionDays: number
+  emailNotifications: boolean
+  smsAlerts: boolean
+  maintenanceMode: boolean
+  autoBackup: boolean
+  backupFrequency: string
+}
+
+export const DEFAULT_SETTINGS: SystemSettings = {
+  orgName: 'Abia Land Administration Enterprise System',
+  registryZone: 'Greater Umuahia',
+  supportEmail: 'support@alaes.ab.gov.ng',
+  timezone: '(GMT+01:00) West Africa Time — Lagos',
+  currency: 'NGN — Nigerian Naira',
+  dateFormat: 'DD MMM, YYYY',
+  sessionTimeout: 30,
+  enforce2fa: true,
+  passwordExpiryDays: 90,
+  ipAllowlist: false,
+  auditRetentionDays: 365,
+  emailNotifications: true,
+  smsAlerts: false,
+  maintenanceMode: false,
+  autoBackup: true,
+  backupFrequency: 'Daily at 02:00',
+}

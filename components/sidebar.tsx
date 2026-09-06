@@ -1,16 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ChevronDown, LogOut } from 'lucide-react'
 import { AlaesLogo } from '@/components/alaes-logo'
-import { NAV, type NavModule, type NavNode } from '@/lib/nav'
+import { NAV, findActiveChain, type NavModule, type NavNode } from '@/lib/nav'
 import { cn } from '@/lib/utils'
 
-export function Sidebar({ open }: { open: boolean }) {
-  // Active leaf path and the set of expanded group paths, keyed by full path
-  // so repeated labels (e.g. two "DMS Update") never collide.
-  const [active, setActive] = useState('Dashboard')
-  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () => void }) {
+  const pathname = usePathname()
+
+  // Expanded group paths, keyed by full path so repeated labels never collide.
+  const [expanded, setExpanded] = useState<Set<string>>(
+    () => new Set(findActiveChain(pathname)),
+  )
+  // Highlight fallback for hrefless leaves; routed leaves use the pathname.
+  const [active, setActive] = useState('')
+
+  // When the route changes, auto-expand the ancestors of the active leaf.
+  useEffect(() => {
+    const chain = findActiveChain(pathname)
+    if (chain.length) {
+      setExpanded((prev) => new Set([...prev, ...chain]))
+    }
+  }, [pathname])
 
   const toggle = (path: string) => {
     setExpanded((prev) => {
@@ -19,6 +33,15 @@ export function Sidebar({ open }: { open: boolean }) {
       else next.add(path)
       return next
     })
+  }
+
+  const shared: SharedProps = {
+    pathname,
+    active,
+    expanded,
+    setActive,
+    toggle,
+    onNavigate,
   }
 
   return (
@@ -35,14 +58,7 @@ export function Sidebar({ open }: { open: boolean }) {
       <nav className="scrollbar-thin flex-1 overflow-y-auto px-3 py-4">
         <ul className="flex flex-col gap-1">
           {NAV.map((mod) => (
-            <ModuleItem
-              key={mod.label}
-              module={mod}
-              active={active}
-              expanded={expanded}
-              setActive={setActive}
-              toggle={toggle}
-            />
+            <ModuleItem key={mod.label} module={mod} {...shared} />
           ))}
         </ul>
       </nav>
@@ -72,27 +88,58 @@ export function Sidebar({ open }: { open: boolean }) {
 }
 
 type SharedProps = {
+  pathname: string
   active: string
   expanded: Set<string>
   setActive: (path: string) => void
   toggle: (path: string) => void
+  onNavigate?: () => void
+}
+
+/** Row shell shared by routed leaves (Link), hrefless leaves and groups (button). */
+function Row({
+  href,
+  isActive,
+  onClick,
+  onNavigate,
+  className,
+  children,
+}: {
+  href?: string
+  isActive: boolean
+  onClick?: () => void
+  onNavigate?: () => void
+  className: string
+  children: React.ReactNode
+}) {
+  if (href) {
+    return (
+      <Link href={href} onClick={onNavigate} className={className} aria-current={isActive ? 'page' : undefined}>
+        {children}
+      </Link>
+    )
+  }
+  return (
+    <button type="button" onClick={onClick} className={className}>
+      {children}
+    </button>
+  )
 }
 
 function ModuleItem({ module, ...shared }: { module: NavModule } & SharedProps) {
-  const { active, expanded, setActive, toggle } = shared
+  const { pathname, active, expanded, setActive, toggle, onNavigate } = shared
   const path = module.label
   const hasChildren = !!module.children?.length
   const isOpen = expanded.has(path)
-  const isActive = active === path
+  const isActive = module.href ? pathname === module.href : active === path
 
   return (
     <li>
-      <button
-        type="button"
-        onClick={() => {
-          if (hasChildren) toggle(path)
-          else setActive(path)
-        }}
+      <Row
+        href={hasChildren ? undefined : module.href}
+        isActive={isActive}
+        onNavigate={onNavigate}
+        onClick={() => (hasChildren ? toggle(path) : setActive(path))}
         className={cn(
           'group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors',
           isActive
@@ -115,18 +162,12 @@ function ModuleItem({ module, ...shared }: { module: NavModule } & SharedProps) 
             )}
           />
         )}
-      </button>
+      </Row>
 
       {hasChildren && isOpen && (
         <ul className="mb-1 ms-5 mt-1 flex flex-col gap-0.5 border-l border-sidebar-border pl-2">
           {module.children!.map((child) => (
-            <NavBranch
-              key={child.label}
-              node={child}
-              parentPath={path}
-              depth={1}
-              {...shared}
-            />
+            <NavBranch key={child.label} node={child} parentPath={path} {...shared} />
           ))}
         </ul>
       )}
@@ -137,23 +178,21 @@ function ModuleItem({ module, ...shared }: { module: NavModule } & SharedProps) 
 function NavBranch({
   node,
   parentPath,
-  depth,
   ...shared
-}: { node: NavNode; parentPath: string; depth: number } & SharedProps) {
-  const { active, expanded, setActive, toggle } = shared
+}: { node: NavNode; parentPath: string } & SharedProps) {
+  const { pathname, active, expanded, setActive, toggle, onNavigate } = shared
   const path = `${parentPath}/${node.label}`
   const hasChildren = !!node.children?.length
   const isOpen = expanded.has(path)
-  const isActive = active === path
+  const isActive = node.href ? pathname === node.href : active === path
 
   return (
     <li>
-      <button
-        type="button"
-        onClick={() => {
-          if (hasChildren) toggle(path)
-          else setActive(path)
-        }}
+      <Row
+        href={hasChildren ? undefined : node.href}
+        isActive={isActive}
+        onNavigate={onNavigate}
+        onClick={() => (hasChildren ? toggle(path) : setActive(path))}
         className={cn(
           'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[13px] transition-colors',
           isActive
@@ -170,18 +209,12 @@ function NavBranch({
             )}
           />
         )}
-      </button>
+      </Row>
 
       {hasChildren && isOpen && (
         <ul className="ms-3 mt-0.5 flex flex-col gap-0.5 border-l border-sidebar-border pl-2">
           {node.children!.map((child) => (
-            <NavBranch
-              key={child.label}
-              node={child}
-              parentPath={path}
-              depth={depth + 1}
-              {...shared}
-            />
+            <NavBranch key={child.label} node={child} parentPath={path} {...shared} />
           ))}
         </ul>
       )}
