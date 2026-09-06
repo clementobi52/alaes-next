@@ -331,7 +331,16 @@ export const NAV: NavModule[] = [
           },
           {
             label: 'Unit Applications',
-            children: leaves('Parented Units', 'Standalone Units'),
+            children: [
+              {
+                label: 'Parented Units',
+                href: '/sectional-titling/applications/parented',
+              },
+              {
+                label: 'Standalone Units',
+                href: '/sectional-titling/applications/standalone',
+              },
+            ],
           },
         ],
       },

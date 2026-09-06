@@ -255,3 +255,134 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
     directorApproval: { status: 'Approved', date: '2025-12-15' },
   },
 ]
+
+/* ------------------------------------------------------------------ */
+/* Unit Applications — shared shape                                    */
+/* ------------------------------------------------------------------ */
+
+export const ALLOCATION_SOURCES = ['State Government', 'Local Government'] as const
+export type AllocationSource = (typeof ALLOCATION_SOURCES)[number]
+
+/** A single sectional unit moving through the approval pipeline. */
+export type UnitApplication = {
+  schemeNo: string
+  npFileNo: string // parent / primary (mother) file number
+  unitFileNo: string
+  unitNo: string
+  landUse: LandUse
+  allocationSource: AllocationSource
+  allocationEntity: string
+  unitOwner: string
+  phone: string
+  applicationDate: string
+  dateCaptured: string
+  createdBy: string
+  jsiStatus: ApprovalStage
+  jsiApproval: ApprovalStage
+  planningRecommendation: ApprovalStage
+  directorApproval: ApprovalStage
+}
+
+/** Roll a unit's four pipeline stages into one headline status. */
+export function unitOverallStatus(u: UnitApplication): STStatus {
+  if (u.directorApproval.status === 'Approved') return 'Approved'
+  if (
+    u.jsiApproval.status === 'Declined' ||
+    u.planningRecommendation.status === 'Declined' ||
+    u.directorApproval.status === 'Declined'
+  )
+    return 'Declined'
+  return 'Pending'
+}
+
+/* ------------------------------------------------------------------ */
+/* Parented Units (units under a mother/primary scheme)                */
+/* ------------------------------------------------------------------ */
+
+export const PARENTED_STATS = {
+  motherSchemes: 4,
+  totalUnits: 11,
+  approved: 5,
+  pending: 6,
+}
+
+export type MotherScheme = {
+  schemeNo: string
+  motherFileNo: string
+  property: string
+  developer: string
+  landUse: LandUse
+  totalUnits: number
+  units: UnitApplication[]
+}
+
+export const PARENTED_SCHEMES: MotherScheme[] = [
+  {
+    schemeNo: 'ST/SP/0008',
+    motherFileNo: 'ST-COM-2026-08',
+    property: 'Plaza Complex, Aba Road, Aba',
+    developer: 'Platinum Synergy Villas Ltd',
+    landUse: 'Commercial',
+    totalUnits: 12,
+    units: [
+      { schemeNo: 'ST/SP/0008', npFileNo: 'ST-COM-2026-08', unitFileNo: 'ST-COM-2026-08-001', unitNo: 'Shop A1', landUse: 'Commercial', allocationSource: 'State Government', allocationEntity: 'Abia State Govt', unitOwner: 'Emeka Uche', phone: '0803 461 2290', applicationDate: '2026-07-18', dateCaptured: '2026-08-01', createdBy: 'AO Okoro', jsiStatus: { status: 'Captured', date: '2026-08-02' }, jsiApproval: { status: 'Approved', date: '2026-08-10' }, planningRecommendation: { status: 'Approved', date: '2026-08-12' }, directorApproval: { status: 'Approved', date: '2026-08-20' } },
+      { schemeNo: 'ST/SP/0008', npFileNo: 'ST-COM-2026-08', unitFileNo: 'ST-COM-2026-08-002', unitNo: 'Shop A2', landUse: 'Commercial', allocationSource: 'State Government', allocationEntity: 'Abia State Govt', unitOwner: 'Ada Amaka', phone: '0806 552 8134', applicationDate: '2026-07-18', dateCaptured: '2026-08-01', createdBy: 'AO Okoro', jsiStatus: { status: 'Captured', date: '2026-08-02' }, jsiApproval: { status: 'Approved', date: '2026-08-10' }, planningRecommendation: { status: 'Pending' }, directorApproval: { status: 'Pending' } },
+      { schemeNo: 'ST/SP/0008', npFileNo: 'ST-COM-2026-08', unitFileNo: 'ST-COM-2026-08-003', unitNo: 'Office B1', landUse: 'Commercial', allocationSource: 'State Government', allocationEntity: 'Abia State Govt', unitOwner: 'Uche Okonkwo', phone: '0701 223 9087', applicationDate: '2026-07-20', dateCaptured: '2026-08-03', createdBy: 'EU Uche', jsiStatus: { status: 'Captured', date: '2026-08-04' }, jsiApproval: { status: 'Approved', date: '2026-08-12' }, planningRecommendation: { status: 'Approved', date: '2026-08-14' }, directorApproval: { status: 'Pending' } },
+    ],
+  },
+  {
+    schemeNo: 'ST/SP/0011',
+    motherFileNo: 'ST-RES-2026-11',
+    property: 'Residential Estate, Ohuhu, Umuahia',
+    developer: 'Ladan Trading Company Ltd',
+    landUse: 'Residential',
+    totalUnits: 8,
+    units: [
+      { schemeNo: 'ST/SP/0011', npFileNo: 'ST-RES-2026-11', unitFileNo: 'ST-RES-2026-11-001', unitNo: 'Block 1 Flat 1', landUse: 'Residential', allocationSource: 'Local Government', allocationEntity: 'Umuahia North LGA', unitOwner: 'Ngozi Adaeze', phone: '0813 770 4521', applicationDate: '2026-06-22', dateCaptured: '2026-07-02', createdBy: 'EU Uche', jsiStatus: { status: 'Captured', date: '2026-07-05' }, jsiApproval: { status: 'Approved', date: '2026-07-15' }, planningRecommendation: { status: 'Approved', date: '2026-07-18' }, directorApproval: { status: 'Approved', date: '2026-07-30' } },
+      { schemeNo: 'ST/SP/0011', npFileNo: 'ST-RES-2026-11', unitFileNo: 'ST-RES-2026-11-002', unitNo: 'Block 1 Flat 2', landUse: 'Residential', allocationSource: 'Local Government', allocationEntity: 'Umuahia North LGA', unitOwner: 'Chukwuemeka Obi', phone: '0902 118 3365', applicationDate: '2026-06-22', dateCaptured: '2026-07-02', createdBy: 'EU Uche', jsiStatus: { status: 'Captured', date: '2026-07-05' }, jsiApproval: { status: 'Approved', date: '2026-07-15' }, planningRecommendation: { status: 'Pending' }, directorApproval: { status: 'Pending' } },
+    ],
+  },
+  {
+    schemeNo: 'ST/SP/0019',
+    motherFileNo: 'ST-MIX-2025-19',
+    property: 'Mixed-Use Development, Factory Road, Aba',
+    developer: 'Chief Binta Okwara',
+    landUse: 'Mixed-Use',
+    totalUnits: 10,
+    units: [
+      { schemeNo: 'ST/SP/0019', npFileNo: 'ST-MIX-2025-19', unitFileNo: 'ST-MIX-2025-19-001', unitNo: 'Suite 1', landUse: 'Mixed-Use', allocationSource: 'State Government', allocationEntity: 'Abia State Govt', unitOwner: 'Platinum Synergy Ltd', phone: '0805 664 2201', applicationDate: '2025-10-05', dateCaptured: '2025-11-18', createdBy: 'AA Amaka', jsiStatus: { status: 'Captured', date: '2025-11-20' }, jsiApproval: { status: 'Approved', date: '2025-12-01' }, planningRecommendation: { status: 'Approved', date: '2025-12-03' }, directorApproval: { status: 'Approved', date: '2025-12-15' } },
+      { schemeNo: 'ST/SP/0019', npFileNo: 'ST-MIX-2025-19', unitFileNo: 'ST-MIX-2025-19-002', unitNo: 'Suite 2', landUse: 'Mixed-Use', allocationSource: 'State Government', allocationEntity: 'Abia State Govt', unitOwner: 'Umuahia Mega Plaza Ltd', phone: '0703 552 7789', applicationDate: '2025-10-05', dateCaptured: '2025-11-18', createdBy: 'AA Amaka', jsiStatus: { status: 'Captured', date: '2025-11-20' }, jsiApproval: { status: 'Approved', date: '2025-12-01' }, planningRecommendation: { status: 'Pending' }, directorApproval: { status: 'Pending' } },
+    ],
+  },
+  {
+    schemeNo: 'ST/SP/0006',
+    motherFileNo: 'ST-IND-2025-06',
+    property: 'Industrial Layout, Osisioma, Aba',
+    developer: 'Ngozi Adaeze',
+    landUse: 'Industrial',
+    totalUnits: 2,
+    units: [
+      { schemeNo: 'ST/SP/0006', npFileNo: 'ST-IND-2025-06', unitFileNo: 'ST-IND-2025-06-001', unitNo: 'Warehouse 1', landUse: 'Industrial', allocationSource: 'Local Government', allocationEntity: 'Osisioma Ngwa LGA', unitOwner: 'Ladan Trading Ltd', phone: '0816 443 1120', applicationDate: '2025-11-12', dateCaptured: '2025-12-02', createdBy: 'UO Okonkwo', jsiStatus: { status: 'Captured', date: '2025-12-05' }, jsiApproval: { status: 'Approved', date: '2025-12-18' }, planningRecommendation: { status: 'Approved', date: '2025-12-20' }, directorApproval: { status: 'Approved', date: '2026-01-05' } },
+    ],
+  },
+]
+
+/* ------------------------------------------------------------------ */
+/* Standalone Unit Applications (SUA — no mother application)          */
+/* ------------------------------------------------------------------ */
+
+export const STANDALONE_STATS = {
+  total: 6,
+  approved: 2,
+  pending: 4,
+  rejected: 0,
+}
+
+export const STANDALONE_APPLICATIONS: UnitApplication[] = [
+  { schemeNo: 'ST/SP/0025', npFileNo: 'ST-COM-2026-4', unitFileNo: 'ST-COM-2026-4-001', unitNo: 'Unit 1', landUse: 'Commercial', allocationSource: 'Local Government', allocationEntity: 'Aba South LGA', unitOwner: 'Dahiru Isa Umar', phone: '0803 145 9921', applicationDate: '2026-04-06', dateCaptured: '2026-04-11', createdBy: 'NS Umar', jsiStatus: { status: 'Captured', date: '2026-04-12' }, jsiApproval: { status: 'Approved', date: '2026-04-20' }, planningRecommendation: { status: 'Approved', date: '2026-04-22' }, directorApproval: { status: 'Approved', date: '2026-05-02' } },
+  { schemeNo: 'ST/SP/0026', npFileNo: 'ST-COM-2026-5', unitFileNo: 'ST-COM-2026-5-001', unitNo: 'Unit 1', landUse: 'Commercial', allocationSource: 'State Government', allocationEntity: 'Abia State Govt', unitOwner: 'Adaeze Amaka Nwosu', phone: '0806 774 2018', applicationDate: '2026-05-02', dateCaptured: '2026-05-09', createdBy: 'AO Okoro', jsiStatus: { status: 'Captured', date: '2026-05-10' }, jsiApproval: { status: 'Approved', date: '2026-05-19' }, planningRecommendation: { status: 'Pending' }, directorApproval: { status: 'Pending' } },
+  { schemeNo: 'ST/SP/0027', npFileNo: 'ST-RES-2025-2', unitFileNo: 'ST-RES-2025-2-009', unitNo: 'Flat 9', landUse: 'Residential', allocationSource: 'Local Government', allocationEntity: 'Umuahia South LGA', unitOwner: 'Emeka Uche', phone: '0701 998 5540', applicationDate: '2025-02-14', dateCaptured: '2025-02-27', createdBy: 'EU Uche', jsiStatus: { status: 'Captured', date: '2025-03-01' }, jsiApproval: { status: 'Approved', date: '2025-03-10' }, planningRecommendation: { status: 'Approved', date: '2025-03-12' }, directorApproval: { status: 'Approved', date: '2025-03-25' } },
+  { schemeNo: 'ST/SP/0028', npFileNo: 'ST-RES-2026-7', unitFileNo: 'ST-RES-2026-7-003', unitNo: 'Flat 3', landUse: 'Residential', allocationSource: 'State Government', allocationEntity: 'Abia State Govt', unitOwner: 'Chief Binta Okwara', phone: '0813 220 6674', applicationDate: '2026-03-11', dateCaptured: '2026-03-18', createdBy: 'AA Amaka', jsiStatus: { status: 'Captured', date: '2026-03-19' }, jsiApproval: { status: 'Pending' }, planningRecommendation: { status: 'Pending' }, directorApproval: { status: 'Pending' } },
+  { schemeNo: 'ST/SP/0029', npFileNo: 'ST-IND-2026-2', unitFileNo: 'ST-IND-2026-2-001', unitNo: 'Bay 1', landUse: 'Industrial', allocationSource: 'Local Government', allocationEntity: 'Osisioma Ngwa LGA', unitOwner: 'Umuahia Mega Plaza Ltd', phone: '0902 445 1176', applicationDate: '2026-02-20', dateCaptured: '2026-02-28', createdBy: 'UO Okonkwo', jsiStatus: { status: 'Captured', date: '2026-03-01' }, jsiApproval: { status: 'Pending' }, planningRecommendation: { status: 'Pending' }, directorApproval: { status: 'Pending' } },
+  { schemeNo: 'ST/SP/0030', npFileNo: 'ST-COM-2026-9', unitFileNo: 'ST-COM-2026-9-002', unitNo: 'Shop 2', landUse: 'Commercial', allocationSource: 'State Government', allocationEntity: 'Abia State Govt', unitOwner: 'Platinum Synergy Ltd', phone: '0805 331 8890', applicationDate: '2026-06-01', dateCaptured: '2026-06-08', createdBy: 'NS Umar', jsiStatus: { status: 'Captured', date: '2026-06-09' }, jsiApproval: { status: 'Pending' }, planningRecommendation: { status: 'Pending' }, directorApproval: { status: 'Pending' } },
+]
