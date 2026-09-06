@@ -295,6 +295,7 @@ export function Modal({
   description,
   children,
   footer,
+  widthClass = 'max-w-lg',
 }: {
   open: boolean
   onClose: () => void
@@ -302,6 +303,7 @@ export function Modal({
   description?: string
   children: ReactNode
   footer?: ReactNode
+  widthClass?: string
 }) {
   useEffect(() => {
     if (!open) return
@@ -324,7 +326,10 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="scrollbar-thin relative z-10 flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+        className={cn(
+          'scrollbar-thin relative z-10 flex max-h-[85vh] w-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl',
+          widthClass,
+        )}
       >
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div>
