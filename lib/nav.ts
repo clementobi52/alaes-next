@@ -388,6 +388,7 @@ export const NAV: NavModule[] = [
         href: '/system-admin/digital-signature-control',
       },
       { label: 'System Settings', href: '/system-admin/system-settings' },
+      { label: 'Database Connection', href: '/system-admin/database' },
       { label: 'Folder Watcher', href: '/system-admin/folder-watcher' },
     ],
   },
