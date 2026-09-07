@@ -218,14 +218,14 @@ export const NAV: NavModule[] = [
     label: 'Legal Search',
     icon: Search,
     children: [
-      { label: 'Property Records' },
+      { label: 'Property Records', href: '/legal-search/property-records' },
       {
         label: 'On-Premise Legal Search',
-        children: leaves(
-          'Official (for filing purpose)',
-          'On-Premise',
-          'Legal Search Reports',
-        ),
+        children: [
+          { label: 'Official (for filing purpose)', href: '/legal-search/official' },
+          { label: 'On-Premise', href: '/legal-search/on-premise' },
+          { label: 'Legal Search Reports' },
+        ],
       },
       { label: 'Transaction Token Control' },
       {
