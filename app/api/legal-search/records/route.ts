@@ -30,38 +30,65 @@ function mapColumns(columns: string[]): ColumnMap {
   const find = (...names: string[]) => names.map((name) => normalized.get(name.toLowerCase().replace(/[^a-z0-9]/g, ''))).find(Boolean)
   return {
     id: find('Id', 'TransactionId', 'PropertyTransactionId'),
-    fileNo: find('FileNo', 'FileNumber', 'KANGISFileNo', 'KangisFileNumber', 'NewKANGISFileNo'),
-    property: find('Property', 'PropertyName', 'Description', 'Subject'),
-    owner: find('Owner', 'OwnerName', 'ApplicantName', 'ProprietorName', 'GuarantorName'),
-    location: find('Location', 'Address', 'PropertyAddress', 'District'),
-    lga: find('LGA', 'LocalGovernmentArea'),
+    fileNo: find('ParentFileNumber', 'FileNumber', 'FileNo', 'KANGISFileNo', 'NewKANGISFileNo', 'RootRegistrationNumber'),
+    property: find('ScheduleName', 'Property', 'PropertyName', 'Description', 'Subject'),
+    owner: find('GranteeName', 'GrantorName', 'Owner', 'OwnerName', 'ApplicantName', 'ProprietorName'),
+    location: find('ScheduleName', 'LayoutName', 'Location', 'Address', 'PropertyAddress', 'District'),
+    lga: find('LgaOrCityID', 'LGA', 'LocalGovernmentArea'),
     plot: find('PlotNumber', 'PlotNo'),
-    plan: find('PlanNumber', 'PlanNo'),
-    status: find('Status', 'TransactionStatus'),
-    typeId: find('TransactionTypeId', 'TypeId'),
+    plan: find('RootRegistrationNumber', 'PlanNumber', 'PlanNo'),
+    status: find('IsApproved', 'Status', 'TransactionStatus'),
+    typeId: find('PropertyTransferTypeID', 'PropertyTransactionTypeId', 'TransactionTypeId', 'TypeId'),
     type: find('TransactionType', 'Type', 'Name'),
-    created: find('CreatedDate', 'CreatedAt', 'TransactionDate', 'DateCreated'),
-    size: find('Size', 'PropertySize', 'Area'),
+    created: find('DateCreated', 'CreatedDate', 'CreatedAt', 'TransactionDate', 'TransactionDateTime'),
+    size: find('PlotSize', 'Size', 'PropertySize', 'Area'),
     caveat: find('Caveat', 'HasCaveat'),
-    particulars: find('RegistrationParticulars', 'Particulars', 'Instrument'),
+    particulars: find('ParentRegistrationNumber', 'RegistrationParticulars', 'Particulars', 'Instrument'),
   }
 }
 
-function selectExpression(map: ColumnMap, key: string, alias: string) {
-  return map[key] ? `${identifier(map[key]!)} AS ${identifier(alias)}` : `NULL AS ${identifier(alias)}`
+function selectExpression(map: ColumnMap, key: string, alias: string, tableAlias?: string) {
+  const column = map[key]
+  return column ? `${tableAlias ? `${tableAlias}.` : ''}${identifier(column)} AS ${identifier(alias)}` : `NULL AS ${identifier(alias)}`
 }
 
 export async function GET(request: Request) {
   if (!isDbConfigured()) return NextResponse.json({ ok: true, source: 'demo', records: LEGAL_SEARCH_RECORDS })
   const url = new URL(request.url)
   const search = url.searchParams.get('search')?.trim() ?? ''
-  const tables = await Promise.all(Object.values(TABLES).map(getColumns))
-  const map = mapColumns(tables[0])
-  const searchable = [map.fileNo, map.property, map.owner, map.location, map.lga, map.plot, map.plan].filter(Boolean) as string[]
-  const where = search && searchable.length ? `WHERE ${searchable.map((column) => `TRY_CONVERT(nvarchar(500), ${identifier(column)}) LIKE @search`).join(' OR ')}` : ''
-  const order = map.created ? `ORDER BY ${identifier(map.created)} DESC` : map.id ? `ORDER BY ${identifier(map.id)} DESC` : ''
-  const result = await query(`SELECT TOP (200) ${['id','fileNo','property','owner','location','lga','plot','plan','status','type','created','size','caveat','particulars'].map((key) => selectExpression(map, key, key)).join(', ')} FROM dbo.${identifier(TABLES.transaction)} ${where} ${order}`, search ? { search: `%${search}%` } : {})
-  return NextResponse.json({ ok: true, source: 'mssql', records: result.recordset, tables: TABLES })
+  const [transactionColumns, historyColumns, typeColumns] = await Promise.all(Object.values(TABLES).map(getColumns))
+  const historyMap = mapColumns(historyColumns)
+  const typeName = typeColumns.find((column) => column.toLowerCase() === 'transactiontype')
+  const historyId = historyColumns.find((column) => column.toLowerCase() === 'propertytransactionhistoryid')
+  const typeId = typeColumns.find((column) => column.toLowerCase() === 'propertytransactiontypeid')
+  const searchable = [historyMap.fileNo, historyMap.property, historyMap.owner, historyMap.location, historyMap.lga, historyMap.plot, historyMap.plan, historyMap.created].filter(Boolean) as string[]
+  const where = search && searchable.length ? `WHERE ${searchable.map((column) => `TRY_CONVERT(nvarchar(500), h.${identifier(column)}) LIKE @search`).join(' OR ')}` : ''
+  const order = historyMap.created ? `ORDER BY h.${identifier(historyMap.created)} DESC` : historyMap.id ? `ORDER BY h.${identifier(historyMap.id)} DESC` : ''
+  const typeJoin = historyMap.typeId && typeId ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(historyMap.typeId)} = t.${identifier(typeId)}` : ''
+  const typeSelect = typeName ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
+  const result = await query(`SELECT TOP (200)
+    ${historyId ? `h.${identifier(historyId)}` : 'NULL'} AS [id],
+    ${selectExpression(historyMap, 'fileNo', 'fileNo', 'h')},
+    ${selectExpression(historyMap, 'property', 'property', 'h')},
+    ${selectExpression(historyMap, 'owner', 'owner', 'h')},
+    ${selectExpression(historyMap, 'location', 'location', 'h')},
+    ${selectExpression(historyMap, 'lga', 'lga', 'h')},
+    ${selectExpression(historyMap, 'plot', 'plot', 'h')},
+    ${selectExpression(historyMap, 'plan', 'plan', 'h')},
+    ${selectExpression(historyMap, 'status', 'status', 'h')},
+    ${typeSelect},
+    ${selectExpression(historyMap, 'created', 'created', 'h')},
+    ${selectExpression(historyMap, 'size', 'size', 'h')},
+    ${selectExpression(historyMap, 'caveat', 'caveat', 'h')},
+    ${selectExpression(historyMap, 'particulars', 'particulars', 'h')},
+    ${selectExpression(historyMap, 'owner', 'grantee', 'h')},
+    ${selectExpression(historyMap, 'location', 'scheduleName', 'h')},
+    ${selectExpression(historyMap, 'plot', 'plotNumber', 'h')},
+    ${selectExpression(historyMap, 'size', 'plotSize', 'h')},
+    ${selectExpression(historyMap, 'status', 'approved', 'h')},
+    ${typeSelect.replace('[type]', '[transactionType]')}
+    FROM dbo.${identifier(TABLES.history)} h ${typeJoin} ${where} ${order}`, search ? { search: `%${search}%` } : {})
+  return NextResponse.json({ ok: true, source: 'mssql', records: result.recordset, tables: TABLES, schema: { transaction: transactionColumns, history: historyColumns, type: typeColumns } })
 }
 
 export async function POST(request: Request) {

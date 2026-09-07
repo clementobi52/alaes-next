@@ -20,8 +20,8 @@ export async function GET(request: Request) {
     const lookup = new Map(columns.map((column) => [column.toLowerCase().replace(/[^a-z0-9]/g, ''), column]))
     return candidates.map((candidate) => lookup.get(candidate.toLowerCase().replace(/[^a-z0-9]/g, ''))).find(Boolean)
   }
-  const historyId = pick(historyColumns.recordset.map((column) => column.name), 'TransactionId', 'PropertyTransactionId', 'Id')
-  const typeId = pick(typeColumns.recordset.map((column) => column.name), 'Id', 'TransactionTypeId')
+  const historyId = pick(historyColumns.recordset.map((column) => column.name), 'PropertyTransactionHistoryID', 'PropertyTransactionHistoryId', 'Id')
+  const typeId = pick(typeColumns.recordset.map((column) => column.name), 'PropertyTransactionTypeID', 'PropertyTransactionTypeId', 'Id', 'TransactionTypeId')
   const history = historyId && transactionId
     ? await query(`SELECT TOP (200) * FROM dbo.${identifier('Stage_PropertyTransactionHistory')} WHERE TRY_CONVERT(nvarchar(200), ${identifier(historyId)}) = @transactionId ORDER BY 1 DESC`, { transactionId })
     : await query(`SELECT TOP (200) * FROM dbo.${identifier('Stage_PropertyTransactionHistory')} ORDER BY 1 DESC`)

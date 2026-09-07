@@ -1,9 +1,0 @@
-[object DocumentFragment],"<span class=""column-name"">PropertyTransactionTypeId</span><span class=""column-data-type"">int</span>","<span class=""column-name"">TransactionType</span><span class=""column-data-type"">varchar</span>","<span class=""column-name"">Description</span><span class=""column-data-type"">varchar</span>","<span class=""column-name"">DateCreated</span><span class=""column-data-type"">datetime</span>"
-,1,Assignment,,2015-07-12 10:47:29.517
-,2,Lease,,2015-07-12 10:47:35.470
-,3,Mortgage,,2015-07-12 10:47:40.790
-,4,Surrender,,2015-07-12 10:47:46.627
-,5,Customary Grant,,2015-07-12 10:47:52.320
-,6,Statutory Grant,,2015-07-12 10:48:00.177
-,7,Transfer,,2016-12-01 09:22:48.167
-,8,Sub-Underlease,,2018-01-23 07:28:59.210
