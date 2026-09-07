@@ -91,8 +91,8 @@ export async function GET(request: Request) {
     ${selectExpression(historyMap, 'size', 'plotSize', 'h')},
     ${selectExpression(historyMap, 'status', 'approved', 'h')},
     ${typeSelect.replace('[type]', '[transactionType]')}
-    FROM dbo.${identifier(TABLES.history)} h
-    INNER JOIN dbo.${identifier(TABLES.transaction)} p ON ${propertyIdColumn ? `p.${identifier(propertyIdColumn)}` : 'NULL'} = h.${identifier(historyMap.propertyId ?? historyMap.id ?? historyId ?? 'Id')}
+    FROM dbo.${identifier(TABLES.transaction)} p
+    LEFT JOIN dbo.${identifier(TABLES.history)} h ON ${propertyIdColumn && historyMap.propertyId ? `p.${identifier(propertyIdColumn)} = h.${identifier(historyMap.propertyId)}` : '1 = 0'}
     ${typeJoin}
     ${transactionWhere}
     ${order}`, search ? { search: `%${search}%` } : {})
