@@ -12,6 +12,8 @@ import {
   Umbrella,
   UploadCloud,
   Layers,
+  X,
+  CheckCircle,
 } from 'lucide-react'
 import { AppShell } from '@/components/app-shell'
 import { Button } from '@/components/ui/button'
@@ -59,6 +61,9 @@ type ActionKey = 'create' | 'view' | 'update' | 'delete'
 type CreateUserForm = {
   name: string
   email: string
+  username: string
+  password: string
+  phoneNumber: string
   department: string
   userType: UserType | ''
   rank: string
@@ -72,12 +77,15 @@ type CreateUserForm = {
   leaveReason: string
   oooFrom: string
   oooTo: string
-  passport: string
+  passport: File | null
 }
 
 const emptyForm: CreateUserForm = {
   name: '',
   email: '',
+  username: '',
+  password: '',
+  phoneNumber: '',
   department: DEPARTMENTS[0].name,
   userType: '',
   rank: '',
@@ -91,7 +99,7 @@ const emptyForm: CreateUserForm = {
   leaveReason: '',
   oooFrom: '',
   oooTo: '',
-  passport: '',
+  passport: null,
 }
 
 export default function UserAccountsPage() {
@@ -103,6 +111,7 @@ export default function UserAccountsPage() {
   const [open, setOpen] = useState(false)
   const [showAllRoles, setShowAllRoles] = useState(false)
   const [form, setForm] = useState<CreateUserForm>(emptyForm)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const set = <K extends keyof CreateUserForm>(key: K, value: CreateUserForm[K]) =>
@@ -175,10 +184,28 @@ export default function UserAccountsPage() {
     setOpen(false)
     setForm(emptyForm)
     setShowAllRoles(false)
+    setPreviewUrl(null)
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) {
+      set('passport', file)
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
+    }
+  }
+
+  function handleRemoveFile() {
+    set('passport', null)
+    setPreviewUrl(null)
+    if (fileRef.current) {
+      fileRef.current.value = ''
+    }
   }
 
   function addUser() {
-    if (!form.name.trim() || !form.email.trim()) return
+    if (!form.name.trim() || !form.email.trim() || !form.username.trim() || !form.password.trim()) return
     const roleLabel = form.roles[0] ?? (form.userType || 'Records Clerk')
     setUsers((prev) => [
       {
@@ -193,6 +220,15 @@ export default function UserAccountsPage() {
       ...prev,
     ])
     closeModal()
+  }
+
+  // Helper function to format file size
+  function formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
   return (
@@ -345,7 +381,84 @@ export default function UserAccountsPage() {
         }
       >
         <div className="flex flex-col gap-5">
-          {/* Identity */}
+          {/* Passport photo - UPDATED with preview and file management */}
+          <div>
+            <h4 className="text-sm font-semibold text-foreground">Passport Photo</h4>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Upload a passport-sized photo (JPG, PNG, or GIF format, max 2MB)
+            </p>
+            
+            {!form.passport ? (
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                className="mt-3 flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 px-4 py-8 text-center transition-colors hover:border-primary/70 hover:bg-primary/10"
+              >
+                <UploadCloud className="h-7 w-7 text-primary" />
+                <span className="text-sm font-semibold text-primary">
+                  Click to upload passport photo
+                </span>
+                <span className="text-xs text-muted-foreground">JPG, PNG or GIF (max. 2MB)</span>
+              </button>
+            ) : (
+              <div className="mt-3 overflow-hidden rounded-xl border border-border bg-muted/20">
+                <div className="flex items-start gap-4 p-4">
+                  {/* Thumbnail preview */}
+                  {previewUrl && (
+                    <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-border">
+                      <img
+                        src={previewUrl}
+                        alt="Passport preview"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* File info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">
+                      {form.passport.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatFileSize(form.passport.size)}
+                    </p>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-xs font-medium text-green-600">Ready to upload</span>
+                    </div>
+                  </div>
+                  
+                  {/* Action buttons */}
+                  <div className="flex flex-shrink-0 items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+                    >
+                      Change
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemoveFile}
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/png,image/jpeg,image/gif"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+          </div>
+
+          {/* Identity - Added Username, Password, Phone Number */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Full name">
               <TextInput
@@ -360,6 +473,35 @@ export default function UserAccountsPage() {
                 value={form.email}
                 onChange={(e) => set('email', e.target.value)}
                 placeholder="name@alaes.ab.gov.ng"
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Username">
+              <TextInput
+                value={form.username}
+                onChange={(e) => set('username', e.target.value)}
+                placeholder="e.g. chinwe.eze"
+              />
+            </Field>
+            <Field label="Password">
+              <TextInput
+                type="password"
+                value={form.password}
+                onChange={(e) => set('password', e.target.value)}
+                placeholder="Enter a secure password"
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Phone Number">
+              <TextInput
+                type="tel"
+                value={form.phoneNumber}
+                onChange={(e) => set('phoneNumber', e.target.value)}
+                placeholder="e.g. +234 800 000 0000"
               />
             </Field>
           </div>
@@ -604,32 +746,6 @@ export default function UserAccountsPage() {
               </Field>
             </div>
           </TintCard>
-
-          {/* Passport photo */}
-          <div>
-            <h4 className="text-sm font-semibold text-foreground">Passport Photo</h4>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Upload a passport-sized photo (JPG, PNG, or GIF format, max 2MB)
-            </p>
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="mt-3 flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 px-4 py-8 text-center transition-colors hover:border-primary/70 hover:bg-primary/10"
-            >
-              <UploadCloud className="h-7 w-7 text-primary" />
-              <span className="text-sm font-semibold text-primary">
-                {form.passport || 'Click to upload passport photo'}
-              </span>
-              <span className="text-xs text-muted-foreground">JPG, PNG or GIF (max. 2MB)</span>
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/png,image/jpeg,image/gif"
-              className="hidden"
-              onChange={(e) => set('passport', e.target.files?.[0]?.name ?? '')}
-            />
-          </div>
         </div>
       </Modal>
     </AppShell>
