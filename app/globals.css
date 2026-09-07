@@ -1,5 +1,19 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+
+@media print {
+  @page { size: landscape; margin: 0.2in; }
+  html, body { background: white !important; }
+  body * { visibility: hidden; }
+  .legal-search-report, .legal-search-report * { visibility: visible; }
+  .legal-search-report { position: absolute; left: 0; top: 0; width: 100%; max-width: none; overflow: visible; box-shadow: none !important; }
+  .legal-search-report table { page-break-inside: auto; }
+  .legal-search-report tr { page-break-inside: avoid; page-break-after: auto; }
+  .legal-search-report thead { display: table-header-group; }
+  .legal-search-report .report-header { break-inside: avoid; }
+  .legal-search-report .report-transaction-table { font-size: 10px; }
+  .legal-search-report button, [data-radix-dialog-overlay], [data-radix-dialog-close] { display: none !important; }
+}
 @import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
