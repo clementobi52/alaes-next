@@ -60,8 +60,9 @@ export function buildDbConfig(): MssqlConfig {
       idleTimeoutMillis: 30_000,
     },
     options: {
-      // Azure SQL requires encryption; on-prem servers usually enable it too.
-      encrypt: boolEnv(process.env.MSSQL_ENCRYPT, true),
+      // Defaults to false for local dev. Set MSSQL_ENCRYPT=true for Azure SQL
+      // (required there) or on-prem servers configured to force encryption.
+      encrypt: boolEnv(process.env.MSSQL_ENCRYPT, false),
       // Self-signed certs on internal servers need this set to true.
       trustServerCertificate: boolEnv(
         process.env.MSSQL_TRUST_SERVER_CERTIFICATE,
@@ -83,7 +84,7 @@ export function dbConfigSummary() {
     port: process.env.MSSQL_PORT ? Number(process.env.MSSQL_PORT) : 1433,
     database: process.env.MSSQL_DATABASE ?? null,
     user: process.env.MSSQL_USER ?? null,
-    encrypt: boolEnv(process.env.MSSQL_ENCRYPT, true),
+    encrypt: boolEnv(process.env.MSSQL_ENCRYPT, false),
     trustServerCertificate: boolEnv(
       process.env.MSSQL_TRUST_SERVER_CERTIFICATE,
       true,
