@@ -14,6 +14,7 @@ import {
   Calendar,
   AlertCircle,
   X,
+  CheckCircle2,
 } from 'lucide-react'
 import { AppShell } from '@/components/app-shell'
 import {
@@ -25,12 +26,21 @@ import {
   SearchBar,
   Field,
   SelectInput,
+  Modal,
 } from '@/components/system-admin/primitives'
 import {
   FILENO_STATS,
   FILENO_RECORDS,
+  FILENO_PREFIXES,
+  FILENO_SUFFIXES,
+  FILENO_SCHEDULES,
+  FILENO_SCHEDULE_RULES,
+  buildFileNo,
   statusTone,
   landUseTone,
+  type FileNoPrefix,
+  type FileNoSuffix,
+  type FileNoSchedule,
 } from '@/lib/sectional-titling-data'
 
 const QUICK_ACTIONS = [
@@ -45,6 +55,28 @@ export default function FileNoManagementPage() {
   const [fileType, setFileType] = useState('')
   const [year, setYear] = useState('')
   const [status, setStatus] = useState('')
+  const [commissionOpen, setCommissionOpen] = useState(false)
+  const [schedule, setSchedule] = useState<FileNoSchedule>('Aba')
+  const [prefix, setPrefix] = useState<FileNoPrefix>('LUAC/AB')
+  const [suffix, setSuffix] = useState<FileNoSuffix>('AB')
+  const [sequence, setSequence] = useState('1')
+  const [generated, setGenerated] = useState('')
+
+  const scheduleRule = FILENO_SCHEDULE_RULES[schedule]
+  const allowedPrefixes = scheduleRule.prefixes
+  const fileNoPreview = buildFileNo(prefix, Number(sequence) || 0, suffix)
+
+  const handleScheduleChange = (value: FileNoSchedule) => {
+    setSchedule(value)
+    const nextPrefix = FILENO_SCHEDULE_RULES[value].prefixes[0]
+    setPrefix(nextPrefix)
+    setSuffix(FILENO_SCHEDULE_RULES[value].suffixes[0] ?? 'AB')
+  }
+
+  const handleCommission = () => {
+    if (!sequence || Number(sequence) < 1 || Number(sequence) > 99999) return
+    setGenerated(fileNoPreview)
+  }
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -109,6 +141,7 @@ export default function FileNoManagementPage() {
             <div className="flex flex-col gap-3">
               <button
                 type="button"
+                onClick={() => setCommissionOpen(true)}
                 className="group flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-primary transition-transform hover:scale-105"
               >
                 <PlusCircle className="h-5 w-5 transition-transform group-hover:rotate-90" />
@@ -297,6 +330,64 @@ export default function FileNoManagementPage() {
           </div>
         </SectionCard>
       </div>
+
+      <Modal
+        open={commissionOpen}
+        onClose={() => setCommissionOpen(false)}
+        title="Commission New ST FileNo"
+        description="Select the schedule and nomenclature used to generate the next sectional titling file number."
+        widthClass="max-w-2xl"
+        footer={
+          <div className="flex items-center justify-end gap-3">
+            <button type="button" onClick={() => setCommissionOpen(false)} className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted">
+              Cancel
+            </button>
+            <button type="button" onClick={handleCommission} className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+              <CheckCircle2 className="h-4 w-4" />
+              Commission FileNo
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-5 p-5">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Live FileNo Preview</p>
+            <p className="mt-2 font-mono text-2xl font-bold tracking-wide text-foreground">{fileNoPreview}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{scheduleRule.helper}</p>
+          </div>
+          {generated && (
+            <div className="flex items-center gap-2 rounded-lg border border-chart-2/30 bg-chart-2/10 px-4 py-3 text-sm text-foreground">
+              <CheckCircle2 className="h-4 w-4 text-chart-2" />
+              Generated FileNo: <span className="font-mono font-semibold">{generated}</span>
+            </div>
+          )}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Schedule">
+              <SelectInput value={schedule} onChange={(e) => handleScheduleChange(e.target.value as FileNoSchedule)}>
+                {FILENO_SCHEDULES.map((item) => <option key={item}>{item}</option>)}
+              </SelectInput>
+            </Field>
+            <Field label="Sequence (5 digits)">
+              <input type="number" min="1" max="99999" value={sequence} onChange={(e) => setSequence(e.target.value)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+            </Field>
+            <Field label="File Prefix">
+              <SelectInput value={prefix} onChange={(e) => setPrefix(e.target.value as FileNoPrefix)}>
+                {FILENO_PREFIXES.filter((item) => allowedPrefixes.includes(item)).map((item) => <option key={item}>{item}</option>)}
+              </SelectInput>
+            </Field>
+            <Field label="Suffix">
+              <SelectInput value={suffix} disabled={scheduleRule.suffixes.length === 0 || prefix !== 'LUAC/AB'} onChange={(e) => setSuffix(e.target.value as FileNoSuffix)}>
+                {(scheduleRule.suffixes.length ? scheduleRule.suffixes : FILENO_SUFFIXES).map((item) => <option key={item}>{item}</option>)}
+              </SelectInput>
+            </Field>
+          </div>
+          <div className="rounded-lg border border-border bg-muted/30 p-4">
+            <p className="text-sm font-semibold text-foreground">Accepted formats</p>
+            <p className="mt-1 font-mono text-xs leading-6 text-muted-foreground">LUAC/AB/xxxxx/AB · LUAC/AB/xxxxx/UM · LUM/xxxxx · LABA/xxxxx · LUM/OH/xxxxx</p>
+            <p className="mt-2 text-xs text-muted-foreground">The sequence is always padded to five digits, for example <span className="font-mono">00027</span>.</p>
+          </div>
+        </div>
+      </Modal>
     </AppShell>
   )
 }
