@@ -30,6 +30,7 @@ function mapColumns(columns: string[]): ColumnMap {
   const find = (...names: string[]) => names.map((name) => normalized.get(name.toLowerCase().replace(/[^a-z0-9]/g, ''))).find(Boolean)
   return {
     id: find('Id', 'TransactionId', 'PropertyTransactionId'),
+    propertyId: find('PropertyId', 'PropertyID', 'Property_Id'),
     fileNo: find('ParentFileNumber', 'FileNumber', 'FileNo', 'KANGISFileNo', 'NewKANGISFileNo', 'RootRegistrationNumber'),
     property: find('ScheduleName', 'Property', 'PropertyName', 'Description', 'Subject'),
     owner: find('GranteeName', 'GrantorName', 'Owner', 'OwnerName', 'ApplicantName', 'ProprietorName'),
@@ -57,16 +58,19 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const search = url.searchParams.get('search')?.trim() ?? ''
   const [transactionColumns, historyColumns, typeColumns] = await Promise.all(Object.values(TABLES).map(getColumns))
+  const propertyIdColumn = transactionColumns.find((column) => column.toLowerCase() === 'propertyid') ?? transactionColumns.find((column) => column.toLowerCase() === 'property_id')
+  const transactionMap = mapColumns(transactionColumns)
   const historyMap = mapColumns(historyColumns)
   const typeName = typeColumns.find((column) => column.toLowerCase() === 'transactiontype')
   const historyId = historyColumns.find((column) => column.toLowerCase() === 'propertytransactionhistoryid')
   const typeId = typeColumns.find((column) => column.toLowerCase() === 'propertytransactiontypeid')
-  const searchable = [historyMap.fileNo, historyMap.property, historyMap.owner, historyMap.location, historyMap.lga, historyMap.plot, historyMap.plan, historyMap.created].filter(Boolean) as string[]
-  const where = search && searchable.length ? `WHERE ${searchable.map((column) => `TRY_CONVERT(nvarchar(500), h.${identifier(column)}) LIKE @search`).join(' OR ')}` : ''
+  const searchable = [transactionMap.fileNo, transactionMap.property, transactionMap.owner, transactionMap.location, transactionMap.lga, transactionMap.plot, transactionMap.plan].filter(Boolean) as string[]
+  const transactionWhere = search && searchable.length ? `WHERE ${searchable.map((column) => `TRY_CONVERT(nvarchar(500), p.${identifier(column)}) LIKE @search`).join(' OR ')}` : ''
   const order = historyMap.created ? `ORDER BY h.${identifier(historyMap.created)} DESC` : historyMap.id ? `ORDER BY h.${identifier(historyMap.id)} DESC` : ''
   const typeJoin = historyMap.typeId && typeId ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(historyMap.typeId)} = t.${identifier(typeId)}` : ''
   const typeSelect = typeName ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
   const result = await query(`SELECT TOP (200)
+    ${propertyIdColumn ? `p.${identifier(propertyIdColumn)}` : 'NULL'} AS [propertyId],
     ${historyId ? `h.${identifier(historyId)}` : 'NULL'} AS [id],
     ${selectExpression(historyMap, 'fileNo', 'fileNo', 'h')},
     ${selectExpression(historyMap, 'property', 'property', 'h')},
@@ -87,8 +91,19 @@ export async function GET(request: Request) {
     ${selectExpression(historyMap, 'size', 'plotSize', 'h')},
     ${selectExpression(historyMap, 'status', 'approved', 'h')},
     ${typeSelect.replace('[type]', '[transactionType]')}
-    FROM dbo.${identifier(TABLES.history)} h ${typeJoin} ${where} ${order}`, search ? { search: `%${search}%` } : {})
-  return NextResponse.json({ ok: true, source: 'mssql', records: result.recordset, tables: TABLES, schema: { transaction: transactionColumns, history: historyColumns, type: typeColumns } })
+    FROM dbo.${identifier(TABLES.history)} h
+    INNER JOIN dbo.${identifier(TABLES.transaction)} p ON ${propertyIdColumn ? `p.${identifier(propertyIdColumn)}` : 'NULL'} = h.${identifier(historyMap.propertyId ?? historyMap.id ?? historyId ?? 'Id')}
+    ${typeJoin}
+    ${transactionWhere}
+    ${order}`, search ? { search: `%${search}%` } : {})
+  const grouped = new Map<string, Record<string, unknown> & { history?: unknown[] }>()
+  for (const row of result.recordset as Array<Record<string, unknown>>) {
+    const propertyId = String(row.propertyId ?? row.id ?? '')
+    const existing = grouped.get(propertyId)
+    if (existing) existing.history = [...(existing.history ?? []), row]
+    else grouped.set(propertyId, { ...row, history: [row] })
+  }
+  return NextResponse.json({ ok: true, source: 'mssql', records: [...grouped.values()], tables: TABLES, schema: { transaction: transactionColumns, history: historyColumns, type: typeColumns } })
 }
 
 export async function POST(request: Request) {
