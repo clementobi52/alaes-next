@@ -174,6 +174,47 @@ export const FILENO_RECORDS: FileNoRecord[] = [
 ]
 
 /* ------------------------------------------------------------------ */
+/* FileNo nomenclature and schedules                                   */
+/* ------------------------------------------------------------------ */
+
+export const FILENO_PREFIXES = ['LUAC/AB', 'LUM', 'LABA', 'LUM/OH'] as const
+export type FileNoPrefix = (typeof FILENO_PREFIXES)[number]
+export const FILENO_SUFFIXES = ['AB', 'UM'] as const
+export type FileNoSuffix = (typeof FILENO_SUFFIXES)[number]
+export const FILENO_SCHEDULES = ['Aba', 'Ohafia', 'Umuahia'] as const
+export type FileNoSchedule = (typeof FILENO_SCHEDULES)[number]
+
+export const FILENO_SCHEDULE_RULES: Record<
+  FileNoSchedule,
+  { prefixes: FileNoPrefix[]; suffixes: FileNoSuffix[]; helper: string }
+> = {
+  Aba: {
+    prefixes: ['LUAC/AB', 'LABA'],
+    suffixes: ['AB', 'UM'],
+    helper: 'Aba supports LUAC/AB with AB or UM suffixes, plus LABA legacy numbers.',
+  },
+  Ohafia: {
+    prefixes: ['LUM/OH'],
+    suffixes: [],
+    helper: 'Ohafia uses the LUM/OH/xxxxx format.',
+  },
+  Umuahia: {
+    prefixes: ['LUM'],
+    suffixes: [],
+    helper: 'Umuahia uses the LUM/xxxxx format.',
+  },
+}
+
+export function buildFileNo(prefix: FileNoPrefix, sequence: number, suffix?: FileNoSuffix) {
+  const number = String(sequence).padStart(5, '0')
+  return prefix === 'LUAC/AB' ? `${prefix}/${number}/${suffix ?? 'AB'}` : `${prefix}/${number}`
+}
+
+export function isValidFileNoFormat(value: string) {
+  return /^(LUAC\/AB\/\d{5}\/(AB|UM)|LUM\/\d{5}|LABA\/\d{5}|LUM\/OH\/\d{5})$/.test(value)
+}
+
+/* ------------------------------------------------------------------ */
 /* Primary Applications                                                */
 /* ------------------------------------------------------------------ */
 
