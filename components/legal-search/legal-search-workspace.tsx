@@ -5,6 +5,7 @@ import { ClipboardCheck, Download, FileSearch, Filter, Search, ShieldCheck, Slid
 import { AppShell } from '@/components/app-shell'
 import { Avatar, Field, Modal, SearchBar, SectionCard, SectionHeader, SelectInput, StatTile, StatusBadge } from '@/components/system-admin/primitives'
 import { LEGAL_SEARCH_RECORDS, OFFICIAL_REQUESTS, ON_PREMISE_REQUESTS, SEARCH_LAND_USES, SEARCH_LOCATIONS, SEARCH_TONES, filterRecords, type PropertyRecord } from '@/lib/legal-search-data'
+import { SearchReport } from '@/components/legal-search/search-report'
 
 const metrics = [
   { label: 'Records indexed', value: '4,297', tone: 'primary' as const },
@@ -48,7 +49,7 @@ const dynamicFilters = ['Grantor Name', 'Grantee Name', 'Schedule Name', 'Layout
 
 type SearchRecord = PropertyRecord & Partial<Record<'ABIAGISFileNo' | 'newABIAGISFileNo' | 'guarantor' | 'guarantee' | 'lga' | 'plotNumber' | 'registrationParticulars' | 'particulars' | 'size' | 'caveat' | 'type' | 'created' | 'propertyId' | 'grantor' | 'grantee' | 'scheduleName' | 'layoutName' | 'plotSize' | 'approved' | 'transactionType', string>>
 
-function SearchReport({ record, official, onClose }: { record: SearchRecord; official: boolean; onClose: () => void }) {
+function LegacySearchReport({ record, official, onClose }: { record: SearchRecord; official: boolean; onClose: () => void }) {
   const transactions = [
     { type: record.transactionType ?? record.instrument ?? 'Property transaction', party1: record.grantor ?? 'Abia State Government', party2: record.grantee ?? record.owner, date: record.created ?? 'Not recorded', particulars: record.particulars ?? 'Transaction history record', caveat: record.caveat ?? 'None' },
   ]
