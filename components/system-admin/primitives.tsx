@@ -296,6 +296,7 @@ export function Modal({
   children,
   footer,
   widthClass = 'max-w-lg',
+  printable = false,
 }: {
   open: boolean
   onClose: () => void
@@ -304,6 +305,7 @@ export function Modal({
   children: ReactNode
   footer?: ReactNode
   widthClass?: string
+  printable?: boolean
 }) {
   useEffect(() => {
     if (!open) return
@@ -315,12 +317,16 @@ export function Modal({
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      {...(printable ? { 'data-report-modal-root': '' } : {})}
+    >
       <button
         type="button"
         aria-label="Close dialog"
         onClick={onClose}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        {...(printable ? { 'data-report-backdrop': '' } : {})}
       />
       <div
         role="dialog"
@@ -330,8 +336,12 @@ export function Modal({
           'scrollbar-thin relative z-10 flex max-h-[85vh] w-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl',
           widthClass,
         )}
+        {...(printable ? { 'data-report-dialog': '' } : {})}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-border p-5">
+        <div
+          className="flex items-start justify-between gap-4 border-b border-border p-5"
+          {...(printable ? { 'data-report-chrome': '' } : {})}
+        >
           <div>
             <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
             {description && (
@@ -349,9 +359,17 @@ export function Modal({
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="scrollbar-thin flex-1 overflow-y-auto p-5">{children}</div>
+        <div
+          className="scrollbar-thin flex-1 overflow-y-auto p-5"
+          {...(printable ? { 'data-report-scroll': '' } : {})}
+        >
+          {children}
+        </div>
         {footer && (
-          <div className="flex items-center justify-end gap-2 border-t border-border p-5">
+          <div
+            className="flex items-center justify-end gap-2 border-t border-border p-5"
+            {...(printable ? { 'data-report-chrome': '' } : {})}
+          >
             {footer}
           </div>
         )}
