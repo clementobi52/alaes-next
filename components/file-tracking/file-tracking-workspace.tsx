@@ -21,9 +21,11 @@ export function FileTrackingWorkspace() {
 
   useEffect(() => {
     const requested = searchParams.get('view')
-    if (requested === 'log') setView('log')
+    setActive(null)
+    if (!requested || requested === 'dashboard' || requested === 'activity') setView('dashboard')
+    else if (requested === 'log') setView('log')
     else if (requested === 'search' || requested === 'track') setView('search')
-    else if (requested === 'activity') setView('dashboard')
+    else setView('dashboard')
   }, [searchParams])
 
   const filtered = useMemo(() => files.filter((file) => (statusFilter === 'All' || file.status === statusFilter) && (!query || `${file.id} ${file.reference} ${file.subject} ${file.currentOffice}`.toLowerCase().includes(query.toLowerCase()))), [files, query, statusFilter])
