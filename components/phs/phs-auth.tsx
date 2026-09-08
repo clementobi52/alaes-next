@@ -10,13 +10,13 @@ const inputClass =
 
 export function PhsSignIn() {
   const { signIn, setView } = usePortal()
-  const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    const result = signIn(name, password)
+    const result = signIn(username, password)
     if (!result.ok) setError(result.error ?? 'Unable to sign in.')
   }
 
@@ -43,17 +43,17 @@ export function PhsSignIn() {
           </div>
           <form onSubmit={submit} className="space-y-5">
             <div>
-              <label htmlFor="signin-name" className="mb-1 block text-sm font-medium text-slate-700">Institution Name</label>
+              <label htmlFor="signin-username" className="mb-1 block text-sm font-medium text-slate-700">Username</label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-                <input id="signin-name" value={name} onChange={(e) => { setName(e.target.value); setError('') }} required placeholder="Enter your institution name" className={`${inputClass} pl-10`} />
+                <input id="signin-username" value={username} onChange={(e) => { setUsername(e.target.value); setError('') }} required placeholder="Enter your username" autoComplete="username" className={`${inputClass} pl-10`} />
               </div>
             </div>
             <div>
               <label htmlFor="signin-password" className="mb-1 block text-sm font-medium text-slate-700">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-                <input id="signin-password" type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError('') }} required placeholder="Enter your password" className={`${inputClass} pl-10`} />
+                <input id="signin-password" type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError('') }} required placeholder="Enter your password" autoComplete="current-password" className={`${inputClass} pl-10`} />
               </div>
             </div>
             {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
