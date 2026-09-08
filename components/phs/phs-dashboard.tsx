@@ -15,7 +15,7 @@ import { usePortal } from '@/components/phs/phs-store'
 import { TokenPurchaseModal } from '@/components/phs/phs-token-modal'
 import { PhsSearchSlip } from '@/components/phs/phs-search-slip'
 
-type ApiRecord = Record<string, string | undefined> & { id?: string; propertyId?: string; fileNo?: string }
+type ApiRecord = Record<string, string | undefined> & { id?: string; propertyId?: string; fileNo?: string; history?: Array<Record<string, string | undefined>> }
 
 type DashboardRecord = {
   id: string
@@ -35,6 +35,15 @@ type DashboardRecord = {
   transactionType?: string
   caveat?: string
   created?: string
+  propertyDescription?: string
+  address?: string
+  planNumber?: string
+  plotSize?: string
+  district?: string
+  registrationNumber?: string
+  parentRegistration?: string
+  approved?: string
+  history?: Array<Record<string, string | undefined>>
 }
 
 function mapRecord(record: ApiRecord): DashboardRecord {
@@ -48,6 +57,15 @@ function mapRecord(record: ApiRecord): DashboardRecord {
     landUse: record.landUse ?? '—',
     status: record.approved === 'Yes' ? 'Verified' : 'Pending',
     created: record.created ?? '—',
+    propertyDescription: record.propertyDescription,
+    address: record.address,
+    planNumber: record.planNumber,
+    plotSize: record.plotSize,
+    district: record.district,
+    registrationNumber: record.registrationNumber,
+    parentRegistration: record.parentRegistration,
+    approved: record.approved,
+    history: Array.isArray(record.history) ? record.history : undefined,
   }
 }
 

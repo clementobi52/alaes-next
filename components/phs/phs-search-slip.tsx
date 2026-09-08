@@ -29,11 +29,29 @@ type SlipRecord = {
   address?: string
   created?: string
   caveat?: string
+  history?: Array<{
+    id?: string | number
+    fileNo?: string
+    transactionType?: string
+    grantor?: string
+    grantee?: string
+    instrumentDate?: string
+    registrationDate?: string
+    registrationNumber?: string
+    parentRegistration?: string
+    propertyDescription?: string
+  }>
 }
 
 export function PhsSearchSlip({ record, onClose }: { record: SlipRecord; onClose: () => void }) {
   const fileNumber = formatAbiaFileNumber(record.fileNo)
   const caveat = record.caveat && !['no', 'none', 'nil', '—'].includes(record.caveat.trim().toLowerCase()) ? 'YES' : 'NO'
+  const transactions = [...(record.history ?? [])].sort((a, b) => {
+    const left = new Date(a.instrumentDate ?? a.registrationDate ?? '').getTime()
+    const right = new Date(b.instrumentDate ?? b.registrationDate ?? '').getTime()
+    return (Number.isFinite(left) ? left : Number(a.id) || 0) - (Number.isFinite(right) ? right : Number(b.id) || 0)
+  })
+  const searchDate = new Date().toLocaleDateString('en-GB')
 
   return (
     <Modal
@@ -65,6 +83,8 @@ export function PhsSearchSlip({ record, onClose }: { record: SlipRecord; onClose
             <SlipField label="Abia State File No." value={fileNumber} />
             <SlipField label="ABIAGIS No." value={record.propertyId} />
             <SlipField label="Search Status" value={record.status ?? 'Verified'} />
+            <SlipField label="Search Date" value={searchDate} />
+            <SlipField label="Reference No." value={`PHS/${new Date().getFullYear()}/${String(record.id).slice(-6)}`} />
             <SlipField label="File Title / Holder" value={record.grantee ?? record.owner} />
             <SlipField label="Schedule" value={record.scheduleName ?? record.property} />
             <SlipField label="Layout" value={record.layoutName} />
@@ -90,6 +110,22 @@ export function PhsSearchSlip({ record, onClose }: { record: SlipRecord; onClose
             <SlipField label="Instrument" value={record.transactionType} />
             <SlipField label="Caveat" value={caveat} emphasis={caveat === 'YES'} />
           </div>
+        </section>
+
+        <section className="mt-4 border border-foreground">
+          <div className="border-b border-foreground bg-muted px-3 py-1 text-[11px] font-black uppercase">Transaction History</div>
+          {transactions.length ? (
+            <div className="divide-y divide-border text-[9px]">
+              {transactions.map((transaction, index) => (
+                <div key={`${transaction.id ?? transaction.fileNo ?? 'transaction'}-${index}`} className="grid grid-cols-[24px_1fr_1fr_1fr] gap-2 px-3 py-2">
+                  <strong>{index + 1}.</strong>
+                  <div><strong className="block">{transaction.transactionType ?? 'Property transaction'}</strong><span>{transaction.instrumentDate ?? transaction.registrationDate ?? 'Date not recorded'}</span></div>
+                  <div><span className="block text-muted-foreground">From</span><strong>{transaction.grantor ?? 'Abia State Government'}</strong><span className="mx-1">→</span><strong>{transaction.grantee ?? record.grantee ?? 'Not recorded'}</strong></div>
+                  <div><span className="block text-muted-foreground">Registration / particulars</span><strong>{transaction.registrationNumber ?? transaction.parentRegistration ?? 'Not recorded'}</strong></div>
+                </div>
+              ))}
+            </div>
+          ) : <p className="p-3 text-[9px] text-muted-foreground">No transaction records found.</p>}
         </section>
 
         <div className="mt-6 border-t border-foreground pt-3 text-[9px] leading-relaxed">
