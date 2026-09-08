@@ -31,10 +31,10 @@ function mapColumns(columns: string[]): ColumnMap {
   return {
     id: find('Id', 'TransactionId', 'PropertyTransactionId'),
     propertyId: find('PropertyId', 'PropertyID', 'Property_Id'),
-    fileNo: find('ParentFileNumber', 'FileNumber', 'FileNo', 'KANGISFileNo', 'NewKANGISFileNo', 'RootRegistrationNumber'),
-    property: find('ScheduleName', 'Property', 'PropertyName', 'Description', 'Subject'),
-    owner: find('GranteeName', 'GrantorName', 'Owner', 'OwnerName', 'ApplicantName', 'ProprietorName'),
-    location: find('ScheduleName', 'LayoutName', 'Location', 'Address', 'PropertyAddress', 'District'),
+    fileNo: find('ParentFileNumber', 'FileNumber', 'FileNo', 'KANGISFileNo', 'NewKANGISFileNo', 'RootRegistrationNumber', 'FullRegistrationNumber', 'RegistrationNumber'),
+    property: find('ScheduleName', 'PropertyDescription', 'Property', 'PropertyName', 'Description', 'Subject'),
+    owner: find('GranteeName', 'GrantorName', 'Grantee', 'Grantor', 'Owner', 'OwnerName', 'ApplicantName', 'ProprietorName'),
+    location: find('ScheduleName', 'LayoutName', 'Location', 'Address', 'AddressDescription', 'PropertyAddress', 'District'),
     lga: find('LgaOrCityID', 'LGA', 'LocalGovernmentArea'),
     plot: find('PlotNumber', 'PlotNo'),
     plan: find('RootRegistrationNumber', 'PlanNumber', 'PlanNo'),
@@ -71,8 +71,10 @@ export async function GET(request: Request) {
   const typeName = typeColumns.find((column) => column.toLowerCase() === 'transactiontype')
   const historyId = historyColumns.find((column) => column.toLowerCase() === 'propertytransactionhistoryid')
   const typeId = typeColumns.find((column) => column.toLowerCase() === 'propertytransactiontypeid')
-  const searchable = [transactionMap.fileNo, transactionMap.property, transactionMap.owner, transactionMap.location, transactionMap.lga, transactionMap.plot, transactionMap.plan].filter(Boolean) as string[]
-  const transactionWhere = search && searchable.length ? `WHERE ${searchable.map((column) => `TRY_CONVERT(nvarchar(500), p.${identifier(column)}) LIKE @search`).join(' OR ')}` : ''
+  const transactionSearchable = [transactionMap.fileNo, transactionMap.property, transactionMap.owner, transactionMap.location, transactionMap.lga, transactionMap.plot, transactionMap.plan].filter(Boolean) as string[]
+  const historySearchable = [historyMap.fileNo, historyMap.property, historyMap.owner, historyMap.location, historyMap.lga, historyMap.plot, historyMap.plan].filter(Boolean) as string[]
+  const searchable = [...transactionSearchable.map((column) => `TRY_CONVERT(nvarchar(500), p.${identifier(column)}) LIKE @search`), ...historySearchable.map((column) => `TRY_CONVERT(nvarchar(500), h.${identifier(column)}) LIKE @search`)]
+  const transactionWhere = search && searchable.length ? `WHERE ${searchable.join(' OR ')}` : ''
   const order = historyMap.created ? `ORDER BY h.${identifier(historyMap.created)} DESC` : historyMap.id ? `ORDER BY h.${identifier(historyMap.id)} DESC` : ''
   const typeJoin = historyMap.typeId && typeId ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(historyMap.typeId)} = t.${identifier(typeId)}` : ''
   const typeSelect = typeName && typeJoin ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
