@@ -6,12 +6,9 @@ import { LEGAL_SEARCH_RECORDS } from '@/lib/legal-search-data'
 export const runtime = 'nodejs'
 
 const TABLES = {
-  transaction: 'Stage_PropertyTransaction',
   history: 'Stage_PropertyTransactionHistory',
   type: 'Stage_PropertyTransactionType',
 } as const
-
-type ColumnMap = Record<string, string | undefined>
 
 function identifier(value: string) {
   return `[${value.replace(/]/g, ']]')}]`
@@ -25,32 +22,11 @@ async function getColumns(table: string) {
   return result.recordset.map((column) => column.name)
 }
 
-function mapColumns(columns: string[]): ColumnMap {
+/** Resolve the real column name from a list of candidates, case/format-insensitive. */
+function resolver(columns: string[]) {
   const normalized = new Map(columns.map((column) => [column.toLowerCase().replace(/[^a-z0-9]/g, ''), column]))
-  const find = (...names: string[]) => names.map((name) => normalized.get(name.toLowerCase().replace(/[^a-z0-9]/g, ''))).find(Boolean)
-  return {
-    id: find('Id', 'TransactionId', 'PropertyTransactionId'),
-    propertyId: find('PropertyId', 'PropertyID', 'Property_Id'),
-    fileNo: find('ParentFileNumber', 'FileNumber', 'FileNo', 'KANGISFileNo', 'NewKANGISFileNo', 'RootRegistrationNumber', 'FullRegistrationNumber', 'RegistrationNumber'),
-    property: find('ScheduleName', 'PropertyDescription', 'Property', 'PropertyName', 'Description', 'Subject'),
-    owner: find('GranteeName', 'GrantorName', 'Grantee', 'Grantor', 'Owner', 'OwnerName', 'ApplicantName', 'ProprietorName'),
-    location: find('ScheduleName', 'LayoutName', 'Location', 'Address', 'AddressDescription', 'PropertyAddress', 'District'),
-    lga: find('LgaOrCityID', 'LGA', 'LocalGovernmentArea'),
-    plot: find('PlotNumber', 'PlotNo'),
-    plan: find('RootRegistrationNumber', 'PlanNumber', 'PlanNo'),
-    status: find('IsApproved', 'Status', 'TransactionStatus'),
-    typeId: find('PropertyTransferTypeID', 'PropertyTransactionTypeId', 'TransactionTypeId', 'TypeId'),
-    type: find('TransactionType', 'Type', 'Name'),
-    created: find('DateCreated', 'CreatedDate', 'CreatedAt', 'TransactionDate', 'TransactionDateTime'),
-    size: find('PlotSize', 'Size', 'PropertySize', 'Area'),
-    caveat: find('Caveat', 'HasCaveat'),
-    particulars: find('ParentRegistrationNumber', 'RegistrationParticulars', 'Particulars', 'Instrument'),
-  }
-}
-
-function selectExpression(map: ColumnMap, key: string, alias: string, tableAlias?: string) {
-  const column = map[key]
-  return column ? `${tableAlias ? `${tableAlias}.` : ''}${identifier(column)} AS ${identifier(alias)}` : `NULL AS ${identifier(alias)}`
+  return (...candidates: string[]) =>
+    candidates.map((name) => normalized.get(name.toLowerCase().replace(/[^a-z0-9]/g, ''))).find(Boolean)
 }
 
 export async function GET(request: Request) {
@@ -61,70 +37,129 @@ export async function GET(request: Request) {
   }
   const url = new URL(request.url)
   const search = url.searchParams.get('search')?.trim() ?? ''
-  console.log('[v0] Legal search started', { debugId, searchLength: search.length, tables: TABLES })
+  const propertyIdParam = url.searchParams.get('propertyId')?.trim() ?? ''
+  console.log('[v0] Legal search started', { debugId, searchLength: search.length, propertyIdParam, tables: TABLES })
   try {
-  const [transactionColumns, historyColumns, typeColumns] = await Promise.all(Object.values(TABLES).map(getColumns))
-  console.log('[v0] Legal search schema detected', { debugId, transactionColumns, historyColumns, typeColumns })
-  const historyMap = mapColumns(historyColumns)
-  const grantorColumn = historyColumns.find((column) => column.toLowerCase() === 'grantorname')
-  const typeName = typeColumns.find((column) => column.toLowerCase() === 'transactiontype')
-  const historyId = historyColumns.find((column) => column.toLowerCase() === 'propertytransactionhistoryid')
-  const typeId = typeColumns.find((column) => column.toLowerCase() === 'propertytransactiontypeid')
-  // The rich, searchable property data lives entirely in the history table.
-  // The transaction table has no reliable key to join on, so the search runs on history alone.
-  const searchableColumns = [historyMap.fileNo, historyMap.property, historyMap.owner, grantorColumn, historyMap.location, historyMap.lga, historyMap.plot, historyMap.plan, historyMap.particulars].filter(Boolean) as string[]
-  const uniqueSearchable = [...new Set(searchableColumns)]
-  // Tokenize the search so "MR. NGADIUBA SAMUEL" matches records containing each word
-  // in any searchable column, regardless of order or prefixes. Ignore very short noise tokens.
-  const tokens = search.split(/\s+/).map((token) => token.replace(/[^\p{L}\p{N}/-]/gu, '')).filter((token) => token.length >= 2)
-  const params: Record<string, string> = {}
-  const tokenClauses = tokens.map((token, index) => {
-    params[`token${index}`] = `%${token}%`
-    return `(${uniqueSearchable.map((column) => `TRY_CONVERT(nvarchar(500), h.${identifier(column)}) LIKE @token${index}`).join(' OR ')})`
-  })
-  const where = tokenClauses.length ? `WHERE ${tokenClauses.join(' AND ')}` : ''
-  const order = historyMap.created ? `ORDER BY h.${identifier(historyMap.created)} DESC` : historyId ? `ORDER BY h.${identifier(historyId)} DESC` : ''
-  const typeJoin = historyMap.typeId && typeId ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(historyMap.typeId)} = t.${identifier(typeId)}` : ''
-  const typeSelect = typeName && typeJoin ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
-  console.log('[v0] Legal search query mapping', { debugId, fileNumberColumn: historyMap.fileNo, ownerColumn: historyMap.owner, grantorColumn, transactionTypeColumn: typeName, transactionTypeJoinColumn: historyMap.typeId, searchColumns: uniqueSearchable, tokens })
-  const result = await query(`SELECT TOP (300)
-    ${historyId ? `h.${identifier(historyId)}` : 'NULL'} AS [id],
-    ${selectExpression(historyMap, 'fileNo', 'fileNo', 'h')},
-    ${selectExpression(historyMap, 'fileNo', 'propertyId', 'h')},
-    ${selectExpression(historyMap, 'property', 'property', 'h')},
-    ${selectExpression(historyMap, 'owner', 'owner', 'h')},
-    ${grantorColumn ? `h.${identifier(grantorColumn)}` : 'NULL'} AS [grantor],
-    ${selectExpression(historyMap, 'owner', 'grantee', 'h')},
-    ${selectExpression(historyMap, 'location', 'location', 'h')},
-    ${selectExpression(historyMap, 'property', 'scheduleName', 'h')},
-    ${selectExpression(historyMap, 'lga', 'lga', 'h')},
-    ${selectExpression(historyMap, 'plot', 'plot', 'h')},
-    ${selectExpression(historyMap, 'plot', 'plotNumber', 'h')},
-    ${selectExpression(historyMap, 'plan', 'plan', 'h')},
-    ${selectExpression(historyMap, 'status', 'status', 'h')},
-    ${selectExpression(historyMap, 'status', 'approved', 'h')},
-    ${typeSelect},
-    ${typeSelect.replace('[type]', '[transactionType]')},
-    ${selectExpression(historyMap, 'created', 'created', 'h')},
-    ${selectExpression(historyMap, 'size', 'size', 'h')},
-    ${selectExpression(historyMap, 'size', 'plotSize', 'h')},
-    ${selectExpression(historyMap, 'caveat', 'caveat', 'h')},
-    ${selectExpression(historyMap, 'particulars', 'particulars', 'h')}
-    FROM dbo.${identifier(TABLES.history)} h
-    ${typeJoin}
-    ${where}
-    ${order}`, params)
-  // Group one property's many transactions together, keyed by its parent file number.
-  const grouped = new Map<string, Record<string, unknown> & { history?: unknown[] }>()
-  for (const row of result.recordset as Array<Record<string, unknown>>) {
-    const key = String(row.fileNo ?? row.id ?? Math.random())
-    const existing = grouped.get(key)
-    if (existing) existing.history = [...(existing.history ?? []), row]
-    else grouped.set(key, { ...row, history: [row] })
-  }
-  const records = [...grouped.values()]
-  console.log('[v0] Legal search completed', { debugId, rawRows: result.recordset.length, groupedProperties: records.length, historyRows: records.reduce((total, record) => total + (record.history?.length ?? 0), 0) })
-  return NextResponse.json({ ok: true, source: 'mssql', records, tables: TABLES, schema: { transaction: transactionColumns, history: historyColumns, type: typeColumns }, debugId })
+    const [historyColumns, typeColumns] = await Promise.all([getColumns(TABLES.history), getColumns(TABLES.type)])
+    const h = resolver(historyColumns)
+    const t = resolver(typeColumns)
+
+    // Exact Abia schema mapping. `FileNumberID` is the property key: one property
+    // (file) has many history rows (its transactions over time).
+    const cols = {
+      id: h('PropertyTransactionHistoryID'),
+      propertyId: h('FileNumberID'),
+      fileNo: h('ParentFileNumber'),
+      grantor: h('GrantorName'),
+      grantee: h('GranteeName'),
+      guarantor: h('GuarantorName'),
+      scheduleName: h('ScheduleName'),
+      layoutName: h('LayoutName'),
+      lga: h('LgaOrCityID'),
+      district: h('DistrictID'),
+      plotNumber: h('PlotNumber'),
+      plotSize: h('PlotSize'),
+      approved: h('IsApproved'),
+      caveated: h('IsCaveated'),
+      caveatRemarks: h('CaveatRemarks'),
+      parentRegistration: h('ParentRegistrationNumber'),
+      rootRegistration: h('RootRegistrationNumber'),
+      registrationNumber: h('FullRegistrationNumber', 'RegistrationNumber'),
+      planNumber: h('PlanNumber', 'OriginalPlanNumber'),
+      propertyDescription: h('PropertyDescription'),
+      address: h('AddressDescription'),
+      instrumentDate: h('InstrumentDate'),
+      registrationDate: h('RegistrationDate'),
+      created: h('DateCreated'),
+      transferTypeId: h('PropertyTransferTypeID', 'PropertyTransactionTypeId'),
+    }
+    const typeIdCol = t('PropertyTransactionTypeId', 'PropertyTransferTypeID', 'Id')
+    const typeNameCol = t('TransactionType', 'Name', 'Type')
+
+    const sel = (alias: string, column: string | undefined, tableAlias = 'h') =>
+      column ? `${tableAlias}.${identifier(column)} AS ${identifier(alias)}` : `NULL AS ${identifier(alias)}`
+
+    // Search runs across every relevant property field, not just the grantee name.
+    const searchableColumns = [
+      cols.fileNo, cols.grantor, cols.grantee, cols.guarantor, cols.scheduleName, cols.layoutName,
+      cols.plotNumber, cols.parentRegistration, cols.rootRegistration, cols.registrationNumber,
+      cols.planNumber, cols.propertyDescription, cols.address,
+    ].filter(Boolean) as string[]
+    const uniqueSearchable = [...new Set(searchableColumns)]
+
+    const typeJoin = cols.transferTypeId && typeIdCol
+      ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(cols.transferTypeId)} = t.${identifier(typeIdCol)}`
+      : ''
+    const typeSelect = typeJoin && typeNameCol ? `t.${identifier(typeNameCol)} AS [transactionType]` : 'NULL AS [transactionType]'
+    const approvedSelect = cols.approved ? `CASE WHEN h.${identifier(cols.approved)} = 1 THEN 'Yes' ELSE 'No' END AS [approved]` : `'No' AS [approved]`
+    const caveatSelect = cols.caveated
+      ? `CASE WHEN h.${identifier(cols.caveated)} = 1 THEN COALESCE(${cols.caveatRemarks ? `TRY_CONVERT(nvarchar(400), h.${identifier(cols.caveatRemarks)})` : `'Yes'`}, 'Yes') ELSE 'None' END AS [caveat]`
+      : `'None' AS [caveat]`
+    const order = cols.created ? `ORDER BY h.${identifier(cols.created)} DESC` : cols.id ? `ORDER BY h.${identifier(cols.id)} DESC` : ''
+
+    const params: Record<string, string> = {}
+    let where = ''
+    if (propertyIdParam && cols.propertyId) {
+      // Report mode: return EVERY transaction tied to this property id.
+      params.propertyId = propertyIdParam
+      where = `WHERE h.${identifier(cols.propertyId)} = @propertyId`
+    } else {
+      // Tokenize so "MR. NGADIUBA SAMUEL" matches each word in any field, any order.
+      const tokens = search.split(/\s+/).map((token) => token.replace(/[^\p{L}\p{N}/-]/gu, '')).filter((token) => token.length >= 2)
+      const tokenClauses = tokens.map((token, index) => {
+        params[`token${index}`] = `%${token}%`
+        return `(${uniqueSearchable.map((column) => `TRY_CONVERT(nvarchar(500), h.${identifier(column)}) LIKE @token${index}`).join(' OR ')})`
+      })
+      where = tokenClauses.length ? `WHERE ${tokenClauses.join(' AND ')}` : ''
+    }
+
+    console.log('[v0] Legal search query mapping', { debugId, propertyKey: cols.propertyId, fileNo: cols.fileNo, grantee: cols.grantee, grantor: cols.grantor, transactionType: typeNameCol, searchColumns: uniqueSearchable })
+
+    const result = await query(`SELECT TOP (500)
+      ${sel('id', cols.id)},
+      ${sel('propertyId', cols.propertyId)},
+      ${sel('fileNo', cols.fileNo)},
+      ${sel('grantor', cols.grantor)},
+      ${sel('grantee', cols.grantee)},
+      ${sel('guarantor', cols.guarantor)},
+      ${sel('scheduleName', cols.scheduleName)},
+      ${sel('layoutName', cols.layoutName)},
+      ${sel('lga', cols.lga)},
+      ${sel('district', cols.district)},
+      ${sel('plotNumber', cols.plotNumber)},
+      ${sel('plotSize', cols.plotSize)},
+      ${approvedSelect},
+      ${caveatSelect},
+      ${sel('parentRegistration', cols.parentRegistration)},
+      ${sel('rootRegistration', cols.rootRegistration)},
+      ${sel('registrationNumber', cols.registrationNumber)},
+      ${sel('planNumber', cols.planNumber)},
+      ${sel('propertyDescription', cols.propertyDescription)},
+      ${sel('address', cols.address)},
+      ${sel('instrumentDate', cols.instrumentDate)},
+      ${sel('registrationDate', cols.registrationDate)},
+      ${sel('created', cols.created)},
+      ${typeSelect}
+      FROM dbo.${identifier(TABLES.history)} h
+      ${typeJoin}
+      ${where}
+      ${order}`, params)
+
+    const rows = result.recordset as Array<Record<string, unknown>>
+
+    // Group one property's many transactions together, keyed by its property id
+    // (FileNumberID). The first row is the representative/most-recent transaction.
+    const grouped = new Map<string, Record<string, unknown> & { history: Record<string, unknown>[] }>()
+    for (const row of rows) {
+      const key = String(row.propertyId ?? row.fileNo ?? row.id ?? Math.random())
+      const existing = grouped.get(key)
+      if (existing) existing.history.push(row)
+      else grouped.set(key, { ...row, history: [row] })
+    }
+    const records = [...grouped.values()].map((record) => ({ ...record, transactionCount: record.history.length }))
+
+    console.log('[v0] Legal search completed', { debugId, rawRows: rows.length, groupedProperties: records.length })
+    return NextResponse.json({ ok: true, source: 'mssql', records, tables: TABLES, debugId })
   } catch (error) {
     console.log('[v0] Legal search failed', { debugId, error: error instanceof Error ? error.message : String(error), tables: TABLES })
     return NextResponse.json({ ok: false, error: 'Legal search database query failed.', debugId }, { status: 500 })
