@@ -43,6 +43,10 @@
   .phs-search-slip main > section:last-of-type > div { margin-left: 0.02in !important; }
   .phs-search-slip .grid.grid-cols-2 { gap: 0.18in !important; }
   .phs-search-slip footer { margin-top: 0.35in !important; }
+  .file-tracker-log-sheet { min-height: auto !important; background: #fff !important; padding: 0 !important; color: #000 !important; }
+  .file-tracker-log-sheet > div { max-width: none !important; }
+  .file-tracker-log-sheet button { display: none !important; }
+  .file-tracker-log-sheet .border-slate-200, .file-tracker-log-sheet .border-slate-100 { border-color: #cbd5e1 !important; }
   .legal-search-report table { page-break-inside: auto; }
   .legal-search-report tr { page-break-inside: avoid; page-break-after: auto; }
   .legal-search-report thead { display: table-header-group; }

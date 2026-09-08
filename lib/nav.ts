@@ -104,13 +104,13 @@ export const NAV: NavModule[] = [
   {
     label: 'File Tracking (Web & Mobile)',
     icon: Compass,
-    children: leaves(
-      'File Tracker Dashboard',
-      'Track File',
-      'Quick Search',
-      'Log a File',
-      'Mobile Sync & Activity Logs',
-    ),
+    children: [
+      { label: 'File Tracker Dashboard', href: '/file-tracking' },
+      { label: 'Track File', href: '/file-tracking?view=track' },
+      { label: 'Quick Search', href: '/file-tracking?view=search' },
+      { label: 'Log a File', href: '/file-tracking?view=log' },
+      { label: 'Mobile Sync & Activity Logs', href: '/file-tracking?view=activity' },
+    ],
   },
 
   {
