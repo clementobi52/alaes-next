@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { PhsRegister, PhsSignIn } from '@/components/phs/phs-auth'
 import { PhsDashboard } from '@/components/phs/phs-dashboard'
 import { PhsLanding } from '@/components/phs/phs-landing'
@@ -12,17 +12,12 @@ type PortalView = 'landing' | 'signin' | 'register' | 'dashboard' | 'organizatio
 function PortalContent() {
   const { currentOrg: sessionOrg, view, setView } = usePortal()
   const session = Boolean(sessionOrg)
-  const [localView, setLocalView] = useState<PortalView>(view as PortalView)
-  const activeView = localView
+  const activeView = view as PortalView
 
   useEffect(() => {
-    if (!session && (activeView === 'dashboard' || activeView === 'organization')) setLocalView('signin')
-    if (session && (activeView === 'signin' || activeView === 'register')) setLocalView('dashboard')
-  }, [session, activeView])
-
-  useEffect(() => {
-    setView(activeView)
-  }, [activeView, setView])
+    if (!session && (activeView === 'dashboard' || activeView === 'organization')) setView('signin')
+    if (session && (activeView === 'signin' || activeView === 'register')) setView('dashboard')
+  }, [session, activeView, setView])
 
   if (activeView === 'landing') return <PhsLanding />
   if (activeView === 'signin') return <PhsSignIn />
