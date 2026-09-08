@@ -2,8 +2,25 @@ import { NextResponse } from 'next/server'
 import { isDbConfigured } from '@/lib/db/config'
 import { query } from '@/lib/db/mssql'
 import { LEGAL_SEARCH_RECORDS } from '@/lib/legal-search-data'
+import { FILENO_SCHEDULE_RULES } from '@/lib/sectional-titling-data'
 
 export const runtime = 'nodejs'
+
+/**
+ * The property's file number is NOT stored (ParentFileNumber is blank in the data).
+ * It is derived from the schedule (town) prefix + the numeric FileNumberID, per the
+ * Abia nomenclature rules: Umuahia -> LUM/xxxxx, Ohafia -> LUM/OH/xxxxx, Aba -> LUAC/AB/xxxxx/AB.
+ */
+function buildAbiaFileNo(scheduleName: unknown, fileNumberId: unknown): string | null {
+  const id = Number(fileNumberId)
+  if (!Number.isFinite(id) || id <= 0) return null
+  const schedule = String(scheduleName ?? '').trim()
+  const rule = (FILENO_SCHEDULE_RULES as Record<string, { prefixes: string[] }>)[schedule]
+  const prefix = rule?.prefixes?.[0]
+  if (!prefix) return null
+  const number = String(id).padStart(5, '0')
+  return prefix === 'LUAC/AB' ? `${prefix}/${number}/AB` : `${prefix}/${number}`
+}
 
 const TABLES = {
   history: 'Stage_PropertyTransactionHistory',
@@ -67,6 +84,7 @@ export async function GET(request: Request) {
       registrationNumber: h('FullRegistrationNumber', 'RegistrationNumber'),
       planNumber: h('PlanNumber', 'OriginalPlanNumber'),
       propertyDescription: h('PropertyDescription'),
+      landUse: h('LandUse', 'LandUseType', 'PropertyUsage', 'Usage', 'PurposeOfUse'),
       address: h('AddressDescription'),
       instrumentDate: h('InstrumentDate'),
       registrationDate: h('RegistrationDate'),
@@ -135,6 +153,7 @@ export async function GET(request: Request) {
       ${sel('registrationNumber', cols.registrationNumber)},
       ${sel('planNumber', cols.planNumber)},
       ${sel('propertyDescription', cols.propertyDescription)},
+      ${sel('landUse', cols.landUse)},
       ${sel('address', cols.address)},
       ${sel('instrumentDate', cols.instrumentDate)},
       ${sel('registrationDate', cols.registrationDate)},
@@ -145,7 +164,12 @@ export async function GET(request: Request) {
       ${where}
       ${order}`, params)
 
-    const rows = result.recordset as Array<Record<string, unknown>>
+    const rows: Array<Record<string, unknown>> = (result.recordset as Array<Record<string, unknown>>).map((row) => {
+      // Derive the real file number from schedule + FileNumberID when it isn't stored.
+      const storedFileNo = typeof row.fileNo === 'string' ? row.fileNo.trim() : ''
+      const fileNo = storedFileNo || buildAbiaFileNo(row.scheduleName, row.propertyId) || (row.propertyId != null ? String(row.propertyId) : '')
+      return { ...row, fileNo }
+    })
 
     // Group one property's many transactions together, keyed by its property id
     // (FileNumberID). The first row is the representative/most-recent transaction.
