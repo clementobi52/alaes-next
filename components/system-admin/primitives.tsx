@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { Search, X, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -307,6 +308,9 @@ export function Modal({
   widthClass?: string
   printable?: boolean
 }) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -316,7 +320,7 @@ export function Modal({
 
   if (!open) return null
 
-  return (
+  const content = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       {...(printable ? { 'data-report-modal-root': '' } : {})}
@@ -376,6 +380,12 @@ export function Modal({
       </div>
     </div>
   )
+
+  // Printable modals render through a portal at document.body so the print
+  // stylesheet can hide the entire app (display:none) and print only this report,
+  // which avoids the blank pages that visibility:hidden layout leaves behind.
+  if (printable) return mounted ? createPortal(content, document.body) : null
+  return content
 }
 
 /* ------------------------------------------------------------------ */
