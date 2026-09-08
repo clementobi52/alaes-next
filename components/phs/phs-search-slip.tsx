@@ -98,7 +98,7 @@ export function PhsSearchSlip({ record, onClose }: { record: SlipRecord; onClose
             </SlipCard>
           </div>
 
-          <section className="mt-9">
+          <section className="mt-9 overflow-visible pl-2">
             <SectionTitle>Transaction Timeline</SectionTitle>
             {transactions.length ? <div className="mt-7 space-y-6 border-l-2 border-primary pl-7">
               {transactions.map((transaction, index) => <div key={`${transaction.id ?? transaction.fileNo ?? 'transaction'}-${index}`} className="relative break-inside-avoid">

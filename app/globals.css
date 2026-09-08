@@ -38,7 +38,9 @@
   .legal-search-report { position: relative !important; left: auto; top: auto; width: 100%; max-width: none; overflow: visible; box-shadow: none !important; color: #000 !important; padding: 0 !important; line-height: 1.25 !important; }
   .phs-search-slip { page: phs-slip; width: 100% !important; max-width: none !important; min-height: auto !important; padding: 0 !important; color: #000 !important; box-shadow: none !important; }
   .phs-search-slip header { padding: 0 0 0.18in !important; }
-  .phs-search-slip main { padding: 0.2in 0 0 !important; }
+  .phs-search-slip main { padding: 0.2in 0.28in 0 !important; }
+  .phs-search-slip main > section:last-of-type { margin-left: 0.08in !important; }
+  .phs-search-slip main > section:last-of-type > div { margin-left: 0.02in !important; }
   .phs-search-slip .grid.grid-cols-2 { gap: 0.18in !important; }
   .phs-search-slip footer { margin-top: 0.35in !important; }
   .legal-search-report table { page-break-inside: auto; }
