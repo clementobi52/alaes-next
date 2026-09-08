@@ -16,6 +16,7 @@ export function FileTrackingWorkspace() {
   const [files, setFiles] = useState(initialTrackedFiles)
   const [active, setActive] = useState<TrackedFile | null>(null)
   const [view, setView] = useState<'dashboard' | 'search' | 'log' | 'log-manager'>('dashboard')
+  const [requestMode, setRequestMode] = useState<'manual' | 'digital'>('manual')
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'All' | FileStatus>('All')
   const searchParams = useSearchParams()
@@ -37,8 +38,8 @@ export function FileTrackingWorkspace() {
     event.preventDefault(); const form = new FormData(event.currentTarget); const next = createFile({ reference: String(form.get('reference')), subject: String(form.get('subject')), sourceOffice: String(form.get('sourceOffice')), currentOffice: String(form.get('receivingOffice')), receivingOfficer: String(form.get('receivingOfficer')), priority: form.get('priority') as 'Normal' | 'Urgent', dueDate: String(form.get('dueDate')), notes: String(form.get('notes') || '') }); setFiles((current) => [next, ...current]); setActive(next); setView('dashboard'); event.currentTarget.reset()
   }
 
-  if (view === 'log') return <CreateFileTracker onCancel={() => setView('dashboard')} onSave={saveFile} onOpenLog={() => setView('log-manager')} />
-  if (view === 'log-manager') return <FileLogManager files={files} onRefresh={() => setFiles([...files])} onCreate={() => setView('log')} onUpdate={(updated) => setFiles((current) => current.map((file) => file.id === updated.id ? updated : file))} />
+  if (view === 'log') return <CreateFileTracker initialMode={requestMode} onCancel={() => setView('dashboard')} onSave={saveFile} onOpenLog={() => setView('log-manager')} />
+  if (view === 'log-manager') return <FileLogManager files={files} onRefresh={() => setFiles([...files])} onCreate={(mode = 'manual') => { setRequestMode(mode); setView('log') }} onUpdate={(updated) => setFiles((current) => current.map((file) => file.id === updated.id ? updated : file))} />
   if (active) return <FileDetails file={active} onBack={() => setActive(null)} onPrint={() => window.print()} />
   if (view === 'search') return <SearchView query={query} setQuery={setQuery} files={filtered} onSelect={setActive} onBack={() => setView('dashboard')} />
 

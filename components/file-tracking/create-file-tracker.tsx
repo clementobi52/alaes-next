@@ -8,6 +8,7 @@ type CreateFileTrackerProps = {
   onCancel: () => void
   onSave: (event: React.FormEvent<HTMLFormElement>) => void
   onOpenLog: () => void
+  initialMode?: 'manual' | 'digital'
 }
 
 const fieldClass = 'mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -20,9 +21,9 @@ function Section({ icon: Icon, title, description, children }: { icon: typeof Fi
   return <section className="overflow-hidden rounded-lg border border-border bg-card"><div className="border-b border-border px-5 py-4"><div className="flex items-center gap-2"><Icon className="size-4 text-primary" /><h2 className="font-semibold text-foreground">{title}</h2></div><p className="mt-1 text-xs text-muted-foreground">{description}</p></div><div className="p-5">{children}</div></section>
 }
 
-export function CreateFileTracker({ onCancel, onSave, onOpenLog }: CreateFileTrackerProps) {
+export function CreateFileTracker({ onCancel, onSave, onOpenLog, initialMode = 'manual' }: CreateFileTrackerProps) {
   const [now, setNow] = useState(new Date())
-  const [requestMode, setRequestMode] = useState<'manual' | 'digital'>('manual')
+  const [requestMode, setRequestMode] = useState<'manual' | 'digital'>(initialMode)
   useEffect(() => { const timer = window.setInterval(() => setNow(new Date()), 1000); return () => window.clearInterval(timer) }, [])
   const date = now.toISOString().slice(0, 10)
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
