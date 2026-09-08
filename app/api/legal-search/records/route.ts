@@ -78,11 +78,16 @@ export async function GET(request: Request) {
   const order = historyMap.created ? `ORDER BY h.${identifier(historyMap.created)} DESC` : historyMap.id ? `ORDER BY h.${identifier(historyMap.id)} DESC` : ''
   const typeJoin = historyMap.typeId && typeId ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(historyMap.typeId)} = t.${identifier(typeId)}` : ''
   const typeSelect = typeName && typeJoin ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
+  const hasPropertyLink = Boolean(propertyIdColumn && historyMap.propertyId)
+  const hasFileLink = Boolean(transactionMap.fileNo && historyMap.fileNo)
+  const fromClause = hasPropertyLink || hasFileLink
+    ? `dbo.${identifier(TABLES.transaction)} p LEFT JOIN dbo.${identifier(TABLES.history)} h ON ${hasPropertyLink ? `p.${identifier(propertyIdColumn!)} = h.${identifier(historyMap.propertyId!)}` : `p.${identifier(transactionMap.fileNo!)} = h.${identifier(historyMap.fileNo!)}`}`
+    : `dbo.${identifier(TABLES.history)} h LEFT JOIN dbo.${identifier(TABLES.transaction)} p ON 1 = 0`
   console.log('[v0] Legal search query mapping', { debugId, propertyIdColumn, fileNumberColumn: transactionMap.fileNo, historyPropertyIdColumn: historyMap.propertyId, transactionTypeColumn: typeName, transactionTypeJoinColumn: historyMap.typeId, transactionTypeIdColumn: typeId, searchColumns: searchable })
   const result = await query(`SELECT TOP (200)
     ${propertyIdColumn ? `p.${identifier(propertyIdColumn)}` : 'NULL'} AS [propertyId],
     ${historyId ? `h.${identifier(historyId)}` : 'NULL'} AS [id],
-    ${selectExpression(transactionMap, 'fileNo', 'fileNo', 'p')},
+    COALESCE(${selectExpression(transactionMap, 'fileNo', 'fileNo', 'p').replace(/ AS \[fileNo\]$/, '')}, ${selectExpression(historyMap, 'fileNo', 'historyFileNo', 'h').replace(/ AS \[historyFileNo\]$/, '')}) AS [fileNo],
     ${selectExpression(transactionMap, 'property', 'property', 'p')},
     ${selectExpression(transactionMap, 'owner', 'owner', 'p')},
     ${selectExpression(transactionMap, 'location', 'location', 'p')},
@@ -101,8 +106,7 @@ export async function GET(request: Request) {
     ${selectExpression(transactionMap, 'size', 'plotSize', 'p')},
     ${selectExpression(transactionMap, 'status', 'approved', 'p')},
     ${typeSelect.replace('[type]', '[transactionType]')}
-    FROM dbo.${identifier(TABLES.transaction)} p
-    LEFT JOIN dbo.${identifier(TABLES.history)} h ON ${propertyIdColumn && historyMap.propertyId ? `p.${identifier(propertyIdColumn)} = h.${identifier(historyMap.propertyId)}` : '1 = 0'}
+    FROM ${fromClause}
     ${typeJoin}
     ${transactionWhere}
     ${order}`, search ? { search: `%${search}%` } : {})
