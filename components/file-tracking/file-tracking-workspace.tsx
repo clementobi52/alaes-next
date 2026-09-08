@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { Archive, ArrowRight, ClipboardList, FilePlus2, FileSearch, MapPin, Printer, Search, Send, X } from 'lucide-react'
 import { createFile, FileStatus, formatToday, getStatusTone, initialTrackedFiles, offices, TrackedFile } from '@/lib/file-tracking-data'
 import { CreateFileTracker } from '@/components/file-tracking/create-file-tracker'
+import { FileLogManager } from '@/components/file-tracking/file-log-manager'
 
 const toneClasses: Record<string, string> = { green: 'bg-primary/10 text-primary border-primary/30', blue: 'bg-primary/10 text-primary border-primary/30', amber: 'bg-muted text-foreground border-border', slate: 'bg-muted text-muted-foreground border-border' }
 
@@ -14,7 +15,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) { return <div
 export function FileTrackingWorkspace() {
   const [files, setFiles] = useState(initialTrackedFiles)
   const [active, setActive] = useState<TrackedFile | null>(null)
-  const [view, setView] = useState<'dashboard' | 'search' | 'log'>('dashboard')
+  const [view, setView] = useState<'dashboard' | 'search' | 'log' | 'log-manager'>('dashboard')
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'All' | FileStatus>('All')
   const searchParams = useSearchParams()
@@ -24,6 +25,7 @@ export function FileTrackingWorkspace() {
     setActive(null)
     if (!requested || requested === 'dashboard' || requested === 'activity') setView('dashboard')
     else if (requested === 'log') setView('log')
+    else if (requested === 'log-manager') setView('log-manager')
     else if (requested === 'search' || requested === 'track') setView('search')
     else setView('dashboard')
   }, [searchParams])
@@ -36,6 +38,7 @@ export function FileTrackingWorkspace() {
   }
 
   if (view === 'log') return <CreateFileTracker onCancel={() => setView('dashboard')} onSave={saveFile} />
+  if (view === 'log-manager') return <FileLogManager files={files} onRefresh={() => setFiles([...files])} onCreate={() => setView('log')} onUpdate={(updated) => setFiles((current) => current.map((file) => file.id === updated.id ? updated : file))} />
   if (active) return <FileDetails file={active} onBack={() => setActive(null)} onPrint={() => window.print()} />
   if (view === 'search') return <SearchView query={query} setQuery={setQuery} files={filtered} onSelect={setActive} onBack={() => setView('dashboard')} />
 
