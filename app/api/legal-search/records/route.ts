@@ -54,10 +54,17 @@ function selectExpression(map: ColumnMap, key: string, alias: string, tableAlias
 }
 
 export async function GET(request: Request) {
-  if (!isDbConfigured()) return NextResponse.json({ ok: true, source: 'demo', records: LEGAL_SEARCH_RECORDS })
+  const debugId = `legal-search-${Date.now().toString(36)}`
+  if (!isDbConfigured()) {
+    console.log('[v0] Legal search database not configured', { debugId, source: 'demo' })
+    return NextResponse.json({ ok: true, source: 'demo', records: LEGAL_SEARCH_RECORDS, debugId })
+  }
   const url = new URL(request.url)
   const search = url.searchParams.get('search')?.trim() ?? ''
+  console.log('[v0] Legal search started', { debugId, searchLength: search.length, tables: TABLES })
+  try {
   const [transactionColumns, historyColumns, typeColumns] = await Promise.all(Object.values(TABLES).map(getColumns))
+  console.log('[v0] Legal search schema detected', { debugId, transactionColumns, historyColumns, typeColumns })
   const propertyIdColumn = transactionColumns.find((column) => column.toLowerCase() === 'propertyid') ?? transactionColumns.find((column) => column.toLowerCase() === 'property_id')
   const transactionMap = mapColumns(transactionColumns)
   const historyMap = mapColumns(historyColumns)
@@ -69,6 +76,7 @@ export async function GET(request: Request) {
   const order = historyMap.created ? `ORDER BY h.${identifier(historyMap.created)} DESC` : historyMap.id ? `ORDER BY h.${identifier(historyMap.id)} DESC` : ''
   const typeJoin = historyMap.typeId && typeId ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(historyMap.typeId)} = t.${identifier(typeId)}` : ''
   const typeSelect = typeName ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
+  console.log('[v0] Legal search query mapping', { debugId, propertyIdColumn, fileNumberColumn: transactionMap.fileNo, historyPropertyIdColumn: historyMap.propertyId, transactionTypeColumn: typeName, transactionTypeJoinColumn: historyMap.typeId, transactionTypeIdColumn: typeId, searchColumns: searchable })
   const result = await query(`SELECT TOP (200)
     ${propertyIdColumn ? `p.${identifier(propertyIdColumn)}` : 'NULL'} AS [propertyId],
     ${historyId ? `h.${identifier(historyId)}` : 'NULL'} AS [id],
@@ -103,7 +111,13 @@ export async function GET(request: Request) {
     if (existing) existing.history = [...(existing.history ?? []), row]
     else grouped.set(propertyId, { ...row, history: [row] })
   }
-  return NextResponse.json({ ok: true, source: 'mssql', records: [...grouped.values()], tables: TABLES, schema: { transaction: transactionColumns, history: historyColumns, type: typeColumns } })
+  const records = [...grouped.values()]
+  console.log('[v0] Legal search completed', { debugId, rawRows: result.recordset.length, groupedProperties: records.length, historyRows: records.reduce((total, record) => total + (record.history?.length ?? 0), 0) })
+  return NextResponse.json({ ok: true, source: 'mssql', records, tables: TABLES, schema: { transaction: transactionColumns, history: historyColumns, type: typeColumns }, debugId })
+  } catch (error) {
+    console.log('[v0] Legal search failed', { debugId, error: error instanceof Error ? error.message : String(error), tables: TABLES })
+    return NextResponse.json({ ok: false, error: 'Legal search database query failed.', debugId }, { status: 500 })
+  }
 }
 
 export async function POST(request: Request) {
