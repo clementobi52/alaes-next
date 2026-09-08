@@ -3,6 +3,7 @@
 
 @media print {
   @page { size: landscape; margin: 0.2in; }
+  @page phs-slip { size: portrait; margin: 0.35in; }
   html, body { background: white !important; height: auto !important; overflow: visible !important; }
 
   /* The printable report renders through a portal at document.body. Hide the entire
@@ -35,6 +36,11 @@
   [data-report-chrome] { display: none !important; }
 
   .legal-search-report { position: relative !important; left: auto; top: auto; width: 100%; max-width: none; overflow: visible; box-shadow: none !important; color: #000 !important; padding: 0 !important; line-height: 1.25 !important; }
+  .phs-search-slip { page: phs-slip; width: 100% !important; max-width: none !important; min-height: auto !important; padding: 0 !important; color: #000 !important; box-shadow: none !important; }
+  .phs-search-slip header { padding: 0 0 0.18in !important; }
+  .phs-search-slip main { padding: 0.2in 0 0 !important; }
+  .phs-search-slip .grid.grid-cols-2 { gap: 0.18in !important; }
+  .phs-search-slip footer { margin-top: 0.35in !important; }
   .legal-search-report table { page-break-inside: auto; }
   .legal-search-report tr { page-break-inside: avoid; page-break-after: auto; }
   .legal-search-report thead { display: table-header-group; }

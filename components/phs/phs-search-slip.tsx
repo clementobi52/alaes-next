@@ -63,7 +63,7 @@ export function PhsSearchSlip({ record, onClose }: { record: SlipRecord; onClose
       printable
       footer={<div className="flex justify-end gap-3"><button type="button" onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted">Close</button><button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"><Printer className="h-4 w-4" /> Print slip</button></div>}
     >
-      <article className="phs-search-slip mx-auto w-[8.27in] max-w-full overflow-hidden bg-card font-serif text-[11px] text-foreground shadow-sm print:w-full print:max-w-none print:shadow-none">
+      <article className="phs-search-slip mx-auto w-[8.27in] [page:phs-slip] max-w-full overflow-hidden bg-card font-serif text-[11px] text-foreground shadow-sm print:w-full print:max-w-none print:shadow-none">
         <header className="border-b-4 border-primary px-[0.42in] pb-4 pt-5">
           <div className="flex items-center justify-between gap-5">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-white p-1"><img src="/images/abiagis-emblem.png" alt="ABIAGIS emblem" className="h-full w-full object-contain" /></div>
