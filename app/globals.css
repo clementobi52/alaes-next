@@ -3,36 +3,38 @@
 
 @media print {
   @page { size: landscape; margin: 0.2in; }
-  html, body { background: white !important; }
+  html, body { background: white !important; height: auto !important; overflow: visible !important; }
 
-  /* Only the report should be visible when printing. */
-  body * { visibility: hidden; }
-  .legal-search-report, .legal-search-report * { visibility: visible; }
+  /* The printable report renders through a portal at document.body. Hide the entire
+     app (display:none, so it occupies NO space and leaves no blank pages) and print
+     only the report's portal root. */
+  body:has([data-report-modal-root]) > *:not([data-report-modal-root]) { display: none !important; }
 
-  /* Neutralize the modal wrappers that clip the report. The report sits inside a
-     fixed, centered dialog whose scroll container has max-height + overflow, which
-     otherwise clips the print to one screen and repeats the header on every page. */
-  body:has(.legal-search-report) [data-report-modal-root],
-  body:has(.legal-search-report) [data-report-dialog],
-  body:has(.legal-search-report) [data-report-scroll] {
+  /* Unwrap the modal chrome so the report flows down the page instead of being clipped
+     inside a centered, fixed, max-height dialog (which caused the repeated header). */
+  [data-report-modal-root],
+  [data-report-dialog],
+  [data-report-scroll] {
     position: static !important;
     inset: auto !important;
     display: block !important;
+    max-width: none !important;
+    width: 100% !important;
     max-height: none !important;
     height: auto !important;
     overflow: visible !important;
     padding: 0 !important;
     margin: 0 !important;
     border: 0 !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
-    background: transparent !important;
+    background: white !important;
   }
-  /* Hide the backdrop and the modal's own header/footer chrome. */
-  body:has(.legal-search-report) [data-report-backdrop],
-  body:has(.legal-search-report) [data-report-chrome] { display: none !important; }
+  /* Remove the dark backdrop and the modal's own header/footer chrome. */
+  [data-report-backdrop],
+  [data-report-chrome] { display: none !important; }
 
-  /* The report flows naturally across pages; relative keeps the watermark anchored. */
-  .legal-search-report { position: relative !important; left: auto; top: auto; width: 100%; max-width: none; overflow: visible; box-shadow: none !important; }
+  .legal-search-report { position: relative !important; left: auto; top: auto; width: 100%; max-width: none; overflow: visible; box-shadow: none !important; color: #000 !important; }
   .legal-search-report table { page-break-inside: auto; }
   .legal-search-report tr { page-break-inside: avoid; page-break-after: auto; }
   .legal-search-report thead { display: table-header-group; }
