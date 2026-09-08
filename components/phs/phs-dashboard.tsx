@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { usePortal } from '@/components/phs/phs-store'
 import { TokenPurchaseModal } from '@/components/phs/phs-token-modal'
-import { SearchReport } from '@/components/legal-search/search-report'
+import { PhsSearchSlip } from '@/components/phs/phs-search-slip'
 
 type ApiRecord = Record<string, string | undefined> & { id?: string; propertyId?: string; fileNo?: string }
 
@@ -219,7 +219,7 @@ export function PhsDashboard() {
       </main>
 
       {tokenModal && <TokenPurchaseModal onClose={() => setTokenModal(false)} />}
-      {reportRecord && <SearchReport record={reportRecord} official onClose={() => setReportRecord(null)} />}
+      {reportRecord && <PhsSearchSlip record={reportRecord} onClose={() => setReportRecord(null)} />}
     </div>
   )
 }
