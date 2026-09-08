@@ -34,12 +34,14 @@
   [data-report-backdrop],
   [data-report-chrome] { display: none !important; }
 
-  .legal-search-report { position: relative !important; left: auto; top: auto; width: 100%; max-width: none; overflow: visible; box-shadow: none !important; color: #000 !important; }
+  .legal-search-report { position: relative !important; left: auto; top: auto; width: 100%; max-width: none; overflow: visible; box-shadow: none !important; color: #000 !important; padding: 0 !important; line-height: 1.25 !important; }
   .legal-search-report table { page-break-inside: auto; }
   .legal-search-report tr { page-break-inside: avoid; page-break-after: auto; }
   .legal-search-report thead { display: table-header-group; }
   .legal-search-report .report-header { break-inside: avoid; }
-  .legal-search-report .report-transaction-table { font-size: 10px; }
+  .legal-search-report .report-transaction-table { font-size: 9px; }
+  .legal-search-report .report-transaction-table td,
+  .legal-search-report .report-transaction-table th { padding-top: 2px !important; padding-bottom: 2px !important; }
   .legal-search-report button { display: none !important; }
 }
 @import 'shadcn/tailwind.css';
