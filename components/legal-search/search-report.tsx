@@ -92,7 +92,32 @@ export function SearchReport({ record, official, onClose }: { record: SearchReco
       <article className="legal-search-report relative mx-auto w-[11in] max-w-full overflow-visible bg-card px-[0.4in] py-[0.2in] text-foreground shadow-sm print:min-h-0 print:w-full print:max-w-none print:shadow-none">
         {official && <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"><span className="-rotate-30 select-none whitespace-nowrap text-[clamp(3rem,9vw,8rem)] font-black tracking-[0.16em] text-destructive/10">FOR OFFICIAL PURPOSE</span></div>}
         <div className="relative z-10">
-          <header className="report-header border-b-2 border-foreground pb-2"><div className="flex items-center justify-between gap-4"><div className="h-14 w-16 shrink-0 border border-border bg-muted/30" aria-label="Abia State emblem placeholder" /><div className="flex-1 text-center"><p className="text-[15px] font-bold uppercase tracking-wide text-primary">ABIA STATE MINISTRY OF LANDS AND HOUSING</p><h1 className="mt-1 text-[19px] font-bold">LEGAL SEARCH REPORT</h1><p className="mt-1 text-[13px] font-bold underline">{official ? 'Official Search (For Filing Purpose)' : 'On-Premise Pay-per-Search'}</p></div><div className="h-14 w-16 shrink-0 border border-border bg-muted/30" aria-label="Abia State lands logo placeholder" /></div><p className="mt-1 text-right text-[11px] font-bold">Date: {new Date().toLocaleDateString('en-GB')}</p></header>
+          <header className="report-header border-b-2 border-foreground pb-2"><div className="flex items-center justify-between gap-4">
+            <div className="h-14 w-16 shrink-0 flex items-center justify-center overflow-hidden rounded-full">
+              <img 
+                src="/images/abiagis-emblem.png" 
+                alt="Abia State Emblem" 
+                className="h-full w-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                  e.currentTarget.parentElement?.insertAdjacentHTML('beforeend', '<span class="text-[8px] text-muted-foreground text-center p-1">Emblem</span>')
+                }}
+              />
+            </div>
+            <div className="flex-1 text-center"><p className="text-[15px] font-bold uppercase tracking-wide text-primary">ABIA STATE MINISTRY OF LANDS AND HOUSING</p><h1 className="mt-1 text-[19px] font-bold">LEGAL SEARCH REPORT</h1><p className="mt-1 text-[13px] font-bold underline">{official ? 'Official Search (For Filing Purpose)' : 'On-Premise Pay-per-Search'}</p></div>
+            <div className="h-14 w-16 shrink-0 flex items-center justify-center overflow-hidden rounded-full">
+              <img 
+                src="/images/abia-state--logo.png" 
+                alt="Abia State Lands Logo" 
+                className="h-full w-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                  const parent = e.currentTarget.parentElement
+                  if (parent) parent.innerHTML = '<span class="text-[8px] text-muted-foreground text-center p-1">Logo</span>'
+                }}
+              />
+            </div>
+          </div><p className="mt-1 text-right text-[11px] font-bold">Date: {new Date().toLocaleDateString('en-GB')}</p></header>
           <div className="mt-2 inline-block border border-foreground px-2 py-0.5 text-xs font-bold">Property Details</div>
           <div className="report-property-details mt-1 grid grid-cols-2 gap-x-8 gap-y-1 border-b border-border pb-2 text-[11px] md:grid-cols-4"><ReportField label="File Number" value={record.fileNo} /><ReportField label="File Number ID" value={record.propertyId ?? record.id} /><ReportField label="File Title (Current Holder)" value={holder} /><ReportField label="Schedule" value={record.scheduleName} /><ReportField label="Layout" value={record.layoutName} /><ReportField label="Plot No." value={record.plotNumber} /><ReportField label="Plot Size" value={record.plotSize} /><ReportField label="Land Use" value={record.landUse} /><ReportField label="LGA / City" value={record.lga} /><ReportField label="District" value={record.district} /><ReportField label="Registration No." value={record.registrationNumber ?? record.parentRegistration} /><ReportField label="Plan No." value={record.planNumber} /><ReportField label="Approval" value={record.approved ?? record.status} /><ReportField label="Plot Description" value={record.propertyDescription ?? record.address} /></div>
           <div className="mt-2 flex items-center gap-2"><span className="inline-block border border-foreground px-2 py-0.5 text-xs font-bold">File History</span><span className="text-[10px] text-muted-foreground">{loadingHistory ? 'Loading full history…' : `${rows.length} transaction${rows.length === 1 ? '' : 's'} on this property`}</span></div>
