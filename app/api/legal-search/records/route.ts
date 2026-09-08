@@ -75,7 +75,7 @@ export async function GET(request: Request) {
   const transactionWhere = search && searchable.length ? `WHERE ${searchable.map((column) => `TRY_CONVERT(nvarchar(500), p.${identifier(column)}) LIKE @search`).join(' OR ')}` : ''
   const order = historyMap.created ? `ORDER BY h.${identifier(historyMap.created)} DESC` : historyMap.id ? `ORDER BY h.${identifier(historyMap.id)} DESC` : ''
   const typeJoin = historyMap.typeId && typeId ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(historyMap.typeId)} = t.${identifier(typeId)}` : ''
-  const typeSelect = typeName ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
+  const typeSelect = typeName && typeJoin ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
   console.log('[v0] Legal search query mapping', { debugId, propertyIdColumn, fileNumberColumn: transactionMap.fileNo, historyPropertyIdColumn: historyMap.propertyId, transactionTypeColumn: typeName, transactionTypeJoinColumn: historyMap.typeId, transactionTypeIdColumn: typeId, searchColumns: searchable })
   const result = await query(`SELECT TOP (200)
     ${propertyIdColumn ? `p.${identifier(propertyIdColumn)}` : 'NULL'} AS [propertyId],
