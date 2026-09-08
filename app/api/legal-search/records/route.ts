@@ -171,8 +171,17 @@ export async function GET(request: Request) {
       return { ...row, fileNo }
     })
 
-    // Group one property's many transactions together, keyed by its property id
-    // (FileNumberID). The first row is the representative/most-recent transaction.
+    // Chronological rank for a transaction: earliest first. Prefer a real date, then
+    // fall back to the incrementing history id (older transactions have smaller ids).
+    const chronoRank = (row: Record<string, unknown>) => {
+      const dateValue = row.registrationDate ?? row.instrumentDate ?? row.created
+      const time = dateValue ? new Date(String(dateValue)).getTime() : Number.NaN
+      if (Number.isFinite(time)) return time
+      const idNumber = Number(row.id)
+      return Number.isFinite(idNumber) ? idNumber : 0
+    }
+
+    // Group one property's many transactions together, keyed by its property id (FileNumberID).
     const grouped = new Map<string, Record<string, unknown> & { history: Record<string, unknown>[] }>()
     for (const row of rows) {
       const key = String(row.propertyId ?? row.fileNo ?? row.id ?? Math.random())
@@ -180,7 +189,13 @@ export async function GET(request: Request) {
       if (existing) existing.history.push(row)
       else grouped.set(key, { ...row, history: [row] })
     }
-    const records = [...grouped.values()].map((record) => ({ ...record, transactionCount: record.history.length }))
+    // Within each property, order transactions oldest -> newest so the first
+    // transaction is listed first and the most recent last.
+    const records = [...grouped.values()].map((record) => {
+      const history = [...record.history].sort((a, b) => chronoRank(a) - chronoRank(b))
+      const latest = history[history.length - 1] ?? record
+      return { ...record, ...latest, history, transactionCount: history.length }
+    })
 
     console.log('[v0] Legal search completed', { debugId, rawRows: rows.length, groupedProperties: records.length })
     return NextResponse.json({ ok: true, source: 'mssql', records, tables: TABLES, debugId })
