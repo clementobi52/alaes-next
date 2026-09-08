@@ -74,12 +74,19 @@ export async function GET(request: Request) {
   // The transaction table has no reliable key to join on, so the search runs on history alone.
   const searchableColumns = [historyMap.fileNo, historyMap.property, historyMap.owner, grantorColumn, historyMap.location, historyMap.lga, historyMap.plot, historyMap.plan, historyMap.particulars].filter(Boolean) as string[]
   const uniqueSearchable = [...new Set(searchableColumns)]
-  const searchClauses = uniqueSearchable.map((column) => `TRY_CONVERT(nvarchar(500), h.${identifier(column)}) LIKE @search`)
-  const where = search && searchClauses.length ? `WHERE ${searchClauses.join(' OR ')}` : ''
+  // Tokenize the search so "MR. NGADIUBA SAMUEL" matches records containing each word
+  // in any searchable column, regardless of order or prefixes. Ignore very short noise tokens.
+  const tokens = search.split(/\s+/).map((token) => token.replace(/[^\p{L}\p{N}/-]/gu, '')).filter((token) => token.length >= 2)
+  const params: Record<string, string> = {}
+  const tokenClauses = tokens.map((token, index) => {
+    params[`token${index}`] = `%${token}%`
+    return `(${uniqueSearchable.map((column) => `TRY_CONVERT(nvarchar(500), h.${identifier(column)}) LIKE @token${index}`).join(' OR ')})`
+  })
+  const where = tokenClauses.length ? `WHERE ${tokenClauses.join(' AND ')}` : ''
   const order = historyMap.created ? `ORDER BY h.${identifier(historyMap.created)} DESC` : historyId ? `ORDER BY h.${identifier(historyId)} DESC` : ''
   const typeJoin = historyMap.typeId && typeId ? `LEFT JOIN dbo.${identifier(TABLES.type)} t ON h.${identifier(historyMap.typeId)} = t.${identifier(typeId)}` : ''
   const typeSelect = typeName && typeJoin ? `t.${identifier(typeName)} AS [type]` : 'NULL AS [type]'
-  console.log('[v0] Legal search query mapping', { debugId, fileNumberColumn: historyMap.fileNo, ownerColumn: historyMap.owner, grantorColumn, transactionTypeColumn: typeName, transactionTypeJoinColumn: historyMap.typeId, searchColumns: uniqueSearchable })
+  console.log('[v0] Legal search query mapping', { debugId, fileNumberColumn: historyMap.fileNo, ownerColumn: historyMap.owner, grantorColumn, transactionTypeColumn: typeName, transactionTypeJoinColumn: historyMap.typeId, searchColumns: uniqueSearchable, tokens })
   const result = await query(`SELECT TOP (300)
     ${historyId ? `h.${identifier(historyId)}` : 'NULL'} AS [id],
     ${selectExpression(historyMap, 'fileNo', 'fileNo', 'h')},
@@ -106,7 +113,7 @@ export async function GET(request: Request) {
     FROM dbo.${identifier(TABLES.history)} h
     ${typeJoin}
     ${where}
-    ${order}`, search ? { search: `%${search}%` } : {})
+    ${order}`, params)
   // Group one property's many transactions together, keyed by its parent file number.
   const grouped = new Map<string, Record<string, unknown> & { history?: unknown[] }>()
   for (const row of result.recordset as Array<Record<string, unknown>>) {
