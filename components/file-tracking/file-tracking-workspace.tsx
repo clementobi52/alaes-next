@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Archive, ArrowRight, ClipboardList, FilePlus2, FileSearch, MapPin, Printer, Search, Send, X } from 'lucide-react'
 import { createFile, FileStatus, formatToday, getStatusTone, initialTrackedFiles, offices, TrackedFile } from '@/lib/file-tracking-data'
+import { CreateFileTracker } from '@/components/file-tracking/create-file-tracker'
 
 const toneClasses: Record<string, string> = { green: 'bg-primary/10 text-primary border-primary/30', blue: 'bg-primary/10 text-primary border-primary/30', amber: 'bg-muted text-foreground border-border', slate: 'bg-muted text-muted-foreground border-border' }
 
@@ -32,7 +33,7 @@ export function FileTrackingWorkspace() {
     event.preventDefault(); const form = new FormData(event.currentTarget); const next = createFile({ reference: String(form.get('reference')), subject: String(form.get('subject')), sourceOffice: String(form.get('sourceOffice')), currentOffice: String(form.get('receivingOffice')), receivingOfficer: String(form.get('receivingOfficer')), priority: form.get('priority') as 'Normal' | 'Urgent', dueDate: String(form.get('dueDate')), notes: String(form.get('notes') || '') }); setFiles((current) => [next, ...current]); setActive(next); setView('dashboard'); event.currentTarget.reset()
   }
 
-  if (view === 'log') return <LogFile onCancel={() => setView('dashboard')} onSave={saveFile} />
+  if (view === 'log') return <CreateFileTracker onCancel={() => setView('dashboard')} onSave={saveFile} />
   if (active) return <FileDetails file={active} onBack={() => setActive(null)} onPrint={() => window.print()} />
   if (view === 'search') return <SearchView query={query} setQuery={setQuery} files={filtered} onSelect={setActive} onBack={() => setView('dashboard')} />
 
