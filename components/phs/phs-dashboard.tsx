@@ -185,7 +185,7 @@ export function PhsDashboard() {
               <Search className="h-5 w-5" /> {loading ? 'Searching…' : 'Search (1 Token)'}
             </button>
           </div>
-          <p className="mt-2.5 text-xs text-slate-500">Examples: &quot;COM-RES-2021-078&quot;, &quot;ABGIS12345&quot;, &quot;John Doe&quot;</p>
+          <p className="mt-2.5 text-xs text-slate-500">Examples: &quot;LUAC/1234&quot;, &quot;LABA/1234&quot;, &quot;John Doe&quot;</p>
           {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
         </section>
 
