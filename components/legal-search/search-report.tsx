@@ -88,7 +88,7 @@ export function SearchReport({ record, official, onClose }: { record: SearchReco
   const grantor = record.grantor ?? firstValue(rows, 'grantor')
 
   return (
-    <Modal open onClose={onClose} title="Search Report Preview" widthClass="max-w-[95vw]" footer={<div className="flex justify-end gap-3"><button type="button" onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted">Close</button><button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"><Printer className="h-4 w-4" /> Print report</button></div>}>
+    <Modal open onClose={onClose} title="Search Report Preview" widthClass="max-w-[95vw]" printable footer={<div className="flex justify-end gap-3"><button type="button" onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted">Close</button><button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"><Printer className="h-4 w-4" /> Print report</button></div>}>
       <article className="legal-search-report relative mx-auto min-h-[7.6in] w-[11in] max-w-full overflow-visible bg-card px-[0.4in] py-[0.2in] text-foreground shadow-sm print:min-h-0 print:w-full print:max-w-none print:shadow-none">
         {official && <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"><span className="-rotate-30 select-none whitespace-nowrap text-[clamp(3rem,9vw,8rem)] font-black tracking-[0.16em] text-destructive/10">FOR OFFICIAL PURPOSE</span></div>}
         <div className="relative z-10">
