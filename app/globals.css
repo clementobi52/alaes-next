@@ -43,6 +43,12 @@
   .phs-search-slip main > section:last-of-type > div { margin-left: 0.02in !important; }
   .phs-search-slip .grid.grid-cols-2 { gap: 0.18in !important; }
   .phs-search-slip footer { margin-top: 0.35in !important; }
+
+.file-tracker-create-form input, .file-tracker-create-form select, .file-tracker-create-form textarea { background: var(--card); color: var(--foreground); border-color: var(--border); }
+.file-tracker-create-form input:focus, .file-tracker-create-form select:focus, .file-tracker-create-form textarea:focus { border-color: var(--primary); outline: 2px solid color-mix(in srgb, var(--primary) 20%, transparent); }
+.file-tracker-create-form label { color: var(--foreground); }
+.file-tracker-create-form button[type="submit"] { background: var(--primary); color: var(--primary-foreground); }
+.file-tracker-create-form button[type="submit"]:hover { opacity: 0.9; }
   .file-tracker-log-sheet { min-height: auto !important; background: #fff !important; padding: 0 !important; color: #000 !important; }
   .file-tracker-log-sheet > div { max-width: none !important; }
   .file-tracker-log-sheet button { display: none !important; }
