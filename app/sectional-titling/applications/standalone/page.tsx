@@ -158,18 +158,20 @@ export default function StandaloneUnitsPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1320px] text-sm">
+            <table className="w-full min-w-[1680px] table-fixed text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Scheme No</th>
                   <th className="px-4 py-3 font-medium">NP FileNo</th>
                   <th className="px-4 py-3 font-medium">Unit FileNo</th>
                   <th className="px-4 py-3 font-medium">Land Use</th>
-                  <th className="px-4 py-3 font-medium">Allocation Source</th>
+                  <th className="px-4 py-3 font-medium">Original Owner</th>
                   <th className="px-4 py-3 font-medium">Unit Owner</th>
                   <th className="px-4 py-3 font-medium">Unit No</th>
                   <th className="px-4 py-3 font-medium">Phone</th>
-                  <th className="px-4 py-3 font-medium">App Date</th>
+                  <th className="px-4 py-3 font-medium">Application Date</th>
+                  <th className="px-4 py-3 font-medium">Date Captured</th>
+                  <th className="px-4 py-3 font-medium">Created By</th>
                   <th className="px-4 py-3 font-medium">JSI Status</th>
                   <th className="px-4 py-3 font-medium">JSI Approval</th>
                   <th className="px-4 py-3 font-medium">Planning</th>
@@ -178,8 +180,8 @@ export default function StandaloneUnitsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((u) => (
-                  <UnitRow key={u.unitFileNo} u={u} />
+                {filtered.map((u, index) => (
+                  <UnitRow key={`${u.unitFileNo || 'standalone'}-${index}`} u={u} />
                 ))}
                 {filtered.length === 0 && (
                   <tr>
@@ -209,7 +211,7 @@ function UnitRow({ u }: { u: UnitApplication }) {
         </StatusBadge>
       </td>
       <td className="px-4 py-3">
-        <div>{u.allocationSource}</div>
+        <div className="text-xs font-medium">{u.allocationSource}</div>
         <div className="text-xs text-muted-foreground">{u.allocationEntity}</div>
       </td>
       <td className="px-4 py-3">
@@ -221,6 +223,8 @@ function UnitRow({ u }: { u: UnitApplication }) {
       <td className="px-4 py-3 text-muted-foreground">{u.unitNo}</td>
       <td className="px-4 py-3 text-muted-foreground">{u.phone}</td>
       <td className="px-4 py-3 text-muted-foreground">{u.applicationDate}</td>
+      <td className="px-4 py-3 text-muted-foreground">{u.dateCaptured}</td>
+      <td className="px-4 py-3 text-primary underline">{u.createdBy}</td>
       <td className="px-4 py-3"><StageCell stage={u.jsiStatus} /></td>
       <td className="px-4 py-3"><StageCell stage={u.jsiApproval} /></td>
       <td className="px-4 py-3"><StageCell stage={u.planningRecommendation} /></td>
