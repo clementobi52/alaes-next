@@ -28,6 +28,7 @@ import {
   statusTone,
   landUseTone,
   type ApprovalStage,
+  type PrimaryApplication,
 } from '@/lib/sectional-titling-data'
 
 const OVERVIEW_CARDS = [
@@ -68,7 +69,13 @@ export default function PrimaryApplicationsPage() {
   useEffect(() => {
     fetch('/api/sectional-titling/primary-applications')
       .then((response) => response.json())
-      .then((payload) => { if (payload.ok && payload.applications.length) setApplications(payload.applications) })
+      .then((payload) => {
+        const records = Array.isArray(payload.applications) ? payload.applications : []
+        const usableRecords = records.filter((record: PrimaryApplication) =>
+          record.stFileNo || record.mlsFileNo || record.property || record.owner,
+        )
+        if (payload.ok && usableRecords.length) setApplications(usableRecords)
+      })
       .catch(() => undefined)
   }, [])
 
@@ -120,8 +127,8 @@ export default function PrimaryApplicationsPage() {
         {/* Table */}
         <SectionCard>
           <SectionHeader title="Primary Applications" description="Track each application through the approval pipeline" />
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[1200px] text-sm">
+          <div className="overflow-x-auto rounded-b-lg">
+            <table className="w-full min-w-[1400px] table-fixed text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-3 font-medium">ST FileNo</th>
@@ -163,7 +170,7 @@ export default function PrimaryApplicationsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        {a.passport ? <img src={a.passport} alt={`${a.owner} passport`} className="size-8 rounded-full object-cover" /> : <Avatar name={a.owner} />}
+                        {a.passport && (a.passport.startsWith('/') || a.passport.startsWith('http')) ? <img src={a.passport} alt={`${a.owner || 'Applicant'} passport`} onError={(event) => { event.currentTarget.style.display = 'none' }} className="size-8 shrink-0 rounded-full object-cover" /> : <Avatar name={a.owner || 'Applicant'} />}
                         <span className="max-w-[120px] truncate">{a.owner}</span>
                       </div>
                     </td>
