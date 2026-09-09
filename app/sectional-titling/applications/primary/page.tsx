@@ -9,14 +9,18 @@ import {
   Download,
   FilePlus,
   Eye,
+  Search,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { AppShell } from '@/components/app-shell'
+import { PrimaryApplicationForm } from '@/components/sectional-titling/primary-application-form'
 import {
   SectionCard,
   SectionHeader,
   StatusBadge,
   Avatar,
-  SelectInput,
 } from '@/components/system-admin/primitives'
 import {
   PRIMARY_STATS,
@@ -55,11 +59,19 @@ function StageCell({ stage }: { stage: ApprovalStage }) {
 
 export default function PrimaryApplicationsPage() {
   const [status, setStatus] = useState('')
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [showApplicationForm, setShowApplicationForm] = useState(false)
+  const pageSize = 10
 
-  const filtered = useMemo(() => {
-    if (!status) return PRIMARY_APPLICATIONS
-    return PRIMARY_APPLICATIONS.filter((a) => a.directorApproval.status === status)
-  }, [status])
+  const filtered = useMemo(() => PRIMARY_APPLICATIONS.filter((a) => {
+    const matchesStatus = !status || a.directorApproval.status === status
+    const query = search.trim().toLowerCase()
+    const matchesSearch = !query || [a.stFileNo, a.mlsFileNo, a.property, a.type, a.landUse, a.owner].some((value) => value.toLowerCase().includes(query))
+    return matchesStatus && matchesSearch
+  }), [status, search])
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const visibleApplications = filtered.slice((page - 1) * pageSize, page * pageSize)
 
   return (
     <AppShell
@@ -67,7 +79,16 @@ export default function PrimaryApplicationsPage() {
       subtitle="Applications from original property owners to initiate sectional titling."
       metrics={[]}
     >
-      <div className="space-y-6">
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }} className="h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"><option value="">All...</option><option>Approved</option><option>Pending</option><option>Declined</option></select>
+          <button type="button" className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-card px-3 text-sm text-foreground"><Download className="size-4" />Export<ChevronDown className="size-3" /></button>
+          <button type="button" onClick={() => setShowApplicationForm(true)} className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground"><FilePlus className="size-4" />New Primary Application<ChevronDown className="size-3" /></button>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex gap-2"><button type="button" className="rounded-sm border border-border bg-muted px-3 py-2 text-xs">Excel</button><button type="button" className="rounded-sm border border-border bg-muted px-3 py-2 text-xs">CSV</button><button type="button" className="rounded-sm border border-border bg-muted px-3 py-2 text-xs">PDF</button></div>
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">Search:<input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} className="h-9 rounded-md border border-border bg-card px-3 text-foreground" /></label>
+        </div>
         {/* Overview cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {OVERVIEW_CARDS.map((c) => (
@@ -90,43 +111,13 @@ export default function PrimaryApplicationsPage() {
 
         {/* Table */}
         <SectionCard>
-          <SectionHeader
-            title="Primary Applications"
-            description="Track each application through the approval pipeline"
-            actions={
-              <div className="flex items-center gap-2">
-                <SelectInput
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="h-9 w-36"
-                >
-                  <option value="">All Status</option>
-                  <option>Approved</option>
-                  <option>Pending</option>
-                  <option>Declined</option>
-                </SelectInput>
-                <button
-                  type="button"
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium transition-colors hover:bg-muted"
-                >
-                  <Download className="h-4 w-4" />
-                  Export
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-                >
-                  <FilePlus className="h-4 w-4" />
-                  New Primary Application
-                </button>
-              </div>
-            }
-          />
+          <SectionHeader title="Primary Applications" description="Track each application through the approval pipeline" />
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1200px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-3 font-medium">ST FileNo</th>
+                  <th className="px-4 py-3 font-medium">MLSFileNo</th>
                   <th className="px-4 py-3 font-medium">Property</th>
                   <th className="px-4 py-3 font-medium">Type</th>
                   <th className="px-4 py-3 font-medium">Land Use</th>
@@ -141,7 +132,7 @@ export default function PrimaryApplicationsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((a) => (
+                {visibleApplications.map((a) => (
                   <tr
                     key={a.stFileNo}
                     className="border-b border-border/60 last:border-0 align-top transition-colors hover:bg-muted/40"
@@ -150,6 +141,7 @@ export default function PrimaryApplicationsPage() {
                       <div className="font-medium text-primary">{a.stFileNo}</div>
                       <div className="text-xs text-muted-foreground">{a.mlsFileNo}</div>
                     </td>
+                    <td className="px-4 py-3 text-muted-foreground">{a.mlsFileNo}</td>
                     <td className="px-4 py-3">
                       <div className="max-w-[180px] truncate" title={a.property}>
                         {a.property}
@@ -206,8 +198,10 @@ export default function PrimaryApplicationsPage() {
               </tbody>
             </table>
           </div>
+          <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted-foreground"><span>Showing {filtered.length ? (page - 1) * pageSize + 1 : 0} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} entries</span><div className="flex items-center gap-1"><button type="button" disabled={page === 1} onClick={() => setPage((current) => Math.max(1, current - 1))} className="rounded-md px-2 py-1 hover:bg-muted disabled:opacity-40"><ChevronLeft className="size-4" /></button>{Array.from({ length: pageCount }, (_, index) => index + 1).map((item) => <button type="button" key={item} onClick={() => setPage(item)} className={`rounded-md px-3 py-1 ${item === page ? 'bg-muted font-semibold text-foreground' : 'hover:bg-muted'}`}>{item}</button>)}<button type="button" disabled={page === pageCount} onClick={() => setPage((current) => Math.min(pageCount, current + 1))} className="rounded-md px-2 py-1 hover:bg-muted disabled:opacity-40"><ChevronRight className="size-4" /></button></div></div>
         </SectionCard>
       </div>
+      {showApplicationForm && <PrimaryApplicationForm onClose={() => setShowApplicationForm(false)} />}
     </AppShell>
   )
 }
