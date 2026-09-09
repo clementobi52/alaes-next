@@ -79,7 +79,7 @@ export const NAV: NavModule[] = [
           { label: 'Upload Unindexed Files', href: '/dms/scanning?mode=unindexed' },
         ],
       },
-      { label: 'Document Page Types', children: leaves('PageTyping') },
+      { label: 'Document Page Types', children: [{ label: 'Page Typing', href: '/dms/page-typing' }] },
       { label: 'PT Quality Control' },
       { label: 'DMS Update', children: leaves('Scan More', 'More Pages') },
       { label: 'Activity Monitoring' },
