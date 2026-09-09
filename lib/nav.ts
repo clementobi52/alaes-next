@@ -258,14 +258,14 @@ export const NAV: NavModule[] = [
     children: [
       {
         label: 'Land',
-        children: leaves(
-          'Allocation List',
-          'Generate New FileNo (MLSFileNo)',
-          'New Applications (Existing OP)',
-          'Bill',
-          'Capture/Manage an Existing File',
-          'File Decommissioning',
-        ),
+        children: [
+          { label: 'Allocation List' },
+          { label: 'Generate New FileNo (MLSFileNo)', href: '/land/generate-new-fileno' },
+          { label: 'New Applications (Existing OP)' },
+          { label: 'Bill' },
+          { label: 'Capture/Manage an Existing File' },
+          { label: 'File Decommissioning' },
+        ],
       },
       {
         label: 'Letter of Grant (RofO)',
