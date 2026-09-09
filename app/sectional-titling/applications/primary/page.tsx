@@ -169,7 +169,7 @@ export default function PrimaryApplicationsPage() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className="rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-                        {a.units.allocated} of {a.units.total}
+                        {a.units?.allocated ?? 0} of {a.units?.total ?? 0}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{a.applicationDate}</td>
