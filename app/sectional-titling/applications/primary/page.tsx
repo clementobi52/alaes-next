@@ -140,9 +140,9 @@ export default function PrimaryApplicationsPage() {
                 </tr>
               </thead>
               <tbody>
-                {visibleApplications.map((a) => (
+                {visibleApplications.map((a, index) => (
                   <tr
-                    key={a.stFileNo}
+                    key={`${a.stFileNo || a.mlsFileNo || 'application'}-${index}`}
                     className="border-b border-border/60 last:border-0 align-top transition-colors hover:bg-muted/40"
                   >
                     <td className="px-4 py-3">
