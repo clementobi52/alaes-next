@@ -249,7 +249,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
   {
     stFileNo: 'ST-RES-2026-14', mlsFileNo: 'LUAC/AB/1/AB',
     property: 'Piece Of Land Ahmadu Bello Way, Umuahia', type: 'Fragmented Layout',
-    landUse: 'Residential', owner: 'Chukwuemeka Obi', units: { allocated: 0, total: 3 },
+    landUse: 'Residential', owner: 'Chukwuemeka Obi', passport: '/images/primary-applications/nigerian_chukwudi_nwosu.jpg', units: { allocated: 0, total: 3 },
     applicationDate: '2026-08-07', dateCreated: '2026-08-24', createdBy: 'NS Umar',
     jsiStatus: { status: 'Captured', date: '2026-08-26' },
     jsiApproval: { status: 'Approved', date: '2026-09-04' },
@@ -259,7 +259,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
   {
     stFileNo: 'ST-COM-2026-08', mlsFileNo: 'LUAC/AB/2/UM',
     property: 'Plaza Complex, Aba Road, Aba', type: 'Story Building',
-    landUse: 'Commercial', owner: 'Platinum Synergy Villas Ltd', units: { allocated: 4, total: 12 },
+    landUse: 'Commercial', owner: 'Platinum Synergy Villas Ltd', passport: '/images/primary-applications/nigerian_ifeoma_okeke.jpg', units: { allocated: 4, total: 12 },
     applicationDate: '2026-07-15', dateCreated: '2026-07-30', createdBy: 'AO Okoro',
     jsiStatus: { status: 'Captured', date: '2026-08-01' },
     jsiApproval: { status: 'Approved', date: '2026-08-10' },
@@ -269,7 +269,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
   {
     stFileNo: 'ST-RES-2026-11', mlsFileNo: 'LUM/3',
     property: 'Residential Estate, Ohuhu, Umuahia', type: 'Fragmented Layout',
-    landUse: 'Residential', owner: 'Ladan Trading Company Ltd', units: { allocated: 8, total: 8 },
+    landUse: 'Residential', owner: 'Ladan Trading Company Ltd', passport: '/images/primary-applications/nigerian_emeka_nnamdi.jpg', units: { allocated: 8, total: 8 },
     applicationDate: '2026-06-20', dateCreated: '2026-07-02', createdBy: 'EU Uche',
     jsiStatus: { status: 'Captured', date: '2026-07-05' },
     jsiApproval: { status: 'Approved', date: '2026-07-15' },
@@ -279,7 +279,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
   {
     stFileNo: 'ST-IND-2025-06', mlsFileNo: 'LABA/4',
     property: 'Industrial Layout, Osisioma, Aba', type: 'Warehouse Units',
-    landUse: 'Industrial', owner: 'Ngozi Adaeze', units: { allocated: 1, total: 2 },
+    landUse: 'Industrial', owner: 'Ngozi Adaeze', passport: '/images/primary-applications/nigerian_ezinne_nwoke.jpg', units: { allocated: 1, total: 2 },
     applicationDate: '2025-11-10', dateCreated: '2025-12-02', createdBy: 'UO Okonkwo',
     jsiStatus: { status: 'Captured', date: '2025-12-05' },
     jsiApproval: { status: 'Approved', date: '2025-12-18' },
@@ -289,7 +289,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
   {
     stFileNo: 'ST-MIX-2025-19', mlsFileNo: 'LUM/OH/5',
     property: 'Mixed-Use Development, Factory Road, Aba', type: 'Multi-Unit',
-    landUse: 'Mixed-Use', owner: 'Chief Binta Okwara', units: { allocated: 6, total: 10 },
+    landUse: 'Mixed-Use', owner: 'Chief Binta Okwara', passport: '/images/primary-applications/nigerian_ikenna_igwe.jpg', units: { allocated: 6, total: 10 },
     applicationDate: '2025-10-01', dateCreated: '2025-11-18', createdBy: 'AA Amaka',
     jsiStatus: { status: 'Captured', date: '2025-11-20' },
     jsiApproval: { status: 'Approved', date: '2025-12-01' },
