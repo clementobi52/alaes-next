@@ -13,6 +13,10 @@ export default function FileNoManagementPage() {
   const [commissionFileType, setCommissionFileType] = useState('')
   const [commissionOpen, setCommissionOpen] = useState(false)
   const [printRecord, setPrintRecord] = useState<string | null>(null)
+  const [batchPrintOpen, setBatchPrintOpen] = useState(false)
+  const [batchPrintDate, setBatchPrintDate] = useState('2026-09-09')
+  const [includeCommissioningSheets, setIncludeCommissioningSheets] = useState(true)
+  const [includeConversionApplications, setIncludeConversionApplications] = useState(false)
   const [actionRecord, setActionRecord] = useState<string | null>(null)
   const [schedule, setSchedule] = useState<FileNoSchedule>('Aba')
   const [prefix, setPrefix] = useState<FileNoPrefix>('LUAC/AB')
@@ -47,7 +51,7 @@ export default function FileNoManagementPage() {
 
           <div className="grid items-center gap-3 lg:grid-cols-[1fr_1.15fr_1.35fr_1.35fr_1.35fr]">
             <button type="button" onClick={() => setCommissionOpen(true)} className="flex min-h-10 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"><Plus className="size-5" /> <span className="max-w-40 text-pretty">Generate New File Number</span></button>
-            <button type="button" className="flex min-h-10 items-center justify-center gap-2 rounded-md bg-chart-2 px-3 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"><Printer className="size-5" /> <span className="max-w-52 text-pretty">Print Batch Commissioning Sheet</span></button>
+            <button type="button" onClick={() => setBatchPrintOpen(true)} className="flex min-h-10 items-center justify-center gap-2 rounded-md bg-chart-2 px-3 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"><Printer className="size-5" /> <span className="max-w-52 text-pretty">Print Batch Commissioning Sheet</span></button>
             <SummaryCard icon={FileCheck2} label="Total Commissioned" value="6,301" note="Excludes legacy" tone="blue" />
             <SummaryCard icon={CalendarDays} label="Commissioned Today" value="0" note="Sep 9, 2026" tone="green" />
             <SummaryCard icon={BarChart3} label="Commissioned This Month" value="96" note="September 2026" tone="violet" />
@@ -80,11 +84,19 @@ export default function FileNoManagementPage() {
           <section className="rounded-lg border border-border p-4"><div className="flex items-center justify-between"><p className="text-xs font-medium uppercase tracking-wider text-primary">⌖ Property Location Map</p><div className="flex gap-2"><button type="button" className="rounded-md border border-primary px-3 py-2 text-xs">Pin on Map</button><button type="button" className="rounded-md border border-border px-3 py-2 text-xs">Clear Pin</button></div></div><div className="mt-3 flex min-h-36 items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">No map pin yet. Pick an LGA to pin automatically, or click Pin on Map to set one manually.</div></section>
         </div>
       </Modal>
+      <Modal open={batchPrintOpen} onClose={() => setBatchPrintOpen(false)} title="Batch Print — Commissioning Sheets" description="Select a date to generate a multi-page PDF of sheets" widthClass="max-w-2xl" footer={<div className="flex justify-end gap-3 border-t border-border pt-5"><button type="button" onClick={() => setBatchPrintOpen(false)} className="rounded-lg border border-border px-5 py-2.5 text-sm">Cancel</button><button type="button" onClick={() => setBatchPrintOpen(false)} className="flex items-center gap-2 rounded-lg bg-chart-2 px-5 py-2.5 text-sm font-medium text-primary-foreground"><Printer className="size-4" /> Generate Selected Documents</button></div>}>
+        <div className="space-y-5 p-5"><Field label="Commissioning Date"><input type="date" value={batchPrintDate} onChange={(event) => setBatchPrintDate(event.target.value)} className="h-12 w-full rounded-lg border border-input bg-background px-4 text-base" /></Field><div className="grid gap-4 sm:grid-cols-3"><BatchPrintStat label="Total" value="5" tone="blue" /><BatchPrintStat label="Printed" value="1" tone="amber" /><BatchPrintStat label="Unprinted" value="4" tone="green" /></div><div className="rounded-lg border border-chart-2/40 bg-chart-2/10 px-4 py-3 text-sm text-chart-2">ⓘ Note: The 4 unprinted sheet(s) will be generated for this date.</div><div className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-primary">▧ Conversion (CON-) files: <strong>5 total, 0 printed, 5 awaiting an Application for Conversion.</strong></div><section><h3 className="mb-3 text-lg font-medium">Documents to generate</h3><div className="space-y-3"><label className="flex items-start gap-3 rounded-lg border border-border p-4"><input type="checkbox" checked={includeCommissioningSheets} onChange={(event) => setIncludeCommissioningSheets(event.target.checked)} className="mt-1 size-5 accent-primary" /><span><span className="block font-medium">Commissioning Sheets</span><span className="text-sm text-muted-foreground">The standard batch commissioning sheet for every file on this date.</span></span></label><label className="flex items-start gap-3 rounded-lg border border-border p-4"><input type="checkbox" checked={includeConversionApplications} onChange={(event) => setIncludeConversionApplications(event.target.checked)} className="mt-1 size-5 accent-primary" /><span><span className="block font-medium">Application for Conversion</span><span className="text-sm text-muted-foreground">For Conversion (CON-) files only. You will review the recipient LGA before it generates.</span></span></label></div></section></div>
+      </Modal>
       <Modal open={Boolean(printRecord)} onClose={() => setPrintRecord(null)} title="Printer Manager" description="" widthClass="max-w-xl" footer={<button type="button" onClick={() => setPrintRecord(null)} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-base font-medium text-primary-foreground"><Printer className="size-5" /> Print Original</button>}>
         <div className="space-y-6 p-5"><div className="rounded-lg bg-primary/10 px-4 py-3 text-center text-primary">File No: <strong>{printRecord}</strong></div><section><p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Select Printing Scope</p><div className="grid grid-cols-2 gap-2 rounded-xl bg-muted p-1"><button type="button" className="rounded-lg border-2 border-primary bg-background px-4 py-3 text-sm font-medium text-primary">FileText&nbsp; Single</button><button type="button" className="rounded-lg px-4 py-3 text-sm font-medium">Whole Batch</button></div></section><section><p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Document to Generate</p><SelectInput><option>Commissioning Sheet</option></SelectInput></section></div>
       </Modal>
     </AppShell>
   )
+}
+
+function BatchPrintStat({ label, value, tone }: { label: string; value: string; tone: 'blue' | 'amber' | 'green' }) {
+  const styles = { blue: 'border-primary/30 bg-primary/5 text-primary', amber: 'border-amber-300/60 bg-amber-50 text-amber-700', green: 'border-emerald-300/60 bg-emerald-50 text-emerald-700' }
+  return <div className={`rounded-lg border p-4 text-center ${styles[tone]}`}><p className="text-xs font-medium uppercase tracking-widest">{label}</p><p className="mt-2 text-3xl font-medium">{value}</p></div>
 }
 
 function SummaryCard({ icon: Icon, label, value, note, tone }: { icon: typeof FileCheck2; label: string; value: string; note: string; tone: 'blue' | 'green' | 'violet' }) {
