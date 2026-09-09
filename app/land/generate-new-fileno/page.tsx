@@ -44,7 +44,7 @@ export default function FileNoManagementPage() {
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[1.1fr_1.3fr_1.35fr_1.35fr_1.35fr]">
-            <button type="button" onClick={() => setCommissionOpen(true)} className="flex min-h-20 items-center justify-center gap-5 rounded-xl bg-primary px-6 text-xl font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"><Plus className="size-8" /> <span className="max-w-48 text-pretty">Generate New File Number</span></button>
+            <button type="button" onClick={() => setCommissionOpen(true)} className="flex min-h-10 items-center justify-center gap-5 rounded-xl bg-primary px-6 text-xl font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"><Plus className="size-8" /> <span className="max-w-48 text-pretty">Generate New File Number</span></button>
             <button type="button" className="flex min-h-20 items-center justify-center gap-5 rounded-xl bg-chart-2 px-6 text-xl font-medium text-primary-foreground shadow-sm transition hover:opacity-90"><Printer className="size-8" /> <span className="max-w-64 text-pretty">Print Batch Commissioning Sheet</span></button>
             <SummaryCard icon={FileCheck2} label="Total Commissioned" value="6,301" note="Excludes legacy" tone="blue" />
             <SummaryCard icon={CalendarDays} label="Commissioned Today" value="0" note="Sep 9, 2026" tone="green" />
