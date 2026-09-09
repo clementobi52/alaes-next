@@ -44,6 +44,7 @@
   .phs-search-slip .grid.grid-cols-2 { gap: 0.18in !important; }
   .phs-search-slip footer { margin-top: 0.35in !important; }
 
+.file-tracker-create-form label:has(input[name="fileNo"]) { display: none; }
 .file-tracker-create-form input, .file-tracker-create-form select, .file-tracker-create-form textarea { background: var(--card); color: var(--foreground); border-color: var(--border); }
 .file-tracker-create-form input:focus, .file-tracker-create-form select:focus, .file-tracker-create-form textarea:focus { border-color: var(--primary); outline: 2px solid color-mix(in srgb, var(--primary) 20%, transparent); }
 .file-tracker-create-form label { color: var(--foreground); }
@@ -62,6 +63,9 @@
   .legal-search-report .report-transaction-table th { padding-top: 2px !important; padding-bottom: 2px !important; }
   .legal-search-report button { display: none !important; }
 }
+.file-tracker-create-form label.space-y-1.text-sm:has(input[name="fileTrackingId"]) { display: none; }
+form label:has(input[name="fileTrackingId"]:not([readonly])), form label:has(input[placeholder="Auto-generated after saving"]) { display: none; }
+
 @import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));

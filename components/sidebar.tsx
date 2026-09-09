@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { ChevronDown, LogOut } from 'lucide-react'
 import { AlaesLogo } from '@/components/alaes-logo'
 import { NAV, findActiveChain, type NavModule, type NavNode } from '@/lib/nav'
@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils'
 
 export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () => void }) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const currentRoute = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname
 
   // Expanded group paths, keyed by full path so repeated labels never collide.
   const [expanded, setExpanded] = useState<Set<string>>(
@@ -24,7 +26,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () =
     if (chain.length) {
       setExpanded((prev) => new Set([...prev, ...chain]))
     }
-  }, [pathname])
+  }, [pathname, currentRoute])
 
   const toggle = (path: string) => {
     setExpanded((prev) => {
@@ -37,6 +39,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () =
 
   const shared: SharedProps = {
     pathname,
+    currentRoute,
     active,
     expanded,
     setActive,
@@ -89,6 +92,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () =
 
 type SharedProps = {
   pathname: string
+  currentRoute: string
   active: string
   expanded: Set<string>
   setActive: (path: string) => void
@@ -114,7 +118,7 @@ function Row({
 }) {
   if (href) {
     return (
-      <Link href={href} onClick={onNavigate} className={className} aria-current={isActive ? 'page' : undefined}>
+      <Link href={href} onClick={() => { onClick?.(); onNavigate?.() }} className={className} aria-current={isActive ? 'page' : undefined}>
         {children}
       </Link>
     )
@@ -127,11 +131,11 @@ function Row({
 }
 
 function ModuleItem({ module, ...shared }: { module: NavModule } & SharedProps) {
-  const { pathname, active, expanded, setActive, toggle, onNavigate } = shared
+  const { pathname, currentRoute, active, expanded, setActive, toggle, onNavigate } = shared
   const path = module.label
   const hasChildren = !!module.children?.length
   const isOpen = expanded.has(path)
-  const isActive = module.href ? pathname === module.href : active === path
+  const isActive = module.href ? currentRoute === module.href : active === path
 
   return (
     <li>
@@ -180,11 +184,11 @@ function NavBranch({
   parentPath,
   ...shared
 }: { node: NavNode; parentPath: string } & SharedProps) {
-  const { pathname, active, expanded, setActive, toggle, onNavigate } = shared
+  const { pathname, currentRoute, active, expanded, setActive, toggle, onNavigate } = shared
   const path = `${parentPath}/${node.label}`
   const hasChildren = !!node.children?.length
   const isOpen = expanded.has(path)
-  const isActive = node.href ? pathname === node.href : active === path
+  const isActive = node.href ? currentRoute === node.href : active === path
 
   return (
     <li>

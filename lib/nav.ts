@@ -109,7 +109,6 @@ export const NAV: NavModule[] = [
       { label: 'Track File', href: '/file-tracking?view=track' },
       { label: 'Quick Search', href: '/file-tracking?view=search' },
       { label: 'Log a File', href: '/file-tracking?view=log' },
-      { label: 'File Tracker Log', href: '/file-tracking?view=log-manager' },
       { label: 'Mobile Sync & Activity Logs', href: '/file-tracking?view=activity' },
     ],
   },
