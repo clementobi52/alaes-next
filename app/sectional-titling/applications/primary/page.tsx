@@ -15,6 +15,7 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { AppShell } from '@/components/app-shell'
+import { PrimaryApplicationForm } from '@/components/sectional-titling/primary-application-form'
 import {
   SectionCard,
   SectionHeader,
@@ -60,6 +61,7 @@ export default function PrimaryApplicationsPage() {
   const [status, setStatus] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [showApplicationForm, setShowApplicationForm] = useState(false)
   const pageSize = 10
 
   const filtered = useMemo(() => PRIMARY_APPLICATIONS.filter((a) => {
@@ -81,7 +83,7 @@ export default function PrimaryApplicationsPage() {
         <div className="flex flex-wrap items-center justify-end gap-2">
           <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }} className="h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"><option value="">All...</option><option>Approved</option><option>Pending</option><option>Declined</option></select>
           <button type="button" className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-card px-3 text-sm text-foreground"><Download className="size-4" />Export<ChevronDown className="size-3" /></button>
-          <button type="button" className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground"><FilePlus className="size-4" />New Primary Application<ChevronDown className="size-3" /></button>
+          <button type="button" onClick={() => setShowApplicationForm(true)} className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground"><FilePlus className="size-4" />New Primary Application<ChevronDown className="size-3" /></button>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-2"><button type="button" className="rounded-sm border border-border bg-muted px-3 py-2 text-xs">Excel</button><button type="button" className="rounded-sm border border-border bg-muted px-3 py-2 text-xs">CSV</button><button type="button" className="rounded-sm border border-border bg-muted px-3 py-2 text-xs">PDF</button></div>
@@ -199,6 +201,7 @@ export default function PrimaryApplicationsPage() {
           <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted-foreground"><span>Showing {filtered.length ? (page - 1) * pageSize + 1 : 0} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} entries</span><div className="flex items-center gap-1"><button type="button" disabled={page === 1} onClick={() => setPage((current) => Math.max(1, current - 1))} className="rounded-md px-2 py-1 hover:bg-muted disabled:opacity-40"><ChevronLeft className="size-4" /></button>{Array.from({ length: pageCount }, (_, index) => index + 1).map((item) => <button type="button" key={item} onClick={() => setPage(item)} className={`rounded-md px-3 py-1 ${item === page ? 'bg-muted font-semibold text-foreground' : 'hover:bg-muted'}`}>{item}</button>)}<button type="button" disabled={page === pageCount} onClick={() => setPage((current) => Math.min(pageCount, current + 1))} className="rounded-md px-2 py-1 hover:bg-muted disabled:opacity-40"><ChevronRight className="size-4" /></button></div></div>
         </SectionCard>
       </div>
+      {showApplicationForm && <PrimaryApplicationForm onClose={() => setShowApplicationForm(false)} />}
     </AppShell>
   )
 }
