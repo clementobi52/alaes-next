@@ -7,6 +7,7 @@ import { createFile, FileStatus, formatToday, getStatusTone, initialTrackedFiles
 import { CreateFileTracker } from '@/components/file-tracking/create-file-tracker'
 import { FileLogManager } from '@/components/file-tracking/file-log-manager'
 import { QuickSearchDashboard } from '@/components/file-tracking/quick-search-dashboard'
+import { TrackFileArchive } from '@/components/file-tracking/track-file-archive'
 
 const toneClasses: Record<string, string> = { green: 'bg-primary/10 text-primary border-primary/30', blue: 'bg-primary/10 text-primary border-primary/30', amber: 'bg-muted text-foreground border-border', slate: 'bg-muted text-muted-foreground border-border' }
 
@@ -16,7 +17,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) { return <div
 export function FileTrackingWorkspace() {
   const [files, setFiles] = useState(initialTrackedFiles)
   const [active, setActive] = useState<TrackedFile | null>(null)
-  const [view, setView] = useState<'dashboard' | 'search' | 'log' | 'log-manager'>('dashboard')
+  const [view, setView] = useState<'dashboard' | 'search' | 'track' | 'log' | 'log-manager'>('dashboard')
   const [requestMode, setRequestMode] = useState<'manual' | 'digital'>('manual')
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'All' | FileStatus>('All')
@@ -28,7 +29,8 @@ export function FileTrackingWorkspace() {
     if (!requested || requested === 'dashboard' || requested === 'activity') setView('dashboard')
     else if (requested === 'log') setView('log')
     else if (requested === 'log-manager') setView('log-manager')
-    else if (requested === 'search' || requested === 'track') setView('search')
+    else if (requested === 'search') setView('search')
+    else if (requested === 'track') setView('track')
     else setView('dashboard')
   }, [searchParams])
 
@@ -43,6 +45,7 @@ export function FileTrackingWorkspace() {
   if (view === 'log-manager') return <FileLogManager files={files} onRefresh={() => setFiles([...files])} onCreate={(mode = 'manual') => { setRequestMode(mode); setView('log') }} onUpdate={(updated) => setFiles((current) => current.map((file) => file.id === updated.id ? updated : file))} />
   if (active) return <FileDetails file={active} onBack={() => setActive(null)} onPrint={() => window.print()} />
   if (view === 'search') return <QuickSearchDashboard query={query} setQuery={setQuery} files={filtered} onSelect={setActive} onBack={() => setView('dashboard')} />
+  if (view === 'track') return <TrackFileArchive files={files} onSelect={setActive} />
 
   return <main className="min-h-screen bg-background p-6 lg:p-8"><div className="mx-auto max-w-[1440px] space-y-7"><header className="flex flex-col justify-between gap-4 md:flex-row md:items-center"><div><p className="text-sm font-medium text-primary">FILE TRACKING MODULE</p><h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">File Tracker Dashboard</h1><p className="mt-1 text-sm text-muted-foreground">Monitor, locate, and manage official file movements across departments.</p></div><div className="flex gap-3"><button onClick={() => setView('search')} className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm"><FileSearch className="size-4" /> Quick Search</button><button onClick={() => setView('log')} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"><FilePlus2 className="size-4" /> Log a File</button></div></header><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{stats.map(({ label, value, icon: Icon, color }) => <div key={label} className="rounded-xl border border-border bg-card p-5 shadow-sm"><div className="flex items-start justify-between"><div><p className="text-sm text-muted-foreground">{label}</p><p className="mt-2 text-3xl font-bold text-foreground">{value}</p></div><span className={`rounded-lg p-2.5 ${color}`}><Icon className="size-5" /></span></div></div>)}</div><section className="rounded-xl border border-border bg-card p-5 shadow-sm"><SectionTitle><span>Recent File Activity</span><button onClick={() => setView('search')} className="text-sm font-medium text-primary">View all files <ArrowRight className="ml-1 inline size-4" /></button></SectionTitle><div className="overflow-x-auto"><table className="w-full min-w-[780px] text-left text-sm"><thead><tr className="border-b border-border text-xs uppercase tracking-wide text-slate-400"><th className="pb-3 font-medium">File ID / Reference</th><th className="pb-3 font-medium">Subject</th><th className="pb-3 font-medium">Current Location</th><th className="pb-3 font-medium">Status</th><th className="pb-3 font-medium">Last Activity</th><th className="pb-3" /></tr></thead><tbody>{filtered.slice(0, 6).map((file) => <tr key={file.id} className="border-b border-slate-50 last:border-0"><td className="py-4"><button onClick={() => setActive(file)} className="text-left"><span className="block font-semibold text-primary">{file.id}</span><span className="font-mono text-xs text-slate-400">{file.reference}</span></button></td><td className="max-w-[280px] py-4 text-foreground">{file.subject}</td><td className="py-4"><span className="block text-foreground">{file.currentOffice}</span><span className="text-xs text-slate-400">{file.receivingOfficer}</span></td><td className="py-4"><StatusBadge status={file.status} /></td><td className="py-4 text-muted-foreground">{file.movement.at(-1)?.date}<span className="block text-xs text-slate-400">{file.movement.at(-1)?.time}</span></td><td className="py-4 text-right"><button onClick={() => setActive(file)} className="rounded-md px-3 py-1.5 text-xs font-semibold text-primary hover:bg-blue-50">View</button></td></tr>)}</tbody></table></div></section></div></main>
 }
