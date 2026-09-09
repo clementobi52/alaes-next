@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   FileText,
   CheckCircle2,
@@ -62,14 +62,22 @@ export default function PrimaryApplicationsPage() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [showApplicationForm, setShowApplicationForm] = useState(false)
+  const [applications, setApplications] = useState(PRIMARY_APPLICATIONS)
   const pageSize = 10
 
-  const filtered = useMemo(() => PRIMARY_APPLICATIONS.filter((a) => {
+  useEffect(() => {
+    fetch('/api/sectional-titling/primary-applications')
+      .then((response) => response.json())
+      .then((payload) => { if (payload.ok && payload.applications.length) setApplications(payload.applications) })
+      .catch(() => undefined)
+  }, [])
+
+  const filtered = useMemo(() => applications.filter((a) => {
     const matchesStatus = !status || a.directorApproval.status === status
     const query = search.trim().toLowerCase()
     const matchesSearch = !query || [a.stFileNo, a.mlsFileNo, a.property, a.type, a.landUse, a.owner].some((value) => value.toLowerCase().includes(query))
     return matchesStatus && matchesSearch
-  }), [status, search])
+  }), [status, search, applications])
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize))
   const visibleApplications = filtered.slice((page - 1) * pageSize, page * pageSize)
 
@@ -155,7 +163,7 @@ export default function PrimaryApplicationsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        <Avatar name={a.owner} />
+                        {a.passport ? <img src={a.passport} alt={`${a.owner} passport`} className="size-8 rounded-full object-cover" /> : <Avatar name={a.owner} />}
                         <span className="max-w-[120px] truncate">{a.owner}</span>
                       </div>
                     </td>

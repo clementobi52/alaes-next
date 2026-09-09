@@ -127,11 +127,11 @@ export type RecentApplication = {
 }
 
 export const RECENT_APPLICATIONS: RecentApplication[] = [
-  { fileNo: 'ABA-RC-1982-294', type: 'Mother', applicant: 'Chukwuemeka Obi', status: 'Pending' },
+  { fileNo: 'LUAC/AB/1/AB', type: 'Mother', applicant: 'Chukwuemeka Obi', status: 'Pending' },
   { fileNo: 'ABIA 5567', type: 'Mother', applicant: 'Platinum Synergy Villas Limited', status: 'Pending' },
-  { fileNo: 'UMU 1536', type: 'Mother', applicant: 'Ladan Trading Company Limited', status: 'Pending' },
-  { fileNo: 'ABA-RC-1982-663', type: 'Mother', applicant: 'Ngozi Adaeze', status: 'Approved' },
-  { fileNo: 'ABA-RC-1987-16', type: 'Mother', applicant: 'Chief Binta Okwara', status: 'Approved' },
+  { fileNo: 'LUM/3', type: 'Mother', applicant: 'Ladan Trading Company Limited', status: 'Pending' },
+  { fileNo: 'LABA/4', type: 'Mother', applicant: 'Ngozi Adaeze', status: 'Approved' },
+  { fileNo: 'LUM/OH/5', type: 'Mother', applicant: 'Chief Binta Okwara', status: 'Approved' },
   { fileNo: 'ST-COM-2026-4-001', type: 'Secondary', applicant: 'Dahiru Isa Umar', status: 'Pending' },
   { fileNo: 'ST-COM-2026-5-001', type: 'Secondary', applicant: 'Adaeze Amaka Nwosu', status: 'Pending' },
   { fileNo: 'ST-RES-2025-2-009', type: 'Secondary', applicant: 'Emeka Uche', status: 'Approved' },
@@ -163,11 +163,11 @@ export type FileNoRecord = {
 }
 
 export const FILENO_RECORDS: FileNoRecord[] = [
-  { sn: 1, stFileNo: 'ST-RES-2026-14', mlsFileNo: 'ABA-RC-1982-294', applicant: 'Chukwuemeka Obi', type: 'Primary', landUse: 'Residential', units: { allocated: 0, total: 3 }, year: 2026, commissioningDate: '2026-08-24', commissionedBy: 'NS Umar', status: 'Reserved' },
-  { sn: 2, stFileNo: 'ST-COM-2026-08', mlsFileNo: 'ABA 5567', applicant: 'Platinum Synergy Villas Ltd', type: 'Primary', landUse: 'Commercial', units: { allocated: 4, total: 12 }, year: 2026, commissioningDate: '2026-08-19', commissionedBy: 'AO Okoro', status: 'Generated' },
-  { sn: 3, stFileNo: 'ST-RES-2026-11', mlsFileNo: 'UMU 1536', applicant: 'Ladan Trading Company Ltd', type: 'SuA', landUse: 'Residential', units: { allocated: 8, total: 8 }, year: 2026, commissioningDate: '2026-07-30', commissionedBy: 'EU Uche', status: 'Generated' },
-  { sn: 4, stFileNo: 'ST-IND-2025-06', mlsFileNo: 'ABA-RC-1982-663', applicant: 'Ngozi Adaeze', type: 'PuA', landUse: 'Industrial', units: { allocated: 1, total: 2 }, year: 2025, commissioningDate: '2025-12-02', commissionedBy: 'UO Okonkwo', status: 'Reserved' },
-  { sn: 5, stFileNo: 'ST-MIX-2025-19', mlsFileNo: 'ABA-RC-1987-16', applicant: 'Chief Binta Okwara', type: 'Primary', landUse: 'Mixed-Use', units: { allocated: 6, total: 10 }, year: 2025, commissioningDate: '2025-11-18', commissionedBy: 'AA Amaka', status: 'Generated' },
+  { sn: 1, stFileNo: 'ST-RES-2026-14', mlsFileNo: 'LUAC/AB/1/AB', applicant: 'Chukwuemeka Obi', type: 'Primary', landUse: 'Residential', units: { allocated: 0, total: 3 }, year: 2026, commissioningDate: '2026-08-24', commissionedBy: 'NS Umar', status: 'Reserved' },
+  { sn: 2, stFileNo: 'ST-COM-2026-08', mlsFileNo: 'LUAC/AB/2/UM', applicant: 'Platinum Synergy Villas Ltd', type: 'Primary', landUse: 'Commercial', units: { allocated: 4, total: 12 }, year: 2026, commissioningDate: '2026-08-19', commissionedBy: 'AO Okoro', status: 'Generated' },
+  { sn: 3, stFileNo: 'ST-RES-2026-11', mlsFileNo: 'LUM/3', applicant: 'Ladan Trading Company Ltd', type: 'SuA', landUse: 'Residential', units: { allocated: 8, total: 8 }, year: 2026, commissioningDate: '2026-07-30', commissionedBy: 'EU Uche', status: 'Generated' },
+  { sn: 4, stFileNo: 'ST-IND-2025-06', mlsFileNo: 'LABA/4', applicant: 'Ngozi Adaeze', type: 'PuA', landUse: 'Industrial', units: { allocated: 1, total: 2 }, year: 2025, commissioningDate: '2025-12-02', commissionedBy: 'UO Okonkwo', status: 'Reserved' },
+  { sn: 5, stFileNo: 'ST-MIX-2025-19', mlsFileNo: 'LUM/OH/5', applicant: 'Chief Binta Okwara', type: 'Primary', landUse: 'Mixed-Use', units: { allocated: 6, total: 10 }, year: 2025, commissioningDate: '2025-11-18', commissionedBy: 'AA Amaka', status: 'Generated' },
   { sn: 6, stFileNo: 'ST-COM-2026-04', mlsFileNo: 'ST-COM-2026-4-001', applicant: 'Dahiru Isa Umar', type: 'SuA', landUse: 'Commercial', units: { allocated: 0, total: 5 }, year: 2026, commissioningDate: '2026-04-11', commissionedBy: 'NS Umar', status: 'Expired' },
   { sn: 7, stFileNo: 'ST-RES-2025-02', mlsFileNo: 'ST-RES-2025-2-009', applicant: 'Emeka Uche', type: 'PuA', landUse: 'Residential', units: { allocated: 9, total: 9 }, year: 2025, commissioningDate: '2025-02-27', commissionedBy: 'AO Okoro', status: 'Generated' },
   { sn: 8, stFileNo: 'ST-COM-2024-31', mlsFileNo: 'ABA 8821', applicant: 'Umuahia Mega Plaza Ltd', type: 'Primary', landUse: 'Commercial', units: { allocated: 18, total: 24 }, year: 2024, commissioningDate: '2024-09-05', commissionedBy: 'EU Uche', status: 'Generated' },
@@ -234,6 +234,7 @@ export type PrimaryApplication = {
   type: string
   landUse: LandUse
   owner: string
+  passport?: string | null
   units: { allocated: number; total: number }
   applicationDate: string
   dateCreated: string
@@ -246,7 +247,7 @@ export type PrimaryApplication = {
 
 export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
   {
-    stFileNo: 'ST-RES-2026-14', mlsFileNo: 'ABA-RC-1982-294',
+    stFileNo: 'ST-RES-2026-14', mlsFileNo: 'LUAC/AB/1/AB',
     property: 'Piece Of Land Ahmadu Bello Way, Umuahia', type: 'Fragmented Layout',
     landUse: 'Residential', owner: 'Chukwuemeka Obi', units: { allocated: 0, total: 3 },
     applicationDate: '2026-08-07', dateCreated: '2026-08-24', createdBy: 'NS Umar',
@@ -256,7 +257,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
     directorApproval: { status: 'Pending' },
   },
   {
-    stFileNo: 'ST-COM-2026-08', mlsFileNo: 'ABA 5567',
+    stFileNo: 'ST-COM-2026-08', mlsFileNo: 'LUAC/AB/2/UM',
     property: 'Plaza Complex, Aba Road, Aba', type: 'Story Building',
     landUse: 'Commercial', owner: 'Platinum Synergy Villas Ltd', units: { allocated: 4, total: 12 },
     applicationDate: '2026-07-15', dateCreated: '2026-07-30', createdBy: 'AO Okoro',
@@ -266,7 +267,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
     directorApproval: { status: 'Approved', date: '2026-08-20' },
   },
   {
-    stFileNo: 'ST-RES-2026-11', mlsFileNo: 'UMU 1536',
+    stFileNo: 'ST-RES-2026-11', mlsFileNo: 'LUM/3',
     property: 'Residential Estate, Ohuhu, Umuahia', type: 'Fragmented Layout',
     landUse: 'Residential', owner: 'Ladan Trading Company Ltd', units: { allocated: 8, total: 8 },
     applicationDate: '2026-06-20', dateCreated: '2026-07-02', createdBy: 'EU Uche',
@@ -276,7 +277,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
     directorApproval: { status: 'Pending' },
   },
   {
-    stFileNo: 'ST-IND-2025-06', mlsFileNo: 'ABA-RC-1982-663',
+    stFileNo: 'ST-IND-2025-06', mlsFileNo: 'LABA/4',
     property: 'Industrial Layout, Osisioma, Aba', type: 'Warehouse Units',
     landUse: 'Industrial', owner: 'Ngozi Adaeze', units: { allocated: 1, total: 2 },
     applicationDate: '2025-11-10', dateCreated: '2025-12-02', createdBy: 'UO Okonkwo',
@@ -286,7 +287,7 @@ export const PRIMARY_APPLICATIONS: PrimaryApplication[] = [
     directorApproval: { status: 'Approved', date: '2026-01-05' },
   },
   {
-    stFileNo: 'ST-MIX-2025-19', mlsFileNo: 'ABA-RC-1987-16',
+    stFileNo: 'ST-MIX-2025-19', mlsFileNo: 'LUM/OH/5',
     property: 'Mixed-Use Development, Factory Road, Aba', type: 'Multi-Unit',
     landUse: 'Mixed-Use', owner: 'Chief Binta Okwara', units: { allocated: 6, total: 10 },
     applicationDate: '2025-10-01', dateCreated: '2025-11-18', createdBy: 'AA Amaka',
