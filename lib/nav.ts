@@ -62,7 +62,7 @@ export const NAV: NavModule[] = [
       {
         label: 'Indexing',
         children: [
-          { label: 'File Indexing Assistant' },
+          { label: 'File Indexing Assistant', href: '/land/dms/file-indexing-assistant' },
           { label: 'File History View' },
           {
             label: 'File SerialNo Grouping',
