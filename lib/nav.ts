@@ -81,7 +81,7 @@ export const NAV: NavModule[] = [
       },
       { label: 'Document Page Types', children: [{ label: 'Page Typing', href: '/dms/page-typing' }] },
       { label: 'PT Quality Control' },
-      { label: 'DMS Update', children: leaves('Scan More', 'More Pages') },
+      { label: 'DMS Update', children: [{ label: 'Scan More', href: '/dms/update?mode=scan' }, { label: 'More Pages', href: '/dms/update?mode=type' }] },
       { label: 'Activity Monitoring' },
     ],
   },
@@ -91,7 +91,7 @@ export const NAV: NavModule[] = [
     icon: Archive,
     children: [
       { label: 'File Digital Library - Doc-WARE' },
-      { label: 'DMS Update', children: leaves('Scan More', 'Type More') },
+      { label: 'DMS Update', children: [{ label: 'Scan More', href: '/dms/update?mode=scan' }, { label: 'Type More', href: '/dms/update?mode=type' }] },
     ],
   },
 
