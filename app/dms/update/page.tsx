@@ -2,14 +2,14 @@
 
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-import { Camera, FileText, ScanLine, Type } from 'lucide-react'
+import { Camera, FileText } from 'lucide-react'
 
 const demoFiles = ['LUAC/AB/3518/AB', 'LUAC/AB/2894/UM', 'LUM/2893', 'LABA/2892', 'LUM/OH/2891']
 
 export default function DmsUpdatePage() {
   const searchParams = useSearchParams()
   const initialMode = searchParams.get('mode') === 'type' ? 'type' : 'scan'
-  const [mode, setMode] = useState<'scan' | 'type'>(initialMode)
+  const mode = initialMode
   const [fileNumber, setFileNumber] = useState(demoFiles[0])
   const [pages, setPages] = useState<File[]>([])
   const [saved, setSaved] = useState(false)
@@ -17,21 +17,10 @@ export default function DmsUpdatePage() {
   return (
     <main className="flex flex-col gap-6">
       <header>
-        <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">DMS</p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">DMS Update</h1>
-        <p className="mt-2 text-muted-foreground">Add additional scanned pages or type pages for an existing Abia State file.</p>
+        <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">DMS Update</p>
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight">{mode === 'scan' ? 'Scan More' : 'More Pages'}</h1>
+        <p className="mt-2 text-muted-foreground">{mode === 'scan' ? 'Add additional scanned pages to an existing Abia State file.' : 'Continue page typing for an existing Abia State file.'}</p>
       </header>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <button type="button" onClick={() => { setMode('scan'); setSaved(false) }} className={`rounded-xl border p-5 text-left transition-colors ${mode === 'scan' ? 'border-primary bg-primary/10' : 'border-border bg-card hover:bg-muted'}`}>
-          <div className="flex items-center gap-3"><ScanLine className="size-5 text-primary" /><span className="text-lg font-semibold">Scan More</span></div>
-          <p className="mt-2 text-sm text-muted-foreground">Add newly scanned pages to an existing digital file.</p>
-        </button>
-        <button type="button" onClick={() => { setMode('type'); setSaved(false) }} className={`rounded-xl border p-5 text-left transition-colors ${mode === 'type' ? 'border-primary bg-primary/10' : 'border-border bg-card hover:bg-muted'}`}>
-          <div className="flex items-center gap-3"><Type className="size-5 text-primary" /><span className="text-lg font-semibold">More Pages</span></div>
-          <p className="mt-2 text-sm text-muted-foreground">Continue page typing for pages added to an existing file.</p>
-        </button>
-      </div>
 
       <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-start gap-3"><div className="rounded-lg bg-primary/10 p-3 text-primary">{mode === 'scan' ? <Camera className="size-5" /> : <FileText className="size-5" />}</div><div><h2 className="text-xl font-semibold">{mode === 'scan' ? 'Scan More Pages' : 'Type More Pages'}</h2><p className="mt-1 text-sm text-muted-foreground">{mode === 'scan' ? 'Select the file and upload additional scanned pages.' : 'Select the file and continue classifying and typing its pages.'}</p></div></div>
