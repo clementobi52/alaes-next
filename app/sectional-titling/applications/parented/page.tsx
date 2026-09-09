@@ -6,10 +6,8 @@ import {
   Boxes,
   CheckCircle2,
   Clock,
-  ChevronRight,
   Download,
   Eye,
-  Building,
 } from 'lucide-react'
 import { AppShell } from '@/components/app-shell'
 import {
@@ -107,16 +105,7 @@ export default function ParentedUnitsPage() {
             }
           />
 
-          <div className="space-y-4">
-            {schemes.map((scheme) => (
-              <SchemeGroup key={scheme.schemeNo} scheme={scheme} />
-            ))}
-            {schemes.length === 0 && (
-              <p className="py-12 text-center text-muted-foreground">
-                No units match your filters.
-              </p>
-            )}
-          </div>
+          <ParentedUnitsTable schemes={schemes} />
         </SectionCard>
       </div>
     </AppShell>
@@ -142,44 +131,14 @@ function ApplicantCell({ name, image }: { name: string; image?: string }) {
   )
 }
 
-function SchemeGroup({ scheme }: { scheme: MotherScheme }) {
-  const [open, setOpen] = useState(true)
-  const approved = scheme.units.filter((u) => unitOverallStatus(u) === 'Approved').length
+function ParentedUnitsTable({ schemes }: { schemes: MotherScheme[] }) {
+  const units = schemes.flatMap((scheme) => scheme.units.map((unit) => ({ scheme, unit })))
+
+  if (!units.length) return <p className="py-12 text-center text-muted-foreground">No units match your filters.</p>
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        className="flex w-full items-center gap-4 bg-muted/40 px-4 py-3 text-left transition-colors hover:bg-muted/70"
-      >
-        <ChevronRight
-          className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? 'rotate-90' : ''}`}
-        />
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <Building className="h-4.5 w-4.5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-primary">{scheme.motherFileNo}</span>
-            <span className="text-xs text-muted-foreground">· {scheme.schemeNo}</span>
-          </div>
-          <div className="truncate text-xs text-muted-foreground">
-            {scheme.property} — {scheme.developer}
-          </div>
-        </div>
-        <StatusBadge tone={landUseTone(scheme.landUse)} dot={false}>
-          {scheme.landUse}
-        </StatusBadge>
-        <span className="hidden shrink-0 rounded-md bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground sm:inline">
-          {approved}/{scheme.units.length} approved · {scheme.totalUnits} total units
-        </span>
-      </button>
-
-      {open && (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1680px] table-fixed text-sm">
+    <div className="overflow-x-auto rounded-lg border border-border">
+      <table className="w-full min-w-[1680px] table-fixed text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="px-4 py-2.5 font-medium">Scheme No</th>
@@ -202,9 +161,9 @@ function SchemeGroup({ scheme }: { scheme: MotherScheme }) {
               </tr>
             </thead>
             <tbody>
-              {scheme.units.map((u) => (
+              {units.map(({ scheme, unit: u }, index) => (
                 <tr
-                  key={u.unitFileNo}
+                  key={`${u.unitFileNo || 'unit'}-${index}`}
                   className="border-b border-border/60 align-top transition-colors last:border-0 hover:bg-muted/40"
                 >
                   <td className="px-4 py-3 text-muted-foreground">{scheme.schemeNo}</td>
@@ -237,7 +196,5 @@ function SchemeGroup({ scheme }: { scheme: MotherScheme }) {
             </tbody>
           </table>
         </div>
-      )}
-    </div>
   )
 }
