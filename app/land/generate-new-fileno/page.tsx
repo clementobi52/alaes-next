@@ -44,8 +44,8 @@ export default function FileNoManagementPage() {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[1.25fr_1.45fr_1.25fr_1.25fr_1.25fr]">
-            <button type="button" onClick={() => setCommissionOpen(true)} className="flex min-h-28 items-center justify-center gap-4 rounded-xl bg-emerald-500 px-5 text-base font-normal text-primary-foreground shadow-sm transition hover:bg-emerald-600"><Plus className="size-8" /> <span className="max-w-48 text-pretty">Generate New File Number</span></button>
-            <button type="button" className="flex min-h-28 items-center justify-center gap-4 rounded-xl bg-amber-500 px-5 text-base font-normal text-primary-foreground shadow-sm transition hover:bg-amber-600"><Printer className="size-8" /> <span className="max-w-64 text-pretty">Print Batch Commissioning Sheet</span></button>
+            <button type="button" onClick={() => setCommissionOpen(true)} className="flex min-h-20 items-center justify-center gap-3 rounded-lg bg-emerald-500 px-4 text-sm font-normal text-primary-foreground shadow-sm transition hover:bg-emerald-600"><Plus className="size-8" /> <span className="max-w-48 text-pretty">Generate New File Number</span></button>
+            <button type="button" className="flex min-h-20 items-center justify-center gap-3 rounded-lg bg-amber-500 px-4 text-sm font-normal text-primary-foreground shadow-sm transition hover:bg-amber-600"><Printer className="size-8" /> <span className="max-w-64 text-pretty">Print Batch Commissioning Sheet</span></button>
             <SummaryCard icon={FileCheck2} label="Total Commissioned" value="6,301" note="Excludes legacy" tone="blue" />
             <SummaryCard icon={CalendarDays} label="Commissioned Today" value="0" note="Sep 9, 2026" tone="green" />
             <SummaryCard icon={BarChart3} label="Commissioned This Month" value="96" note="September 2026" tone="violet" />
