@@ -66,8 +66,8 @@ export default function ParentedUnitsPage() {
 
   return (
     <AppShell
-      title="Parented Unit Applications"
-      subtitle="Units claimed under a mother (primary) sectional titling scheme."
+      title="Parented Units"
+      subtitle="Manage and track all Parented Units"
       metrics={[]}
     >
       <div className="space-y-6">
@@ -123,6 +123,25 @@ export default function ParentedUnitsPage() {
   )
 }
 
+const applicantImages: Record<string, string> = {
+  'Emeka Uche': '/images/primary-applications/nigerian_emeka_nnamdi.jpg',
+  'Ada Amaka': '/images/primary-applications/nigerian_ifeoma_okeke.jpg',
+  'Uche Okonkwo': '/images/primary-applications/nigerian_ebuka_okonkwo.jpg',
+  'Ngozi Adaeze': '/images/primary-applications/nigerian_ezinne_nwoke.jpg',
+  'Chukwuemeka Obi': '/images/primary-applications/nigerian_chukwudi_nwosu.jpg',
+}
+
+function ApplicantCell({ name, image }: { name: string; image?: string }) {
+  return (
+    <div className="flex min-w-0 items-center gap-2">
+      {image ? (
+        <img src={image} alt="" className="size-7 shrink-0 rounded-full object-cover" onError={(event) => { event.currentTarget.style.display = 'none' }} />
+      ) : <Avatar name={name} />}
+      <span className="truncate text-xs">{name}</span>
+    </div>
+  )
+}
+
 function SchemeGroup({ scheme }: { scheme: MotherScheme }) {
   const [open, setOpen] = useState(true)
   const approved = scheme.units.filter((u) => unitOverallStatus(u) === 'Approved').length
@@ -160,14 +179,21 @@ function SchemeGroup({ scheme }: { scheme: MotherScheme }) {
 
       {open && (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1080px] text-sm">
+          <table className="w-full min-w-[1680px] table-fixed text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2.5 font-medium">Scheme No</th>
+                <th className="px-4 py-2.5 font-medium">NP FileNo</th>
                 <th className="px-4 py-2.5 font-medium">Unit FileNo</th>
-                <th className="px-4 py-2.5 font-medium">Unit No</th>
+                <th className="px-4 py-2.5 font-medium">Unit Type</th>
+                <th className="px-4 py-2.5 font-medium">Land Use</th>
+                <th className="px-4 py-2.5 font-medium">Original Owner</th>
                 <th className="px-4 py-2.5 font-medium">Unit Owner</th>
+                <th className="px-4 py-2.5 font-medium">Unit No</th>
                 <th className="px-4 py-2.5 font-medium">Phone</th>
                 <th className="px-4 py-2.5 font-medium">App Date</th>
+                <th className="px-4 py-2.5 font-medium">Date Captured</th>
+                <th className="px-4 py-2.5 font-medium">Created By</th>
                 <th className="px-4 py-2.5 font-medium">JSI Status</th>
                 <th className="px-4 py-2.5 font-medium">JSI Approval</th>
                 <th className="px-4 py-2.5 font-medium">Planning</th>
@@ -181,16 +207,18 @@ function SchemeGroup({ scheme }: { scheme: MotherScheme }) {
                   key={u.unitFileNo}
                   className="border-b border-border/60 align-top transition-colors last:border-0 hover:bg-muted/40"
                 >
-                  <td className="px-4 py-3 text-muted-foreground">{u.unitFileNo}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{scheme.schemeNo}</td>
+                  <td className="px-4 py-3 text-primary">{u.npFileNo}</td>
+                  <td className="px-4 py-3 text-primary">{u.unitFileNo}</td>
+                  <td className="px-4 py-3"><StatusBadge tone="blue" dot={false}>PUA</StatusBadge></td>
+                  <td className="px-4 py-3"><StatusBadge tone={landUseTone(u.landUse)} dot={false}>{u.landUse}</StatusBadge></td>
+                  <td className="px-4 py-3"><ApplicantCell name={scheme.developer} image={applicantImages[scheme.developer]} /></td>
+                  <td className="px-4 py-3"><ApplicantCell name={u.unitOwner} image={applicantImages[u.unitOwner]} /></td>
                   <td className="px-4 py-3 font-medium">{u.unitNo}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2.5">
-                      <Avatar name={u.unitOwner} />
-                      <span className="max-w-[140px] truncate">{u.unitOwner}</span>
-                    </div>
-                  </td>
                   <td className="px-4 py-3 text-muted-foreground">{u.phone}</td>
                   <td className="px-4 py-3 text-muted-foreground">{u.applicationDate}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{u.dateCaptured}</td>
+                  <td className="px-4 py-3 text-primary underline">{u.createdBy}</td>
                   <td className="px-4 py-3"><StageCell stage={u.jsiStatus} /></td>
                   <td className="px-4 py-3"><StageCell stage={u.jsiApproval} /></td>
                   <td className="px-4 py-3"><StageCell stage={u.planningRecommendation} /></td>
