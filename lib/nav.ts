@@ -261,7 +261,7 @@ export const NAV: NavModule[] = [
         children: [
           { label: 'Allocation List' },
           { label: 'Generate New FileNo (MLSFileNo)', href: '/land/generate-new-fileno' },
-          { label: 'New Applications (Existing OP)' },
+          { label: 'New Applications (Existing OP)', href: '/land/applications/existing-op' },
           { label: 'Bill' },
           { label: 'Capture/Manage an Existing File' },
           { label: 'File Decommissioning' },
