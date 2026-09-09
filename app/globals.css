@@ -63,6 +63,9 @@
   .legal-search-report .report-transaction-table th { padding-top: 2px !important; padding-bottom: 2px !important; }
   .legal-search-report button { display: none !important; }
 }
+.file-tracker-create-form label.space-y-1.text-sm:has(input[name="fileTrackingId"]) { display: none; }
+form label:has(input[name="fileTrackingId"]:not([readonly])), form label:has(input[placeholder="Auto-generated after saving"]) { display: none; }
+
 @import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
