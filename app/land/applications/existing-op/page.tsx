@@ -6,18 +6,18 @@ import { AppShell } from '@/components/app-shell'
 import { StatusBadge, Avatar } from '@/components/system-admin/primitives'
 
 const records = [
-  { file: 'RES-2026-3517', holder: 'BALA YUNUSA ABDULLAHI', type: 'RESIDENTIAL', location: '—', date: 'Sep 09, 2026' },
-  { file: 'CON-RES-2026-2894', holder: 'ADO IBRAHIM', type: 'COMMERCIAL', location: 'GWALE', date: 'Sep 09, 2026' },
-  { file: 'CON-RES-2026-2893', holder: 'KABIRU UBALE', type: 'COMMERCIAL', location: '—', date: 'Sep 09, 2026' },
-  { file: 'CON-RES-2026-2892', holder: 'MUJITTAFA BALARABE HAMZA', type: 'COMMERCIAL', location: '—', date: 'Sep 09, 2026' },
-  { file: 'CON-RES-2026-2891', holder: 'HARUNA BAKO MAI SHINKU', type: 'COMMERCIAL', location: '—', date: 'Sep 09, 2026' },
-  { file: 'CON-RES-2026-2890', holder: 'ALH. MUSA MAI LESHI', type: 'COMMERCIAL', location: 'GWALE', date: 'Sep 09, 2026' },
-  { file: 'CON-RES-2026-2889', holder: 'JAMILU IDRIS ABUBAKAR', type: 'COMMERCIAL', location: '—', date: 'Sep 08, 2026' },
-  { file: 'CON-RES-2026-2888', holder: 'JAMILU IDRIS ABUBAKAR', type: 'COMMERCIAL', location: '—', date: 'Sep 08, 2026' },
-  { file: 'COM-2026-330', holder: 'A .A RANO NIGERIA LIMITED', type: 'COMMERCIAL', location: '—', date: 'Sep 08, 2026' },
-  { file: 'CON-RES-2026-2887', holder: 'JAMILU IDRIS ABUBAKAR', type: 'COMMERCIAL', location: 'KUMBOTSO', date: 'Sep 08, 2026' },
-  { file: 'CON-RES-2026-2886', holder: 'ABDURRAHMAN IBRAHIM ABUBAKAR', type: 'COMMERCIAL', location: '—', date: 'Sep 08, 2026' },
-  { file: 'CON-RES-2026-2885', holder: 'SANI ABDUSSALAM', type: 'COMMERCIAL', location: 'GWALE', date: 'Sep 08, 2026' },
+  { file: 'LUAC/AB/03517/AB', holder: 'CHINEDU OKAFOR', type: 'RESIDENTIAL', location: 'Aba', date: 'Sep 09, 2026' },
+  { file: 'LUAC/AB/02894/UM', holder: 'NWACHUKWU EMEKA', type: 'COMMERCIAL', location: 'Umuahia', date: 'Sep 09, 2026' },
+  { file: 'LUM/02893', holder: 'OBINNA KALU', type: 'COMMERCIAL', location: 'Umuahia', date: 'Sep 09, 2026' },
+  { file: 'LABA/02892', holder: 'ADAOBI NNAJI', type: 'COMMERCIAL', location: 'Aba', date: 'Sep 09, 2026' },
+  { file: 'LUM/OH/02891', holder: 'KELVIN ONUORAH', type: 'COMMERCIAL', location: 'Ohafia', date: 'Sep 09, 2026' },
+  { file: 'LUAC/AB/02890/AB', holder: 'IFEOMA EZE', type: 'RESIDENTIAL', location: 'Aba', date: 'Sep 09, 2026' },
+  { file: 'LUAC/AB/02889/UM', holder: 'CHUKWUDI MBA', type: 'COMMERCIAL', location: 'Umuahia', date: 'Sep 08, 2026' },
+  { file: 'LUM/02888', holder: 'NGOZI NWANKWO', type: 'RESIDENTIAL', location: 'Umuahia', date: 'Sep 08, 2026' },
+  { file: 'LABA/02887', holder: 'KENECHUKWU OBI', type: 'COMMERCIAL', location: 'Aba', date: 'Sep 08, 2026' },
+  { file: 'LUM/OH/02886', holder: 'ADAURE NDUKA', type: 'COMMERCIAL', location: 'Ohafia', date: 'Sep 08, 2026' },
+  { file: 'LUAC/AB/02885/AB', holder: 'IKENNA ONUOHA', type: 'RESIDENTIAL', location: 'Aba', date: 'Sep 08, 2026' },
+  { file: 'LUAC/AB/02884/UM', holder: 'CHIAMAKA OKEZIE', type: 'COMMERCIAL', location: 'Umuahia', date: 'Sep 08, 2026' },
 ]
 
 const stats = [
