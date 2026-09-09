@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Brain, Check, FileText, FolderOpen, FolderPlus, Layers, Play, RefreshCw, Search, Sparkles, Upload } from 'lucide-react'
 import { AppShell } from '@/components/app-shell'
 import { Button } from '@/components/ui/button'
@@ -25,9 +26,10 @@ const files = [
 ]
 
 export default function FileIndexingAssistantPage() {
+  const searchParams = useSearchParams()
   const [selected, setSelected] = useState(['1'])
   const [query, setQuery] = useState('')
-  const [activeTab, setActiveTab] = useState('file-index')
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('view') === 'blind-scanning' ? 'blind-scanning' : 'file-index')
   const [newFileIndexOpen, setNewFileIndexOpen] = useState(false)
   const [progress, setProgress] = useState(0)
   const visibleFiles = useMemo(() => files.filter((file) => `${file.number} ${file.name}`.toLowerCase().includes(query.toLowerCase())), [query])

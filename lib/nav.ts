@@ -71,7 +71,7 @@ export const NAV: NavModule[] = [
         ],
       },
       { label: 'Print Sign In & Out Sheet' },
-      { label: 'Blind Scanning' },
+      { label: 'Blind Scanning', href: '/land/dms/file-indexing-assistant?view=blind-scanning' },
       {
         label: 'Scanning',
         children: leaves('Upload Indexed Files', 'Upload Unindexed Files'),
