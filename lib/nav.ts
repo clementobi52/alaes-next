@@ -74,7 +74,10 @@ export const NAV: NavModule[] = [
       { label: 'Blind Scanning', href: '/dms/blind-scanning' },
       {
         label: 'Scanning',
-        children: leaves('Upload Indexed Files', 'Upload Unindexed Files'),
+        children: [
+          { label: 'Upload Indexed Files', href: '/dms/scanning?mode=indexed' },
+          { label: 'Upload Unindexed Files', href: '/dms/scanning?mode=unindexed' },
+        ],
       },
       { label: 'Document Page Types', children: leaves('PageTyping') },
       { label: 'PT Quality Control' },
