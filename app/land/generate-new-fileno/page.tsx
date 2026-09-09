@@ -43,9 +43,9 @@ export default function FileNoManagementPage() {
             <button className="flex items-center gap-3 rounded-t-xl px-7 py-4 text-lg font-semibold text-muted-foreground hover:bg-background/70"><FileCheck2 className="size-6" /> Consolidated Report</button>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[1.1fr_1.3fr_1.35fr_1.35fr_1.35fr]">
-            <button type="button" onClick={() => setCommissionOpen(true)} className="flex min-h-10 items-center justify-center gap-5 rounded-xl bg-primary px-6 text-xl font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"><Plus className="size-8" /> <span className="max-w-48 text-pretty">Generate New File Number</span></button>
-            <button type="button" className="flex min-h-20 items-center justify-center gap-5 rounded-xl bg-chart-2 px-6 text-xl font-medium text-primary-foreground shadow-sm transition hover:opacity-90"><Printer className="size-8" /> <span className="max-w-64 text-pretty">Print Batch Commissioning Sheet</span></button>
+          <div className="grid gap-3 lg:grid-cols-[1fr_1.15fr_1.35fr_1.35fr_1.35fr]">
+            <button type="button" onClick={() => setCommissionOpen(true)} className="flex min-h-16 items-center justify-center gap-2 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"><Plus className="size-5" /> <span className="max-w-40 text-pretty">Generate New File Number</span></button>
+            <button type="button" className="flex min-h-16 items-center justify-center gap-2 rounded-lg bg-chart-2 px-3 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"><Printer className="size-5" /> <span className="max-w-52 text-pretty">Print Batch Commissioning Sheet</span></button>
             <SummaryCard icon={FileCheck2} label="Total Commissioned" value="6,301" note="Excludes legacy" tone="blue" />
             <SummaryCard icon={CalendarDays} label="Commissioned Today" value="0" note="Sep 9, 2026" tone="green" />
             <SummaryCard icon={BarChart3} label="Commissioned This Month" value="96" note="September 2026" tone="violet" />
