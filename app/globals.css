@@ -44,6 +44,7 @@
   .phs-search-slip .grid.grid-cols-2 { gap: 0.18in !important; }
   .phs-search-slip footer { margin-top: 0.35in !important; }
 
+.file-tracker-create-form label:has(input[name="fileNo"]) { display: none; }
 .file-tracker-create-form input, .file-tracker-create-form select, .file-tracker-create-form textarea { background: var(--card); color: var(--foreground); border-color: var(--border); }
 .file-tracker-create-form input:focus, .file-tracker-create-form select:focus, .file-tracker-create-form textarea:focus { border-color: var(--primary); outline: 2px solid color-mix(in srgb, var(--primary) 20%, transparent); }
 .file-tracker-create-form label { color: var(--foreground); }
