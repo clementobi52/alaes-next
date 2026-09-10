@@ -2,7 +2,7 @@ import { AppShell } from '@/components/app-shell'
 
 const records = [
   { reference: 'LABA/10482', type: 'Caveat', party: 'Ngozi Adaeze', amount: '—', status: 'Active', updated: '10 Sep 2026' },
-  { reference: 'LUM/01854', type: 'Mortgage', party: 'First Abia Bank Plc', amount: '₦18,500,000', status: 'Pending registration', updated: '09 Sep 2026' },
+  { reference: 'LUM/1854', type: 'Mortgage', party: 'First Abia Bank Plc', amount: '₦18,500,000', status: 'Pending registration', updated: '09 Sep 2026' },
   { reference: 'LUAC/AB/00127/AB', type: 'Surrender & Release', party: 'Emeka Uche', amount: '—', status: 'Released', updated: '08 Sep 2026' },
   { reference: 'LUM/OH/00319', type: 'Lien', party: 'Abia Development Fund', amount: '₦4,200,000', status: 'Active', updated: '07 Sep 2026' },
 ]
