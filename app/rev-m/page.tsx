@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AppShell } from '@/components/app-shell'
 
 const sections = ['Billing', 'Automated Billing', 'Legacy Billing', 'Generate Receipt', 'Land Use Charge (LUC)', 'Transaction Token Control'] as const
@@ -36,6 +36,11 @@ export default function RevMPage() {
   const [token, setToken] = useState('REV-AB-2026-000184')
   const [message, setMessage] = useState('')
   const total = useMemo(() => Number(amount || 0), [amount])
+  useEffect(() => {
+    const view = new URLSearchParams(window.location.search).get('view')
+    const viewMap: Record<string, Section> = { automated: 'Automated Billing', legacy: 'Legacy Billing', receipt: 'Generate Receipt', luc: 'Land Use Charge (LUC)', tokens: 'Transaction Token Control' }
+    if (view && viewMap[view]) setSection(viewMap[view])
+  }, [])
 
   return <AppShell title="ALAES REV-M" subtitle="Revenue management and payment control">
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
