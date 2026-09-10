@@ -211,7 +211,21 @@ export default function UserAccountsPage() {
     if (!form.name.trim() || !form.email.trim() || !form.username.trim() || !form.password.trim()) return
     setSaving(true)
     setSaveError('')
-    const passport = form.passport ? { name: form.passport.name, type: form.passport.type, data: await form.passport.arrayBuffer().then((buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer)))) } : null
+    const passport = form.passport
+      ? {
+          name: form.passport.name,
+          type: form.passport.type,
+          data: await form.passport.arrayBuffer().then((buffer) => {
+            const bytes = new Uint8Array(buffer)
+            const chunkSize = 0x8000
+            let binary = ''
+            for (let index = 0; index < bytes.length; index += chunkSize) {
+              binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize))
+            }
+            return btoa(binary)
+          }),
+        }
+      : null
     const response = await fetch('/api/system-admin/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
