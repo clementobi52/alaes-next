@@ -90,7 +90,7 @@ export const NAV: NavModule[] = [
     label: 'Digital File Archive',
     icon: Archive,
     children: [
-      { label: 'File Digital Library - Doc-WARE' },
+      { label: 'File Digital Library - Doc-WARE', href: '/digital-file-archive' },
       { label: 'DMS Update', children: [{ label: 'Scan More', href: '/dms/update?mode=scan' }, { label: 'Type More', href: '/dms/update?mode=type' }] },
     ],
   },
