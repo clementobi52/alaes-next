@@ -11,22 +11,36 @@ export default function SignInPage() {
   const [remember, setRemember] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const username = String(formData.get('username') ?? '').trim()
     const password = String(formData.get('password') ?? '')
+    setLoading(true)
+    setError('')
+    setSubmitted(false)
 
-    if (username === 'admin' && password === 'admin123') {
-      setError('')
+    try {
+      const response = await fetch('/api/auth/sign-in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      })
+      const result = await response.json()
+      if (!response.ok) {
+        setError(result.error ?? 'Unable to sign in.')
+        return
+      }
       setSubmitted(true)
       router.push('/')
-      return
+      router.refresh()
+    } catch {
+      setError('Unable to connect to the sign-in service.')
+    } finally {
+      setLoading(false)
     }
-
-    setSubmitted(false)
-    setError('Demo sign-in failed. Use username admin and password admin123.')
   }
 
   return (
@@ -61,7 +75,7 @@ export default function SignInPage() {
               <p className="mb-3 text-sm font-medium uppercase tracking-[0.18em] text-primary">Welcome back</p>
               <h2 className="text-3xl font-semibold tracking-tight">Sign in to ALAES</h2>
               <p className="mt-3 leading-6 text-muted-foreground">Enter your username and password to access your workspace.</p>
-              <p className="mt-3 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">Demo access: <span className="font-medium text-foreground">admin</span> / <span className="font-medium text-foreground">admin123</span></p>
+              <p className="mt-3 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">Sign in with an account from the ALAES users table.</p>
             </div>
             <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
               <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="username">
@@ -83,7 +97,7 @@ export default function SignInPage() {
                 <label className="flex items-center gap-2 text-muted-foreground"><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} className="size-4 accent-primary" />Remember me</label>
                 <button type="button" className="font-medium text-primary hover:underline">Forgot password?</button>
               </div>
-              <Button type="submit" className="h-12 w-full text-sm font-semibold">Sign in <ArrowRight data-icon="inline-end" /></Button>
+              <Button type="submit" disabled={loading} className="h-12 w-full text-sm font-semibold">{loading ? 'Signing in…' : 'Sign in'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
               {error && <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
               {submitted && <p role="status" className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Demo sign-in successful. You can now preview the authenticated workspace flow.</p>}
             </form>
