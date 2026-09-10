@@ -265,7 +265,7 @@ export const NAV: NavModule[] = [
       },
       {
         label: 'Letter of Grant (RofO)',
-        children: leaves('Land Recommendation', 'RofO', 'Re-grant Files'),
+        children: [{ label: 'Land Recommendation' }, { label: 'RofO', href: '/land/rofo' }, { label: 'Re-grant Files' }],
       },
       {
         label: 'File History',
