@@ -144,12 +144,12 @@ export const NAV: NavModule[] = [
   {
     label: 'Information Products (RofO)',
     icon: Info,
-    children: leaves(
-      'Letter of Grant/RofO',
-      'Occupancy Permit (OP)',
-      'Site Plan/Parcel Plan',
-      'Certificate of Occupancy',
-    ),
+    children: [
+      { label: 'Letter of Grant/RofO', href: '/information-products' },
+      { label: 'Occupancy Permit (OP)', href: '/information-products?product=op' },
+      { label: 'Site Plan/Parcel Plan', href: '/information-products?product=site-plan' },
+      { label: 'Certificate of Occupancy', href: '/information-products?product=cofo' },
+    ],
   },
 
   {
