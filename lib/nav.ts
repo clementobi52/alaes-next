@@ -156,10 +156,10 @@ export const NAV: NavModule[] = [
     label: 'ALAES REV-M',
     icon: Database,
     children: [
-      { label: 'Billing', children: leaves('Automated Billing', 'Legacy Billing') },
-      { label: 'Generate Receipt' },
-      { label: 'Land Use Charge (LUC)' },
-      { label: 'Transaction Token Control' },
+      { label: 'Billing', children: [{ label: 'Automated Billing', href: '/land/rev-m' }, { label: 'Legacy Billing' }] },
+      { label: 'Generate Receipt', href: '/land/rev-m?view=receipt' },
+      { label: 'Land Use Charge (LUC)', href: '/land/rev-m?view=luc' },
+      { label: 'Transaction Token Control', href: '/land/rev-m?view=tokens' },
     ],
   },
 
