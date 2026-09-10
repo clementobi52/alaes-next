@@ -136,7 +136,11 @@ export default function UserAccountsPage() {
           !q ||
           u.name.toLowerCase().includes(q) ||
           u.username.toLowerCase().includes(q) ||
-          u.email.toLowerCase().includes(q)
+          u.email.toLowerCase().includes(q) ||
+          (u.phoneNumber ?? '').toLowerCase().includes(q) ||
+          u.department.toLowerCase().includes(q) ||
+          (u.userType ?? '').toLowerCase().includes(q) ||
+          (u.rank ?? '').toLowerCase().includes(q)
         const matchesRole = role === 'all' || u.role === role
         const matchesStatus = status === 'all' || u.status === status
         return matchesQuery && matchesRole && matchesStatus
@@ -311,7 +315,7 @@ export default function UserAccountsPage() {
             <SearchBar
               value={query}
               onChange={setQuery}
-              placeholder="Search by name or email…"
+              placeholder="Search name, username, email, phone…"
               className="lg:max-w-sm lg:flex-1"
             />
             <div className="flex gap-3">
@@ -333,15 +337,17 @@ export default function UserAccountsPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-sm">
+            <table className="w-full min-w-[1080px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-5 py-3 font-medium">User</th>
                   <th className="px-5 py-3 font-medium">Department</th>
+                  <th className="px-5 py-3 font-medium">User type / rank</th>
                   <th className="px-5 py-3 font-medium">Role</th>
                   <th className="px-5 py-3 font-medium">Status</th>
+                  <th className="px-5 py-3 font-medium">Contact</th>
+                  <th className="px-5 py-3 font-medium">Access & leave</th>
                   <th className="px-5 py-3 font-medium">Last active</th>
-                  <th className="px-5 py-3 font-medium">Account details</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -358,24 +364,33 @@ export default function UserAccountsPage() {
                       </div>
                     </td>
                     <td className="px-5 py-3 text-muted-foreground">{u.department}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{u.role}</td>
+                    <td className="px-5 py-3">
+                      <p className="font-medium text-foreground">{u.userType || 'Staff'}</p>
+                      <p className="text-xs text-muted-foreground">{u.rank || 'Rank not assigned'}</p>
+                    </td>
+                    <td className="px-5 py-3 text-muted-foreground">
+                      <p>{u.role}</p>
+                      {u.roles?.length ? <p className="mt-1 text-xs text-muted-foreground">{u.roles.length} assigned role{u.roles.length === 1 ? '' : 's'}</p> : null}
+                    </td>
                     <td className="px-5 py-3">
                       <StatusBadge tone={STATUS_TONE[u.status]}>
                         {STATUS_LABEL[u.status]}
                       </StatusBadge>
                     </td>
-                    <td className="px-5 py-3 text-muted-foreground">{u.lastActive}</td>
-                    <td className="max-w-[260px] px-5 py-3 text-xs text-muted-foreground">
-                      <div className="flex flex-wrap gap-1.5">
-                        {u.phoneNumber && <span>{u.phoneNumber}</span>}
-                        {u.userType && <span>{u.userType}</span>}
-                        {u.rank && <span>{u.rank}</span>}
-                        {u.pcAccess && <span>PC access</span>}
-                        {u.onLeave && <span>On leave</span>}
-                        {u.roles?.length ? <span>{u.roles.length} assigned role{u.roles.length === 1 ? '' : 's'}</span> : null}
-                        {u.passportName && <span>Passport attached</span>}
+                    <td className="px-5 py-3 text-xs text-muted-foreground">
+                      <p>{u.phoneNumber || 'No phone number'}</p>
+                      <p className="mt-1 truncate max-w-[190px]">{u.email}</p>
+                    </td>
+                    <td className="px-5 py-3 text-xs text-muted-foreground">
+                      <div className="flex max-w-[220px] flex-wrap gap-1.5">
+                        {u.pcAccess && <StatusBadge tone="blue">PC access</StatusBadge>}
+                        {u.onLeave && <StatusBadge tone="amber">On leave</StatusBadge>}
+                        {!u.onLeave && <StatusBadge tone="green">Available</StatusBadge>}
+                        {u.passportName && <StatusBadge tone="violet">Passport</StatusBadge>}
+                        {u.actions && Object.values(u.actions).some(Boolean) && <StatusBadge tone="blue">Permissions</StatusBadge>}
                       </div>
                     </td>
+                    <td className="px-5 py-3 text-muted-foreground">{u.lastActive}</td>
                     <td className="px-5 py-3 text-right">
                       <div className="relative inline-block">
                         <button
@@ -416,7 +431,7 @@ export default function UserAccountsPage() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-5 py-12 text-center text-muted-foreground">
+                    <td colSpan={9} className="px-5 py-12 text-center text-muted-foreground">
                       No accounts match your filters.
                     </td>
                   </tr>
