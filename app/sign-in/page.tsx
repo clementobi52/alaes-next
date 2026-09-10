@@ -8,10 +8,22 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [remember, setRemember] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setSubmitted(true)
+    const formData = new FormData(event.currentTarget)
+    const username = String(formData.get('username') ?? '').trim()
+    const password = String(formData.get('password') ?? '')
+
+    if (username === 'admin' && password === 'admin123') {
+      setError('')
+      setSubmitted(true)
+      return
+    }
+
+    setSubmitted(false)
+    setError('Demo sign-in failed. Use username admin and password admin123.')
   }
 
   return (
@@ -46,6 +58,7 @@ export default function SignInPage() {
               <p className="mb-3 text-sm font-medium uppercase tracking-[0.18em] text-primary">Welcome back</p>
               <h2 className="text-3xl font-semibold tracking-tight">Sign in to ALAES</h2>
               <p className="mt-3 leading-6 text-muted-foreground">Enter your username and password to access your workspace.</p>
+              <p className="mt-3 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">Demo access: <span className="font-medium text-foreground">admin</span> / <span className="font-medium text-foreground">admin123</span></p>
             </div>
             <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
               <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="username">
@@ -68,7 +81,8 @@ export default function SignInPage() {
                 <button type="button" className="font-medium text-primary hover:underline">Forgot password?</button>
               </div>
               <Button type="submit" className="h-12 w-full text-sm font-semibold">Sign in <ArrowRight data-icon="inline-end" /></Button>
-              {submitted && <p role="status" className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Your sign-in form is ready. Authentication will be connected to the MSSQL tables when they are provided.</p>}
+              {error && <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
+              {submitted && <p role="status" className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Demo sign-in successful. You can now preview the authenticated workspace flow.</p>}
             </form>
             <p className="mt-10 text-center text-xs leading-5 text-muted-foreground">By signing in, you agree to use ALAES in accordance with official access and security policies.</p>
           </div>
