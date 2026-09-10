@@ -181,6 +181,7 @@ export const NAV: NavModule[] = [
           { label: 'Instrument Capture (New Records)', href: '/deeds-registration/instrument-capture' },
           { label: 'Instrument Registration (New Registration)', href: '/deeds-registration/instrument-registration' },
           { label: 'Instrument Registration Reports' },
+          { label: 'Deeds Batch Registration', href: '/deeds-registration/batch-registration' },
         ],
       },
       {
