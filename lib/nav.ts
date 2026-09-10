@@ -186,7 +186,12 @@ export const NAV: NavModule[] = [
       },
       {
         label: 'Encumbrance Management',
-        children: leaves('Caveat', 'Mortgage', 'Surrender & Release', 'Lien'),
+        children: [
+        { label: 'Caveat', href: '/deeds/encumbrance-management?type=caveat' },
+        { label: 'Mortgage', href: '/deeds/encumbrance-management?type=mortgage' },
+        { label: 'Surrender & Release', href: '/deeds/encumbrance-management?type=release' },
+        { label: 'Lien', href: '/deeds/encumbrance-management?type=lien' },
+      ],
       },
       {
         label: 'Parcel/Title Management',
