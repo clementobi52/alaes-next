@@ -307,7 +307,7 @@ export const NAV: NavModule[] = [
         ],
       },
       { label: 'EDMS Update' },
-      { label: 'LAAS Portal', children: leaves('Applications', 'Applicants') },
+      { label: 'LAAS Portal', children: [{ label: 'Applications', href: '/laas-admin' }, { label: 'Applicants', href: '/laas-admin?view=applicants' }] },
     ],
   },
 
