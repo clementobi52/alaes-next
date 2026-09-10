@@ -169,11 +169,11 @@ export const NAV: NavModule[] = [
     children: [
       {
         label: 'PRA',
-        children: leaves(
-          'PRA & PIC User Output Tracking',
-          'Property Records Assistant (Legacy Records)',
-          'AI PRA (File Transactions)',
-        ),
+        children: [
+          { label: 'PRA & PIC User Output Tracking' },
+          { label: 'Property Records Assistant (Legacy Records)', href: '/deeds/pra/property-records' },
+          { label: 'AI PRA (File Transactions)' },
+        ],
       },
       {
         label: 'Deeds Registration',
