@@ -1,10 +1,12 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ArrowRight, Eye, EyeOff, LockKeyhole, UserRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function SignInPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [remember, setRemember] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -19,6 +21,7 @@ export default function SignInPage() {
     if (username === 'admin' && password === 'admin123') {
       setError('')
       setSubmitted(true)
+      router.push('/')
       return
     }
 
