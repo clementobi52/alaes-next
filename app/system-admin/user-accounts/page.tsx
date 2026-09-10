@@ -112,6 +112,8 @@ export default function UserAccountsPage() {
   const [showAllRoles, setShowAllRoles] = useState(false)
   const [form, setForm] = useState<CreateUserForm>(emptyForm)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
   const set = <K extends keyof CreateUserForm>(key: K, value: CreateUserForm[K]) =>
@@ -133,6 +135,7 @@ export default function UserAccountsPage() {
         const matchesQuery =
           !q ||
           u.name.toLowerCase().includes(q) ||
+          u.username.toLowerCase().includes(q) ||
           u.email.toLowerCase().includes(q)
         const matchesRole = role === 'all' || u.role === role
         const matchesStatus = status === 'all' || u.status === status
@@ -204,21 +207,54 @@ export default function UserAccountsPage() {
     }
   }
 
-  function addUser() {
+  async function addUser() {
     if (!form.name.trim() || !form.email.trim() || !form.username.trim() || !form.password.trim()) return
+    setSaving(true)
+    setSaveError('')
+    const passport = form.passport ? { name: form.passport.name, type: form.passport.type, data: await form.passport.arrayBuffer().then((buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer)))) } : null
+    const response = await fetch('/api/system-admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, passport }),
+    })
+    const result = await response.json()
+    if (!response.ok) {
+      setSaveError(result.error ?? 'Unable to create user.')
+      setSaving(false)
+      return
+    }
     const roleLabel = form.roles[0] ?? (form.userType || 'Records Clerk')
     setUsers((prev) => [
       {
         id: `u${Date.now()}`,
         name: form.name.trim(),
         email: form.email.trim(),
+        username: form.username.trim(),
+        emailVerifiedAt: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         department: form.department,
         role: roleLabel,
         status: form.onLeave ? 'invited' : 'active',
         lastActive: 'Just now',
+        phoneNumber: form.phoneNumber.trim(),
+        userType: form.userType || undefined,
+        rank: form.rank.trim(),
+        actions: form.actions,
+        roles: form.roles,
+        pcAccess: form.pcAccess,
+        onLeave: form.onLeave,
+        leaveStart: form.leaveStart,
+        leaveEnd: form.leaveEnd,
+        deputy: form.deputy.trim(),
+        leaveReason: form.leaveReason.trim(),
+        oooFrom: form.oooFrom,
+        oooTo: form.oooTo,
+        passportName: form.passport?.name,
       },
       ...prev,
     ])
+    setSaving(false)
     closeModal()
   }
 
@@ -291,6 +327,7 @@ export default function UserAccountsPage() {
                   <th className="px-5 py-3 font-medium">Role</th>
                   <th className="px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 font-medium">Last active</th>
+                  <th className="px-5 py-3 font-medium">Account details</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -302,7 +339,7 @@ export default function UserAccountsPage() {
                         <Avatar name={u.name} />
                         <div className="min-w-0">
                           <p className="truncate font-medium text-foreground">{u.name}</p>
-                          <p className="truncate text-xs text-muted-foreground">{u.email}</p>
+                          <p className="truncate text-xs text-muted-foreground">@{u.username} · {u.email}</p>
                         </div>
                       </div>
                     </td>
@@ -314,6 +351,17 @@ export default function UserAccountsPage() {
                       </StatusBadge>
                     </td>
                     <td className="px-5 py-3 text-muted-foreground">{u.lastActive}</td>
+                    <td className="max-w-[260px] px-5 py-3 text-xs text-muted-foreground">
+                      <div className="flex flex-wrap gap-1.5">
+                        {u.phoneNumber && <span>{u.phoneNumber}</span>}
+                        {u.userType && <span>{u.userType}</span>}
+                        {u.rank && <span>{u.rank}</span>}
+                        {u.pcAccess && <span>PC access</span>}
+                        {u.onLeave && <span>On leave</span>}
+                        {u.roles?.length ? <span>{u.roles.length} assigned role{u.roles.length === 1 ? '' : 's'}</span> : null}
+                        {u.passportName && <span>Passport attached</span>}
+                      </div>
+                    </td>
                     <td className="px-5 py-3 text-right">
                       <div className="relative inline-block">
                         <button
@@ -354,7 +402,7 @@ export default function UserAccountsPage() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-5 py-12 text-center text-muted-foreground">
+                    <td colSpan={7} className="px-5 py-12 text-center text-muted-foreground">
                       No accounts match your filters.
                     </td>
                   </tr>
@@ -376,11 +424,12 @@ export default function UserAccountsPage() {
             <Button variant="outline" onClick={closeModal}>
               Cancel
             </Button>
-            <Button onClick={addUser}>Create</Button>
+            <Button onClick={addUser} disabled={saving}>{saving ? 'Saving…' : 'Create'}</Button>
           </>
         }
-      >
-        <div className="flex flex-col gap-5">
+  >
+  {saveError && <p role="alert" className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{saveError}</p>}
+  <div className="flex flex-col gap-5">
           {/* Passport photo - UPDATED with preview and file management */}
           <div>
             <h4 className="text-sm font-semibold text-foreground">Passport Photo</h4>

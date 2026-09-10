@@ -10,10 +10,29 @@ export type StaffUser = {
   id: string
   name: string
   email: string
+  username: string
+  passwordHash?: string
+  emailVerifiedAt: string | null
+  createdAt: string
+  updatedAt: string
   department: string
   role: string
   status: UserStatus
   lastActive: string
+  phoneNumber?: string
+  userType?: string
+  rank?: string
+  actions?: Record<'create' | 'view' | 'update' | 'delete', boolean>
+  roles?: string[]
+  pcAccess?: boolean
+  onLeave?: boolean
+  leaveStart?: string
+  leaveEnd?: string
+  deputy?: string
+  leaveReason?: string
+  oooFrom?: string
+  oooTo?: string
+  passportName?: string
 }
 
 export type Department = {
@@ -110,14 +129,20 @@ export const DEPARTMENTS: Department[] = [
 ]
 
 export const USERS: StaffUser[] = [
-  { id: 'u1', name: 'Adaeze Okoro', email: 'a.okoro@alaes.ab.gov.ng', department: 'Land Registry', role: 'Senior Land Registrar', status: 'active', lastActive: '2 min ago' },
-  { id: 'u2', name: 'Emeka Uche', email: 'e.uche@alaes.ab.gov.ng', department: 'Deeds & Instruments', role: 'Deeds Officer', status: 'active', lastActive: '18 min ago' },
-  { id: 'u3', name: 'Uche Okonkwo', email: 'u.okonkwo@alaes.ab.gov.ng', department: 'Survey & GIS', role: 'Survey Officer', status: 'active', lastActive: '1 hr ago' },
-  { id: 'u4', name: 'Ada Amaka', email: 'a.amaka@alaes.ab.gov.ng', department: 'Legal Search', role: 'Legal Search Officer', status: 'active', lastActive: '3 hr ago' },
-  { id: 'u5', name: 'Ngozi Adaeze', email: 'n.adaeze@alaes.ab.gov.ng', department: 'Revenue (REV-M)', role: 'Revenue Officer', status: 'suspended', lastActive: '2 days ago' },
-  { id: 'u6', name: 'Chukwuemeka Obi', email: 'c.obi@alaes.ab.gov.ng', department: 'Land Registry', role: 'Records Clerk', status: 'active', lastActive: '25 min ago' },
-  { id: 'u7', name: 'Chukwueze John', email: 'c.john@alaes.ab.gov.ng', department: 'ICT / System Admin', role: 'System Administrator', status: 'active', lastActive: 'Online now' },
-  { id: 'u8', name: 'Ifeoma Nwosu', email: 'i.nwosu@alaes.ab.gov.ng', department: 'Deeds & Instruments', role: 'Records Clerk', status: 'invited', lastActive: 'Never' },
+  {
+    id: '1',
+    name: 'Admin',
+    email: 'admin@alaes.com',
+    username: 'admin',
+    passwordHash: '$2y$12$qVwUwPwOCPDLt.zm2w7MZu8tjv3Foq4bYIlf7ZY4MDCUoefHU367.',
+    emailVerifiedAt: null,
+    createdAt: '2026-09-06 02:47:58.707',
+    updatedAt: '2026-09-06 02:47:58.707',
+    department: 'ICT / System Admin',
+    role: 'System Administrator',
+    status: 'active',
+    lastActive: 'Online now',
+  },
 ]
 
 const fullPerm = (v: boolean) => ({ view: v, create: v, edit: v, delete: v })
