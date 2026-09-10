@@ -263,10 +263,59 @@ export const NAV: NavModule[] = [
           { label: 'Generate New FileNo (MLSFileNo)', href: '/land/generate-new-fileno' },
           { label: 'New Applications (Existing OP)', href: '/land/applications/existing-op' },
           { label: 'Bill' },
-          { label: 'Capture/Manage an Existing File' },
+          { label: 'Capture/Manage an Existing File', href: '/land/dms/file-indexing-assistant' },
           { label: 'File Decommissioning' },
         ],
       },
+      {
+        label: 'Letter of Grant (RofO)',
+        children: [
+          { label: 'Land Recommendation' },
+          { label: 'RofO', href: '/land/rofo' },
+          { label: 'Re-grant Files' },
+        ],
+      },
+      {
+        label: 'File History',
+        children: [
+          { label: 'History View' },
+          { label: 'Related Files' },
+          { label: 'File Search', children: [{ label: 'Scans', href: '/dms/scanning' }] },
+        ],
+      },
+      { label: 'Problem Files' },
+      {
+        label: 'Digital Archive',
+        children: [
+          { label: 'File Tracker Dashboard', href: '/file-tracking' },
+          { label: 'File Tracker (Archive)', href: '/file-tracking?view=archive' },
+          { label: 'Quick Search', href: '/file-tracking?view=search' },
+          { label: 'Log a File', href: '/file-tracking?view=log' },
+          { label: 'File Digital Library – Doc-WARE' },
+          { label: 'DMS Update', href: '/dms/update?mode=scan' },
+        ],
+      },
+      {
+        label: 'Parcel/Title Management',
+        children: [
+          { label: 'Change of Purpose' },
+          { label: 'Loss of Document' },
+          { label: 'Temporary File' },
+          {
+            label: 'Parcel Update - New',
+            children: [
+              { label: 'Plot Subdivision' },
+              { label: 'Plot Merger' },
+              { label: 'Plot Extension' },
+              { label: 'Plot Separation' },
+            ],
+          },
+          { label: 'Parcel Update - Legacy' },
+          { label: 'Title Status Update' },
+        ],
+      },
+      { label: 'EDMS Update' },
+      { label: 'LAAS Portal', href: '/laas-admin' },
     ],
   },
 
