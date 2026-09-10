@@ -264,55 +264,9 @@ export const NAV: NavModule[] = [
           { label: 'New Applications (Existing OP)', href: '/land/applications/existing-op' },
           { label: 'Bill' },
           { label: 'Capture/Manage an Existing File' },
-          { label: 'Land File Commissioning', href: '/land/commissioning' },
           { label: 'File Decommissioning' },
         ],
       },
-      {
-        label: 'Letter of Grant (RofO)',
-        children: [{ label: 'Land Recommendation' }, { label: 'RofO', href: '/land/rofo' }, { label: 'Re-grant Files' }],
-      },
-      {
-        label: 'File History',
-        children: [
-          { label: 'History View' },
-          { label: 'Related Files' },
-          { label: 'File Search', children: leaves('Scans') },
-        ],
-      },
-      { label: 'Problem Files' },
-      {
-        label: 'Digital Archive',
-        children: leaves(
-          'File Tracker Dashboard',
-          'File Tracker (Archive)',
-          'Quick Search',
-          'Log a File',
-          'File Digital Library – Doc-WARE',
-          'DMS Update',
-        ),
-      },
-      {
-        label: 'Parcel/Title Management',
-        children: [
-          { label: 'Change of Purpose' },
-          { label: 'Loss of Document' },
-          { label: 'Temporary File' },
-          {
-            label: 'Parcel Update - New',
-            children: leaves(
-              'Plot Subdivision',
-              'Plot Merger',
-              'Plot Extension',
-              'Plot Separation',
-              'Parcel Update - Legacy',
-            ),
-          },
-          { label: 'Title Status Update' },
-        ],
-      },
-      { label: 'EDMS Update' },
-      { label: 'LAAS Portal', children: [{ label: 'Applications', href: '/laas-admin' }, { label: 'Applicants', href: '/laas-admin?view=applicants' }] },
     ],
   },
 
