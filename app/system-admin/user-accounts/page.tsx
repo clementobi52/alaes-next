@@ -133,6 +133,7 @@ export default function UserAccountsPage() {
         const matchesQuery =
           !q ||
           u.name.toLowerCase().includes(q) ||
+          u.username.toLowerCase().includes(q) ||
           u.email.toLowerCase().includes(q)
         const matchesRole = role === 'all' || u.role === role
         const matchesStatus = status === 'all' || u.status === status
@@ -212,6 +213,10 @@ export default function UserAccountsPage() {
         id: `u${Date.now()}`,
         name: form.name.trim(),
         email: form.email.trim(),
+        username: form.username.trim(),
+        emailVerifiedAt: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         department: form.department,
         role: roleLabel,
         status: form.onLeave ? 'invited' : 'active',
@@ -302,7 +307,7 @@ export default function UserAccountsPage() {
                         <Avatar name={u.name} />
                         <div className="min-w-0">
                           <p className="truncate font-medium text-foreground">{u.name}</p>
-                          <p className="truncate text-xs text-muted-foreground">{u.email}</p>
+                          <p className="truncate text-xs text-muted-foreground">@{u.username} · {u.email}</p>
                         </div>
                       </div>
                     </td>
