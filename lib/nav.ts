@@ -179,7 +179,7 @@ export const NAV: NavModule[] = [
         label: 'Deeds Registration',
         children: [
           { label: 'Instrument Capture (New Records)', href: '/deeds-registration/instrument-capture' },
-          { label: 'Instrument Registration (New Registration)' },
+          { label: 'Instrument Registration (New Registration)', href: '/deeds-registration/instrument-registration' },
           { label: 'Instrument Registration Reports' },
         ],
       },
