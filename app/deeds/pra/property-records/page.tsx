@@ -5,10 +5,10 @@ import { AppShell } from '@/components/app-shell'
 import { CalendarDays, Database, FilePlus2, MapPin, Search, UserRound, X } from 'lucide-react'
 
   const initialRecords = [
-    { fileNo: 'AB/RES/2020/1234', particulars: 'Vol 12 / Page 45', type: 'Deed of Assignment', party1: 'Chinedu Okafor', party2: 'Ngozi Nwankwo', location: 'Plot 15, Umuahia GRA', date: '2024-01-16', by: 'Admin' },
-    { fileNo: 'AB/COM/2019/5678', particulars: 'Vol 8 / Page 112', type: 'Deed of Lease', party1: 'Ibeku Traders Ltd', party2: 'Emeka Eze', location: 'Shop 22, Ariaria Market, Aba', date: '2024-02-23', by: 'Chika O.' },
-    { fileNo: 'AB/TEMP/0007', particulars: '—', type: 'Power of Attorney', party1: 'Obinna Umeh', party2: 'Adaeze Okorie', location: 'Plot 3, Olokoro, Umuahia', date: '2026-09-08', by: 'Admin' },
-    { fileNo: 'AB/IND/2025/0891', particulars: 'Vol 21 / Page 3', type: 'Deed of Mortgage', party1: 'Aba Industrial Ventures Ltd', party2: 'First Bank Plc', location: 'Osisioma Industrial Layout, Aba', date: '2025-11-02', by: 'Ifeanyi N.' },
+    { fileNo: 'LUAC/2020/1234', particulars: 'Vol 12 / Page 45', type: 'Deed of Assignment', party1: 'Chinedu Okafor', party2: 'Ngozi Nwankwo', location: 'Plot 15, Umuahia GRA', date: '2024-01-16', by: 'Admin' },
+    { fileNo: 'LABA/2019/5678', particulars: 'Vol 8 / Page 112', type: 'Deed of Lease', party1: 'Ibeku Traders Ltd', party2: 'Emeka Eze', location: 'Shop 22, Ariaria Market, Aba', date: '2024-02-23', by: 'Chika O.' },
+    { fileNo: 'LUM/0007', particulars: '—', type: 'Power of Attorney', party1: 'Obinna Umeh', party2: 'Adaeze Okorie', location: 'Plot 3, Olokoro, Umuahia', date: '2026-09-08', by: 'Admin' },
+    { fileNo: 'LUAC/2025/0891', particulars: 'Vol 21 / Page 3', type: 'Deed of Mortgage', party1: 'Aba Industrial Ventures Ltd', party2: 'First Bank Plc', location: 'Osisioma Industrial Layout, Aba', date: '2025-11-02', by: 'Ifeanyi N.' },
   ]
 
 const typeTone = (type: string) => type.includes('Assignment') ? 'bg-primary/10 text-primary' : type.includes('Lease') ? 'bg-emerald-500/10 text-emerald-700' : type.includes('Mortgage') ? 'bg-violet-500/10 text-violet-700' : 'bg-amber-500/10 text-amber-700'
