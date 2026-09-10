@@ -5,8 +5,8 @@
 .receipt-section { border-bottom: 2px dashed #999; padding-bottom: 0.14in; margin-bottom: 0.14in; font-size: 10px; }
 .receipt-section:last-child { border-bottom: 0; margin-bottom: 0; }
 .receipt-header { display: grid; grid-template-columns: 64px 1fr 112px; align-items: center; gap: 12px; border-bottom: 1px solid #222; padding-bottom: 6px; }
-.receipt-seal { display: flex; width: 56px; height: 56px; align-items: center; justify-content: center; border: 1px solid #999; border-radius: 999px; text-align: center; font-size: 8px; font-weight: 700; color: #555; }
-.receipt-logo { display: flex; width: 48px; height: 48px; align-items: center; justify-content: center; border: 2px solid #c00; border-radius: 999px; background: #12346b; color: #fff; text-align: center; font-size: 7px; font-weight: 700; }
+.receipt-seal { display: block; width: 56px; height: 56px; object-fit: contain; }
+.receipt-logo { display: block; width: 48px; height: 48px; object-fit: contain; }
 .receipt-barcode { width: 96px; height: 20px; overflow: hidden; background: #000; color: #fff; font-size: 12px; line-height: 20px; letter-spacing: -2px; }
 .receipt-info { display: grid; grid-template-columns: repeat(3, 1fr); margin: 8px 0; border: 1px solid #222; }
 .receipt-info span { border-right: 1px solid #222; border-bottom: 1px solid #222; padding: 4px; }

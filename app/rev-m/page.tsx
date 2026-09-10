@@ -18,9 +18,9 @@ const sample = {
 function ReceiptSection({ label }: { label: 'ORIGINAL' | 'COPY' }) {
   return <section className="receipt-section">
     <header className="receipt-header">
-      <div className="receipt-seal">COAT<br />OF ARMS</div>
+      <img className="receipt-seal object-contain" src="/images/abia-state--logo.png" alt="Abia State Government logo" />
       <div className="text-center font-bold leading-tight"><p className="text-[10px] text-red-700">REVENUE COLLECTOR&apos;S RECEIPT</p><p className="text-[10px]">MINISTRY OF LANDS AND SURVEY</p><p className="text-[11px] text-blue-800">ABIA STATE GEOGRAPHIC INFORMATION SYSTEM (ABIAGIS)</p><p className="mt-1 tracking-widest text-red-700">{label}</p></div>
-      <div className="flex flex-col items-end gap-1"><div className="receipt-barcode">||||||||||||||||||||</div><div className="receipt-logo">ABIAGIS<br />LOGO</div></div>
+      <div className="flex flex-col items-end gap-1"><div className="receipt-barcode">||||||||||||||||||||</div><img className="receipt-logo object-contain" src="/images/abiagis-emblem.png" alt="ABIAGIS emblem" /></div>
     </header>
     <div className="receipt-info"><span>File Number: <b>{sample.fileNumber}</b></span><span>Bank: <b>{sample.bank}</b></span><span>Payment Date: <b>15-May-2026</b></span><span>Payment ID: <b>{sample.paymentId}</b></span><span>Assessment Number: <b>{sample.assessment}</b></span><span>Receipt Date: <b>15-May-2026</b></span></div>
     <div className="receipt-body"><p><b>Received from</b> <strong>{sample.payer}</strong></p><p><b>the sum of</b> Eighteen Thousand One Hundred and Twenty Five Naira Only</p><p><b>being payment for</b> Land Use Charge</p></div>
