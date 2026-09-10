@@ -258,6 +258,7 @@ export const NAV: NavModule[] = [
           { label: 'New Applications (Existing OP)', href: '/land/applications/existing-op' },
           { label: 'Bill' },
           { label: 'Capture/Manage an Existing File' },
+          { label: 'Land File Commissioning', href: '/land/commissioning' },
           { label: 'File Decommissioning' },
         ],
       },
