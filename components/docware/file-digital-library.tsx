@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { Archive, ChevronLeft, ChevronRight, Download, Eye, FileText, FolderOpen, Plus, Search, Share2, Star, X } from 'lucide-react'
 
-const scannedArchivePdf = 'https://blobs.vusercontent.net/blob/PAL%20645-kctlDtvX9FcfYNT6JPNNGVPBLdAD3p.pdf'
+const scannedArchivePdf = '/docware/pal-645.pdf'
 
 const files = [
   { id: 'FILE-2023-001', name: 'Alhaji Ibrahim Dantata', number: 'PAL/645', kangis: 'KNGP 00338', newKangis: 'KNO001', type: 'Certificate of Occupancy', size: '2.4 MB', format: 'PDF', date: '12 Mar 2026', accessed: 'Today, 09:42', by: 'System Admin', tags: ['Land Records', 'Residential'], pages: 6 },
