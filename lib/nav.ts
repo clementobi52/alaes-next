@@ -66,7 +66,7 @@ export const NAV: NavModule[] = [
           { label: 'File History View' },
           {
             label: 'File SerialNo Grouping',
-            children: leaves('SerialNo Grouping', 'Print Files Label'),
+            children: [{ label: 'SerialNo Grouping', href: '/land/dms/grouping' }, { label: 'Print File Label', href: '/land/dms/print-file-label' }],
           },
         ],
       },
@@ -144,12 +144,12 @@ export const NAV: NavModule[] = [
   {
     label: 'Information Products (RofO)',
     icon: Info,
-    children: leaves(
-      'Letter of Grant/RofO',
-      'Occupancy Permit (OP)',
-      'Site Plan/Parcel Plan',
-      'Certificate of Occupancy',
-    ),
+    children: [
+      { label: 'Letter of Grant/RofO', href: '/information-products' },
+      { label: 'Occupancy Permit (OP)', href: '/information-products?product=op' },
+      { label: 'Site Plan/Parcel Plan', href: '/information-products?product=site-plan' },
+      { label: 'Certificate of Occupancy', href: '/information-products?product=cofo' },
+    ],
   },
 
   {
@@ -181,11 +181,17 @@ export const NAV: NavModule[] = [
           { label: 'Instrument Capture (New Records)', href: '/deeds-registration/instrument-capture' },
           { label: 'Instrument Registration (New Registration)', href: '/deeds-registration/instrument-registration' },
           { label: 'Instrument Registration Reports' },
+          { label: 'Deeds Batch Registration', href: '/deeds-registration/batch-registration' },
         ],
       },
       {
         label: 'Encumbrance Management',
-        children: leaves('Caveat', 'Mortgage', 'Surrender & Release', 'Lien'),
+        children: [
+        { label: 'Caveat', href: '/deeds/encumbrance-management?type=caveat' },
+        { label: 'Mortgage', href: '/deeds/encumbrance-management?type=mortgage' },
+        { label: 'Surrender & Release', href: '/deeds/encumbrance-management?type=release' },
+        { label: 'Lien', href: '/deeds/encumbrance-management?type=lien' },
+      ],
       },
       {
         label: 'Parcel/Title Management',
@@ -221,7 +227,7 @@ export const NAV: NavModule[] = [
           { label: 'Legal Search Reports' },
         ],
       },
-      { label: 'Transaction Token Control' },
+      { label: 'Transaction Token Control', href: '/legal-search/token-control' },
       {
         label: 'Online Legal Search',
         children: [
@@ -258,12 +264,13 @@ export const NAV: NavModule[] = [
           { label: 'New Applications (Existing OP)', href: '/land/applications/existing-op' },
           { label: 'Bill' },
           { label: 'Capture/Manage an Existing File' },
+          { label: 'Land File Commissioning', href: '/land/commissioning' },
           { label: 'File Decommissioning' },
         ],
       },
       {
         label: 'Letter of Grant (RofO)',
-        children: leaves('Land Recommendation', 'RofO', 'Re-grant Files'),
+        children: [{ label: 'Land Recommendation' }, { label: 'RofO', href: '/land/rofo' }, { label: 'Re-grant Files' }],
       },
       {
         label: 'File History',
@@ -305,7 +312,7 @@ export const NAV: NavModule[] = [
         ],
       },
       { label: 'EDMS Update' },
-      { label: 'LAAS Portal', children: leaves('Applications', 'Applicants') },
+      { label: 'LAAS Portal', children: [{ label: 'Applications', href: '/laas-admin' }, { label: 'Applicants', href: '/laas-admin?view=applicants' }] },
     ],
   },
 
