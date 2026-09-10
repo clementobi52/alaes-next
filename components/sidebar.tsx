@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ChevronDown, LogOut } from 'lucide-react'
 import { AlaesLogo } from '@/components/alaes-logo'
 import { NAV, findActiveChain, type NavModule, type NavNode } from '@/lib/nav'
@@ -10,7 +10,14 @@ import { cn } from '@/lib/utils'
 
 export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () => void }) {
   const pathname = usePathname()
+  const router = useRouter()
   const searchParams = useSearchParams()
+
+  const handleSignOut = async () => {
+    await fetch('/api/auth/sign-out', { method: 'POST' })
+    router.replace('/sign-in')
+    router.refresh()
+  }
   const currentRoute = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname
 
   // Expanded group paths, keyed by full path so repeated labels never collide.
@@ -81,6 +88,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () =
         <button
           type="button"
           aria-label="Sign out"
+          onClick={handleSignOut}
           className="flex h-9 w-9 items-center justify-center rounded-lg text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-destructive"
         >
           <LogOut className="h-[18px] w-[18px]" />
