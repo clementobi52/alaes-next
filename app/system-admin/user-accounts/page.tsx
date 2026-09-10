@@ -128,7 +128,7 @@ export default function UserAccountsPage() {
           leaveStart: String(user.leave_start ?? ''), leaveEnd: String(user.leave_end ?? ''),
           deputy: String(user.deputy ?? ''), leaveReason: String(user.leave_reason ?? ''),
           oooFrom: String(user.out_of_office_from ?? ''), oooTo: String(user.out_of_office_to ?? ''),
-          passportName: String(user.passport_name ?? ''),
+          passportName: String(user.passport_name ?? ''), passportType: String(user.passport_type ?? ''), passportUrl: user.passport_name ? `/api/system-admin/users/${String(user.id)}/passport` : '',
         }))
         setUsers(mapped)
       })
@@ -372,7 +372,8 @@ export default function UserAccountsPage() {
             <table className="w-full min-w-[1080px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                  <th className="px-5 py-3 font-medium">User</th>
+                  <th className="px-5 py-3 font-medium">Passport</th>
+  <th className="px-5 py-3 font-medium">User</th>
                   <th className="px-5 py-3 font-medium">Department</th>
                   <th className="px-5 py-3 font-medium">User type / rank</th>
                   <th className="px-5 py-3 font-medium">Role</th>
@@ -386,9 +387,12 @@ export default function UserAccountsPage() {
               <tbody>
                 {filtered.map((u) => (
                   <tr key={u.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar name={u.name} />
+<td className="px-5 py-3">
+  {u.passportUrl ? <img src={u.passportUrl} alt={`${u.name} passport photograph`} className="size-12 rounded-lg border border-border object-cover" /> : <div className="flex size-12 items-center justify-center rounded-lg border border-dashed border-border text-[10px] text-muted-foreground">No photo</div>}
+  </td>
+  <td className="px-5 py-3">
+  <div className="flex items-center gap-3">
+  <Avatar name={u.name} />
                         <div className="min-w-0">
                           <p className="truncate font-medium text-foreground">{u.name}</p>
                           <p className="truncate text-xs text-muted-foreground">@{u.username} · {u.email}</p>

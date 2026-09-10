@@ -33,6 +33,8 @@ export type StaffUser = {
   oooFrom?: string
   oooTo?: string
   passportName?: string
+  passportType?: string
+  passportUrl?: string
 }
 
 export type Department = {

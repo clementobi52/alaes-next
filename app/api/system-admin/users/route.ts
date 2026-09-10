@@ -40,7 +40,7 @@ export async function GET() {
         department, user_type, rank_name, can_create, can_view, can_update,
         can_delete, assigned_roles, pc_access, on_leave, leave_start, leave_end,
         deputy, leave_reason, out_of_office_from, out_of_office_to,
-        passport_name, phone_number
+        passport_name, passport_type, phone_number
       FROM dbo.users
       ORDER BY id DESC
     `)
