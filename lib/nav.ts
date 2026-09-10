@@ -66,7 +66,7 @@ export const NAV: NavModule[] = [
           { label: 'File History View' },
           {
             label: 'File SerialNo Grouping',
-            children: leaves('SerialNo Grouping', 'Print Files Label'),
+            children: [{ label: 'SerialNo Grouping', href: '/land/dms/file-indexing-assistant?view=grouping' }, { label: 'Print File Label', href: '/land/dms/print-file-label' }],
           },
         ],
       },
