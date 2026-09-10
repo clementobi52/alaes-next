@@ -15,18 +15,22 @@ const sample = {
   paymentId: '2',
 }
 
+function ReceiptSection({ label }: { label: 'ORIGINAL' | 'COPY' }) {
+  return <section className="receipt-section">
+    <header className="receipt-header">
+      <div className="receipt-seal">COAT<br />OF ARMS</div>
+      <div className="text-center font-bold leading-tight"><p className="text-[10px] text-red-700">REVENUE COLLECTOR&apos;S RECEIPT</p><p className="text-[10px]">MINISTRY OF LANDS AND SURVEY</p><p className="text-[11px] text-blue-800">ABIA STATE GEOGRAPHIC INFORMATION SYSTEM (ABIAGIS)</p><p className="mt-1 tracking-widest text-red-700">{label}</p></div>
+      <div className="flex flex-col items-end gap-1"><div className="receipt-barcode">||||||||||||||||||||</div><div className="receipt-logo">ABIAGIS<br />LOGO</div></div>
+    </header>
+    <div className="receipt-info"><span>File Number: <b>{sample.fileNumber}</b></span><span>Bank: <b>{sample.bank}</b></span><span>Payment Date: <b>15-May-2026</b></span><span>Payment ID: <b>{sample.paymentId}</b></span><span>Assessment Number: <b>{sample.assessment}</b></span><span>Receipt Date: <b>15-May-2026</b></span></div>
+    <div className="receipt-body"><p><b>Received from</b> <strong>{sample.payer}</strong></p><p><b>the sum of</b> Eighteen Thousand One Hundred and Twenty Five Naira Only</p><p><b>being payment for</b> Land Use Charge</p></div>
+    <div className="receipt-signatures"><div className="receipt-amount">the sum of {sample.amount.toLocaleString('en-NG', { minimumFractionDigits: 2 })}</div><div><span className="receipt-line" />SIGNATURE OR MARK OF PAYER</div><div><span className="receipt-line" />SIGNATURE OF REVENUE COLLECTOR</div></div>
+    <p className="text-center text-[9px] font-bold">NO REFUND OF MONEY AFTER PAYMENT</p>
+  </section>
+}
+
 function ReceiptPreview() {
-  return <div className="receipt-paper space-y-4 text-xs">
-    <div className="flex items-center justify-between border-b pb-3"><div className="text-center font-bold text-[#087f45]">ABIA STATE GEOGRAPHIC INFORMATION SYSTEM (ABIAGIS)</div><span className="font-bold text-red-700">ORIGINAL</span></div>
-    <div className="grid grid-cols-2 gap-2 border-b pb-3"><span>File Number: <b>{sample.fileNumber}</b></span><span>Payment Date: <b>15-May-2026</b></span><span>Payment ID: <b>{sample.paymentId}</b></span><span>Assessment Number: <b>{sample.assessment}</b></span></div>
-    <p>Received from <b>{sample.payer}</b> the sum of <b>NGN {sample.amount.toLocaleString()}</b> being payment for Land Use Charge.</p>
-    <div className="flex justify-between border-y py-4 text-[10px]"><span>Signature or mark of payer</span><span>Signature of revenue collector</span></div>
-    <p className="text-center font-bold text-red-700">NO REFUND OF MONEY AFTER PAYMENT</p>
-    <div className="receipt-divider" />
-    <div className="flex items-center justify-between border-b pb-3"><div className="text-center font-bold text-[#087f45]">MINISTRY OF LANDS AND SURVEY<br />ABIA STATE GOVERNMENT</div><span className="font-bold text-red-700">COPY</span></div>
-    <div className="grid grid-cols-2 gap-2"><span>File Number: <b>{sample.fileNumber}</b></span><span>Receipt Date: <b>15-May-2026</b></span><span>Payment ID: <b>{sample.paymentId}</b></span><span>Bank: <b>{sample.bank}</b></span></div>
-    <p className="text-center font-mono text-lg tracking-[0.35em]">|||| |||| ||| ||||||</p>
-  </div>
+  return <div className="receipt-paper"><ReceiptSection label="ORIGINAL" /><ReceiptSection label="COPY" /></div>
 }
 
 export default function RevMPage() {
