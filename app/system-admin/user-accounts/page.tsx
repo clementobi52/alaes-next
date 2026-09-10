@@ -221,6 +221,20 @@ export default function UserAccountsPage() {
         role: roleLabel,
         status: form.onLeave ? 'invited' : 'active',
         lastActive: 'Just now',
+        phoneNumber: form.phoneNumber.trim(),
+        userType: form.userType || undefined,
+        rank: form.rank.trim(),
+        actions: form.actions,
+        roles: form.roles,
+        pcAccess: form.pcAccess,
+        onLeave: form.onLeave,
+        leaveStart: form.leaveStart,
+        leaveEnd: form.leaveEnd,
+        deputy: form.deputy.trim(),
+        leaveReason: form.leaveReason.trim(),
+        oooFrom: form.oooFrom,
+        oooTo: form.oooTo,
+        passportName: form.passport?.name,
       },
       ...prev,
     ])
@@ -296,6 +310,7 @@ export default function UserAccountsPage() {
                   <th className="px-5 py-3 font-medium">Role</th>
                   <th className="px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 font-medium">Last active</th>
+                  <th className="px-5 py-3 font-medium">Account details</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -319,6 +334,17 @@ export default function UserAccountsPage() {
                       </StatusBadge>
                     </td>
                     <td className="px-5 py-3 text-muted-foreground">{u.lastActive}</td>
+                    <td className="max-w-[260px] px-5 py-3 text-xs text-muted-foreground">
+                      <div className="flex flex-wrap gap-1.5">
+                        {u.phoneNumber && <span>{u.phoneNumber}</span>}
+                        {u.userType && <span>{u.userType}</span>}
+                        {u.rank && <span>{u.rank}</span>}
+                        {u.pcAccess && <span>PC access</span>}
+                        {u.onLeave && <span>On leave</span>}
+                        {u.roles?.length ? <span>{u.roles.length} assigned role{u.roles.length === 1 ? '' : 's'}</span> : null}
+                        {u.passportName && <span>Passport attached</span>}
+                      </div>
+                    </td>
                     <td className="px-5 py-3 text-right">
                       <div className="relative inline-block">
                         <button
@@ -359,7 +385,7 @@ export default function UserAccountsPage() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-5 py-12 text-center text-muted-foreground">
+                    <td colSpan={7} className="px-5 py-12 text-center text-muted-foreground">
                       No accounts match your filters.
                     </td>
                   </tr>

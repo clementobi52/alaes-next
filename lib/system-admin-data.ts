@@ -19,6 +19,20 @@ export type StaffUser = {
   role: string
   status: UserStatus
   lastActive: string
+  phoneNumber?: string
+  userType?: string
+  rank?: string
+  actions?: Record<'create' | 'view' | 'update' | 'delete', boolean>
+  roles?: string[]
+  pcAccess?: boolean
+  onLeave?: boolean
+  leaveStart?: string
+  leaveEnd?: string
+  deputy?: string
+  leaveReason?: string
+  oooFrom?: string
+  oooTo?: string
+  passportName?: string
 }
 
 export type Department = {
