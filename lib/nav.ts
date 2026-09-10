@@ -224,11 +224,11 @@ export const NAV: NavModule[] = [
       { label: 'Transaction Token Control' },
       {
         label: 'Online Legal Search',
-        children: leaves(
-          'Online',
-          'Online Legal Search Admin',
-          'Feedback & Complaints',
-        ),
+        children: [
+          { label: 'Online', href: '/online-legal-search' },
+          { label: 'Online Legal Search Admin' },
+          { label: 'Feedback & Complaints' },
+        ],
       },
       {
         label: 'PHS Portal Admin',
