@@ -112,6 +112,8 @@ export default function UserAccountsPage() {
   const [showAllRoles, setShowAllRoles] = useState(false)
   const [form, setForm] = useState<CreateUserForm>(emptyForm)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
   const set = <K extends keyof CreateUserForm>(key: K, value: CreateUserForm[K]) =>
@@ -205,8 +207,22 @@ export default function UserAccountsPage() {
     }
   }
 
-  function addUser() {
+  async function addUser() {
     if (!form.name.trim() || !form.email.trim() || !form.username.trim() || !form.password.trim()) return
+    setSaving(true)
+    setSaveError('')
+    const passport = form.passport ? { name: form.passport.name, type: form.passport.type, data: await form.passport.arrayBuffer().then((buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer)))) } : null
+    const response = await fetch('/api/system-admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, passport }),
+    })
+    const result = await response.json()
+    if (!response.ok) {
+      setSaveError(result.error ?? 'Unable to create user.')
+      setSaving(false)
+      return
+    }
     const roleLabel = form.roles[0] ?? (form.userType || 'Records Clerk')
     setUsers((prev) => [
       {
@@ -238,6 +254,7 @@ export default function UserAccountsPage() {
       },
       ...prev,
     ])
+    setSaving(false)
     closeModal()
   }
 
@@ -407,11 +424,12 @@ export default function UserAccountsPage() {
             <Button variant="outline" onClick={closeModal}>
               Cancel
             </Button>
-            <Button onClick={addUser}>Create</Button>
+            <Button onClick={addUser} disabled={saving}>{saving ? 'Saving…' : 'Create'}</Button>
           </>
         }
-      >
-        <div className="flex flex-col gap-5">
+  >
+  {saveError && <p role="alert" className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{saveError}</p>}
+  <div className="flex flex-col gap-5">
           {/* Passport photo - UPDATED with preview and file management */}
           <div>
             <h4 className="text-sm font-semibold text-foreground">Passport Photo</h4>
