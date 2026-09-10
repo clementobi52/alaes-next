@@ -2,15 +2,16 @@
 @import 'tw-animate-css';
 
 @media print {
-  @page { size: landscape; margin: 0.2in; }
+  @page { size: A4 portrait; margin: 0.2in; }
   @page phs-slip { size: portrait; margin: 0.35in; }
   html, body { background: white !important; height: auto !important; overflow: visible !important; }
 
   /* Receipt printing must exclude the ALAES shell, tabs, controls, and side panels. */
-  body:has(.receipt-printable) > *:not(:has(.receipt-printable)) { display: none !important; }
-  body:has(.receipt-printable) .receipt-printable { display: block !important; position: absolute !important; inset: 0 !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-  body:has(.receipt-printable) .receipt-printable .receipt-paper { display: block !important; max-width: none !important; width: 100% !important; border: 0 !important; box-shadow: none !important; padding: 0.2in !important; }
-  body:has(.receipt-printable) .receipt-printable ~ * { display: none !important; }
+  body:has(.receipt-printable) * { visibility: hidden !important; }
+  body:has(.receipt-printable) .receipt-printable,
+  body:has(.receipt-printable) .receipt-printable * { visibility: visible !important; }
+  body:has(.receipt-printable) .receipt-printable { position: fixed !important; inset: 0 !important; z-index: 2147483647 !important; display: block !important; width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; }
+  body:has(.receipt-printable) .receipt-printable .receipt-paper { display: block !important; max-width: none !important; width: 100% !important; border: 0 !important; box-shadow: none !important; padding: 0.2in !important; color: #000 !important; background: #fff !important; }
 
   /* The printable report renders through a portal at document.body. Hide the entire
      app (display:none, so it occupies NO space and leaves no blank pages) and print
