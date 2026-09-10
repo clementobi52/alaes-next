@@ -28,6 +28,28 @@ type CreateUserPayload = {
   passport?: { name: string; type: string; data: string } | null
 }
 
+export async function GET() {
+  if (!isDbConfigured()) {
+    return NextResponse.json({ error: 'SQL Server is not configured.' }, { status: 503 })
+  }
+
+  try {
+    const result = await query(`
+      SELECT
+        id, name, email, username, email_verified_at, created_at, updated_at,
+        department, user_type, rank_name, can_create, can_view, can_update,
+        can_delete, assigned_roles, pc_access, on_leave, leave_start, leave_end,
+        deputy, leave_reason, out_of_office_from, out_of_office_to,
+        passport_name, phone_number
+      FROM dbo.users
+      ORDER BY id DESC
+    `)
+    return NextResponse.json({ users: result.recordset })
+  } catch {
+    return NextResponse.json({ error: 'Unable to load users from SQL Server.' }, { status: 500 })
+  }
+}
+
 export async function POST(request: Request) {
   if (!isDbConfigured()) {
     return NextResponse.json({ error: 'SQL Server is not configured.' }, { status: 503 })

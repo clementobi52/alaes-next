@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   UserCheck,
   UserPlus,
@@ -104,6 +104,38 @@ const emptyForm: CreateUserForm = {
 
 export default function UserAccountsPage() {
   const [users, setUsers] = useState<StaffUser[]>(USERS)
+  const [usersLoading, setUsersLoading] = useState(true)
+  const [usersError, setUsersError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/system-admin/users', { cache: 'no-store' })
+      .then(async (response) => {
+        const result = await response.json()
+        if (!response.ok) throw new Error(result.error || 'Unable to load users.')
+        return result.users
+      })
+      .then((rows) => {
+        if (!active) return
+        const mapped: StaffUser[] = rows.map((user: Record<string, unknown>) => ({
+          id: String(user.id), name: String(user.name ?? ''), email: String(user.email ?? ''),
+          username: String(user.username ?? ''), emailVerifiedAt: user.email_verified_at as string | null,
+          createdAt: String(user.created_at ?? ''), updatedAt: String(user.updated_at ?? ''),
+          department: String(user.department ?? 'Unassigned'), userType: String(user.user_type ?? ''),
+          rank: String(user.rank_name ?? ''), role: String(user.user_type ?? 'Staff'), status: 'active',
+          lastActive: 'Not available', phoneNumber: String(user.phone_number ?? ''),
+          pcAccess: Boolean(user.pc_access), onLeave: Boolean(user.on_leave),
+          leaveStart: String(user.leave_start ?? ''), leaveEnd: String(user.leave_end ?? ''),
+          deputy: String(user.deputy ?? ''), leaveReason: String(user.leave_reason ?? ''),
+          oooFrom: String(user.out_of_office_from ?? ''), oooTo: String(user.out_of_office_to ?? ''),
+          passportName: String(user.passport_name ?? ''),
+        }))
+        setUsers(mapped)
+      })
+      .catch((error) => { if (active) setUsersError(error instanceof Error ? error.message : 'Unable to load users.') })
+      .finally(() => { if (active) setUsersLoading(false) })
+    return () => { active = false }
+  }, [])
   const [query, setQuery] = useState('')
   const [role, setRole] = useState('all')
   const [status, setStatus] = useState('all')
