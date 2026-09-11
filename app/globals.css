@@ -14,9 +14,6 @@
 .receipt-signatures { display: grid; grid-template-columns: 120px 1fr 1fr; align-items: end; gap: 16px; margin-top: 8px; text-align: center; font-size: 8px; }
 .receipt-amount { border: 1px solid #222; background: #fafafa; padding: 4px; font-size: 9px; font-weight: 700; }
 .receipt-line { display: block; margin-bottom: 4px; border-bottom: 1px dotted #222; }
-.instrument-table th { padding: 0.75rem 1rem; white-space: nowrap; text-align: left; }
-.instrument-table td { padding: 1rem; vertical-align: top; }
-.instrument-table { border-collapse: separate; border-spacing: 0; }
 
 
 @media print {
