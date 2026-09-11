@@ -13,6 +13,7 @@
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cn": "^0.2.6",
     "lucide-react": "^1.16.0",
     "mammoth": "^1.12.2",
     "mssql": "^12.7.0",
