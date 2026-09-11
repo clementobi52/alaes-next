@@ -15,9 +15,15 @@ export default function SignInPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [useDemoLogin, setUseDemoLogin] = useState(false)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (useDemoLogin) {
+      setLoading(true); setError(''); setSubmitted(true)
+      window.setTimeout(() => router.push('/'), 350)
+      return
+    }
     if (!username.trim() || !password) { setError('Enter your username and password.'); return }
     setLoading(true); setError(''); setSubmitted(false)
     try {
@@ -41,13 +47,14 @@ export default function SignInPage() {
               <p className="mt-1 text-sm text-muted-foreground">Abia Land Administration Enterprise System</p>
             </div>
             <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="username">Username or email<span className="relative"><UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="username" type="text" autoComplete="username" required value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Enter your username or email" className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></span></label>
-              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="password">Password<span className="relative"><LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter your password" className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-11 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /><button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground" aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button></span></label>
+              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="username">Username or email<span className="relative"><UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="username" type="text" autoComplete="username" required={!useDemoLogin} value={username} onChange={(event) => setUsername(event.target.value)} placeholder={useDemoLogin ? 'Demo mode does not require credentials' : 'Enter your username or email'} disabled={useDemoLogin} className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-60 focus:border-primary focus:ring-2 focus:ring-primary/20" /></span></label>
+              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="password">Password<span className="relative"><LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required={!useDemoLogin} value={password} onChange={(event) => setPassword(event.target.value)} placeholder={useDemoLogin ? 'Demo mode does not require credentials' : 'Enter your password'} disabled={useDemoLogin} className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-11 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-60 focus:border-primary focus:ring-2 focus:ring-primary/20" /><button type="button" onClick={() => setShowPassword((value) => !value)} disabled={useDemoLogin} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground disabled:opacity-50" aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button></span></label>
+              <label className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm"><input type="checkbox" checked={useDemoLogin} onChange={(event) => setUseDemoLogin(event.target.checked)} className="size-4 accent-primary" /><span><span className="font-medium">Use demo login</span><span className="block text-xs leading-5 text-muted-foreground">Use this when the MSSQL server is unavailable.</span></span></label>
               <label className="flex items-center gap-2 text-sm text-muted-foreground"><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} className="size-4 accent-primary" />Remember this device</label>
-              <Button type="submit" disabled={loading} className="h-11 w-full font-semibold">{loading ? 'Signing in…' : 'Sign in'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
+              <Button type="submit" disabled={loading} className="h-11 w-full font-semibold">{loading ? 'Signing in…' : useDemoLogin ? 'Enter demo dashboard' : 'Sign in'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
             </form>
             {error && <p role="alert" className="mt-5 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
-            {submitted && <p role="status" className="mt-5 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Sign-in successful. Redirecting to your dashboard…</p>}
+            {submitted && <p role="status" className="mt-5 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">{useDemoLogin ? 'Demo login accepted. Redirecting to the dashboard…' : 'Sign-in successful. Redirecting to your dashboard…'}</p>}
             <p className="mt-7 text-center text-sm text-muted-foreground">Don&apos;t have an account? <button type="button" className="font-medium text-primary hover:underline">Contact administrator</button></p>
           </div>
         </section>
