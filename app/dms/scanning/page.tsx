@@ -28,6 +28,7 @@ export default function ScanningPage() {
   const [uploads, setUploads] = useState<File[]>([])
   const [uploadedCount, setUploadedCount] = useState(0)
   const [query, setQuery] = useState('')
+  const [uploadMessage, setUploadMessage] = useState('')
   const visibleFiles = useMemo(() => files.filter((file) => `${file.number} ${file.holder}`.toLowerCase().includes(query.toLowerCase())), [query])
   const canUpload = uploads.length > 0 && (mode === 'unindexed' || Boolean(selectedFile))
 
