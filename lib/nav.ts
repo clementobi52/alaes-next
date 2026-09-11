@@ -132,10 +132,11 @@ export const NAV: NavModule[] = [
       },
       {
         label: 'Valuation for Compensation',
-        children: leaves(
-          'Monetary Compensation',
-          'Field Data Capture (Web & Mobile App)',
-        ),
+        children: [
+          { label: 'Monetary Compensation', href: '/programmes/valuation-for-compensation/monetary-compensation' },
+          { label: 'Land for Land', href: '/programmes/valuation-for-compensation/land-for-land' },
+          { label: 'Field Data Capture (Web & Mobile App)' },
+        ],
       },
       {
         label: 'Land Property Enumeration',
