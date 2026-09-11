@@ -39,7 +39,7 @@ export default function SignInPage() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-muted/30 text-foreground">
-      <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="grid min-h-screen md:grid-cols-2">
         <section className="flex min-h-screen items-center justify-center p-5 sm:p-8 lg:p-12">
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-7 shadow-xl sm:p-10">
             <div className="mb-8 flex flex-col items-center text-center">
@@ -63,7 +63,7 @@ export default function SignInPage() {
             <p className="mt-7 text-center text-sm text-muted-foreground">Don&apos;t have an account? <button type="button" className="font-medium text-primary hover:underline">Contact administrator</button></p>
           </div>
         </section>
-        <section className="hidden min-h-screen overflow-hidden bg-muted/50 px-8 py-8 lg:block xl:px-12" aria-label="ALAES platform information">
+        <section className="hidden min-h-screen overflow-hidden bg-muted/50 px-5 py-8 md:block lg:px-8 xl:px-12" aria-label="ALAES platform information">
           <div className="sign-in-info-scroll mx-auto max-w-3xl">
             <div className="mb-6 flex justify-center"><div className="grid size-28 place-items-center rounded-xl border border-border bg-card text-6xl font-bold text-primary shadow-sm">A</div></div>
             <div className="mb-8 text-center"><h2 className="text-4xl font-bold tracking-tight text-foreground">ALAES</h2><h3 className="mt-2 text-2xl font-semibold text-foreground">Abia Land Administration Enterprise System</h3><p className="mt-3 text-lg font-medium italic text-primary">Powering a smart, secure &amp; integrated future for land governance in Abia State.</p></div>
