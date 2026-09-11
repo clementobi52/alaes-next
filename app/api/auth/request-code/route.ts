@@ -7,7 +7,10 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 type CodeEntry = { code: string; expiresAt: number; attempts: number }
-const codes = new Map<string, CodeEntry>()
+type RuntimeStore = { codes: Map<string, CodeEntry> }
+const runtimeStore = globalThis as typeof globalThis & { __alaesAuthStore?: RuntimeStore }
+const codes = runtimeStore.__alaesAuthStore?.codes ?? new Map<string, CodeEntry>()
+runtimeStore.__alaesAuthStore ??= { codes }
 
 function normalizePhone(value: string) {
   const digits = value.replace(/\D/g, '')
@@ -38,8 +41,9 @@ async function sendSms(phone: string, code: string) {
     cache: 'no-store',
   })
   const responseBody = (await response.text()).trim()
-  if (responseBody === '' && (response.ok || response.status === 500)) return
+  console.log('[v0] Bulk SMS provider response:', { status: response.status, body: responseBody.slice(0, 500) })
   if (!response.ok) throw new Error(`Bulk SMS request failed with ${response.status}: ${responseBody.slice(0, 200)}`)
+  if (responseBody === '') throw new Error('Bulk SMS provider returned an empty response.')
   try {
     const result = JSON.parse(responseBody) as { status?: string; statusCode?: string; message?: string }
     if (String(result.status).toLowerCase() !== 'success' && result.statusCode !== '600' && result.statusCode !== '609') {
