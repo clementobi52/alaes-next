@@ -1,30 +1,32 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ArrowRight, CheckCircle2, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, UserRound } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Mail, ShieldCheck, UserRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function SignInPage() {
-  const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
   const [remember, setRemember] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [step, setStep] = useState<'phone' | 'code'>('phone')
+  const [phone, setPhone] = useState('')
+  const [code, setCode] = useState('')
+  const demoCode = '482913'
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleRequestCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const username = String(formData.get('username') ?? '').trim()
-    const password = String(formData.get('password') ?? '')
+    if (!phone.trim()) { setError('Enter a phone number to receive your demo sign-in code.'); return }
     setLoading(true); setError(''); setSubmitted(false)
-    try {
-      const response = await fetch('/api/auth/sign-in', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) })
-      const result = await response.json()
-      if (!response.ok) { setError(result.error ?? 'Unable to sign in.'); return }
-      setSubmitted(true); router.push('/'); router.refresh()
-    } catch { setError('Unable to connect to the sign-in service.') } finally { setLoading(false) }
+    window.setTimeout(() => { setLoading(false); setStep('code') }, 500)
+  }
+
+  function handleVerifyCode(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError('')
+    if (code !== demoCode) { setError('That code is not correct. Use the demo code shown below.'); return }
+    setSubmitted(true)
+    setStep('code')
   }
 
   return (
@@ -37,14 +39,20 @@ export default function SignInPage() {
               <h1 className="text-2xl font-bold tracking-tight">Welcome to ALAES</h1>
               <p className="mt-1 text-sm text-muted-foreground">Abia Land Administration Enterprise System</p>
             </div>
-            <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="username">Username<span className="relative"><UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="username" name="username" autoComplete="username" required placeholder="Enter your username" className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></span></label>
-              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="password"><span className="flex items-center justify-between">Password<button type="button" className="text-xs font-medium text-primary hover:underline">Forgot password?</button></span><span className="relative"><LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required placeholder="Enter your password" className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-11 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /><button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground" aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button></span></label>
-              <label className="flex items-center gap-2 text-sm text-muted-foreground"><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} className="size-4 accent-primary" />Remember me</label>
-              <Button type="submit" disabled={loading} className="h-11 w-full font-semibold">{loading ? 'Signing in…' : 'Sign in'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
-              {error && <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
-              {submitted && <p role="status" className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Demo sign-in successful.</p>}
-            </form>
+            {step === 'phone' ? <form className="flex flex-col gap-5" onSubmit={handleRequestCode}>
+              <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-6 text-muted-foreground">Enter your Nigerian phone number and we&apos;ll simulate sending a one-time sign-in code by SMS.</div>
+              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="phone">Phone number<span className="relative"><UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="phone" type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="0801 234 5678" className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></span></label>
+              <label className="flex items-center gap-2 text-sm text-muted-foreground"><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} className="size-4 accent-primary" />Remember this device</label>
+              <Button type="submit" disabled={loading} className="h-11 w-full font-semibold">{loading ? 'Sending demo code…' : 'Get sign-in code'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
+            </form> : <form className="flex flex-col gap-5" onSubmit={handleVerifyCode}>
+              <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-6 text-muted-foreground">A demo code was sent to <strong className="text-foreground">{phone}</strong>. No real SMS is sent.</div>
+              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="code">Sign-in code<input id="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Enter 6-digit code" className="h-11 w-full rounded-lg border border-input bg-background px-3 text-center text-lg tracking-[0.35em] outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></label>
+              <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-center text-sm">Demo code: <strong className="font-mono text-primary">{demoCode}</strong></div>
+              <Button type="submit" className="h-11 w-full font-semibold">Verify and continue <ArrowRight data-icon="inline-end" /></Button>
+              <button type="button" onClick={() => { setStep('phone'); setCode(''); setError('') }} className="text-sm font-medium text-primary hover:underline">Use a different number</button>
+            </form>}
+            {error && <p role="alert" className="mt-5 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
+            {submitted && <p role="status" className="mt-5 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Demo sign-in successful.</p>}
             <p className="mt-7 text-center text-sm text-muted-foreground">Don&apos;t have an account? <button type="button" className="font-medium text-primary hover:underline">Contact administrator</button></p>
           </div>
         </section>
