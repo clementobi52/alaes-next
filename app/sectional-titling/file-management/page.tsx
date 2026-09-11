@@ -57,6 +57,7 @@ export default function FileNoManagementPage() {
   const [status, setStatus] = useState('')
   const [commissionOpen, setCommissionOpen] = useState(false)
   const [schedule, setSchedule] = useState<FileNoSchedule>('Aba')
+  const [applicationType, setApplicationType] = useState<'Primary' | 'SuA' | 'PuA'>('Primary')
   const [prefix, setPrefix] = useState<FileNoPrefix>('LUAC/AB')
   const [suffix, setSuffix] = useState<FileNoSuffix>('AB')
   const [sequence, setSequence] = useState('1')
@@ -358,9 +359,27 @@ export default function FileNoManagementPage() {
           {generated && (
             <div className="flex items-center gap-2 rounded-lg border border-chart-2/30 bg-chart-2/10 px-4 py-3 text-sm text-foreground">
               <CheckCircle2 className="h-4 w-4 text-chart-2" />
-              Generated FileNo: <span className="font-mono font-semibold">{generated}</span>
+              Generated {applicationType} FileNo: <span className="font-mono font-semibold">{generated}</span>
             </div>
           )}
+          <div className="rounded-xl border border-border bg-muted/30 p-4">
+            <p className="text-sm font-semibold text-foreground">Application Type</p>
+            <p className="mt-1 text-xs text-muted-foreground">Choose the Sectional Titling application category for this new file number.</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              {(['Primary', 'SuA', 'PuA'] as const).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setApplicationType(type)}
+                  aria-pressed={applicationType === type}
+                  className={`rounded-lg border px-4 py-3 text-left transition-colors ${applicationType === type ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-background text-foreground hover:border-primary/50'}`}
+                >
+                  <span className="block text-sm font-semibold">{type}</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">{type === 'Primary' ? 'Main sectional titling application' : type === 'SuA' ? 'Subdivision application' : 'Partition application'}</span>
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Schedule">
               <SelectInput value={schedule} onChange={(e) => handleScheduleChange(e.target.value as FileNoSchedule)}>
