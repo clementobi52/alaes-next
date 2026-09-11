@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useMemo, useState } from 'react'
 import { AppShell } from '@/components/app-shell'
 import { FilePlus2, MoreHorizontal, Pencil, Search, Trash2, X } from 'lucide-react'
 
@@ -17,7 +16,6 @@ const seedRecords: Record[] = [
 const types: Array<'All' | EncumbranceType> = ['All', 'Caveat', 'Mortgage', 'Surrender & Release', 'Lien']
 
 export default function EncumbranceManagementPage() {
-  const searchParams = useSearchParams()
   const [records, setRecords] = useState(seedRecords)
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<(typeof types)[number]>('All')
@@ -25,12 +23,6 @@ export default function EncumbranceManagementPage() {
   const [editing, setEditing] = useState<Record | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState<Record>({ reference: '', type: 'Caveat', party: '', amount: '—', status: 'Active', updated: '11 Sep 2026', property: '' })
-
-  useEffect(() => {
-    const requestedType = searchParams.get('type')
-    const typeMap: { [key: string]: EncumbranceType } = { caveat: 'Caveat', mortgage: 'Mortgage', release: 'Surrender & Release', lien: 'Lien' }
-    setFilter(requestedType ? typeMap[requestedType] ?? 'All' : 'All')
-  }, [searchParams])
 
   const filteredRecords = useMemo(() => records.filter((record) => {
     const matchesType = filter === 'All' || record.type === filter
