@@ -329,7 +329,6 @@ export const NAV: NavModule[] = [
     children: [
       { label: 'Overview', href: '/sectional-titling' },
       { label: 'ST FileNo Management', href: '/sectional-titling/file-management' },
-      { label: 'Commission New ST FileNo' },
       {
         label: 'Applications',
         children: [
