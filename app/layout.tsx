@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   description:
     'ALAES: the Abia State land registry, deeds, and document management enterprise platform.',
   generator: 'v0.app',
+  icons: {
+    icon: '/images/alaes-mark.png',
+    shortcut: '/images/alaes-mark.png',
+    apple: '/images/alaes-mark.png',
+  },
 }
 
 export const viewport: Viewport = {
