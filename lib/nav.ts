@@ -96,7 +96,7 @@ export const NAV: NavModule[] = [
   },
 
   {
-    label: 'File Tracking (Web & Mobile)',
+    label: 'File Tracking',
     icon: Compass,
     children: [
       { label: 'File Tracker Dashboard', href: '/file-tracking' },
@@ -329,7 +329,6 @@ export const NAV: NavModule[] = [
     children: [
       { label: 'Overview', href: '/sectional-titling' },
       { label: 'ST FileNo Management', href: '/sectional-titling/file-management' },
-      { label: 'Commission New ST FileNo' },
       {
         label: 'Applications',
         children: [
