@@ -409,6 +409,7 @@ export const NAV: NavModule[] = [
       { label: 'System Settings', href: '/system-admin/system-settings' },
       { label: 'Database Connection', href: '/system-admin/database' },
       { label: 'Folder Watcher', href: '/system-admin/folder-watcher' },
+      { label: 'BULK SMS', href: '/system-admin/bulk-sms' },
     ],
   },
 ]
