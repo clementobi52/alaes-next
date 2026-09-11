@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const result = await query<{ id: number; name: string; username: string; password: string }>(
       `SELECT TOP (1) id, name, username, password
        FROM dbo.users
-       WHERE username = @username`,
+       WHERE username = @username OR email = @username`,
       { username },
     )
     const user = result.recordset[0]
