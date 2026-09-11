@@ -35,13 +35,13 @@ export async function POST(request: Request) {
   const username = body.username?.trim()
   if (!username) return NextResponse.json({ error: 'Username is required.' }, { status: 400 })
   try {
-    const { recordset } = await query<{ id: string; name: string; phone: string }>(
-      `SELECT TOP (1) id, name, phone AS phone FROM dbo.users WHERE username = @username OR email = @username`,
+    const { recordset } = await query<{ id: string; name: string; phone_number: string }>(
+      `SELECT TOP (1) id, name, phone_number FROM dbo.users WHERE username = @username OR email = @username`,
       { username },
     )
     const user = recordset[0]
-    if (!user?.phone) return NextResponse.json({ error: 'No phone number is registered for this user.' }, { status: 404 })
-    const phone = normalizePhone(user.phone)
+    if (!user?.phone_number) return NextResponse.json({ error: 'No phone number is registered for this user.' }, { status: 404 })
+    const phone = normalizePhone(user.phone_number)
     const code = crypto.randomInt(100000, 1000000).toString()
     await sendSms(phone, code)
     codes.set(String(user.id), { code, expiresAt: Date.now() + 10 * 60 * 1000, attempts: 0 })
