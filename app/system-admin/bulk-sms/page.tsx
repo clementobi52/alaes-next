@@ -1,0 +1,83 @@
+'use client'
+
+import { ChangeEvent, useMemo, useState } from 'react'
+import { AppShell } from '@/components/app-shell'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Progress } from '@/components/ui/progress'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AlertCircle, BarChart3, CheckCircle2, Clock3, FileText, History, MessageSquareText, Phone, Plus, Radio, RefreshCcw, Search, Send, ShieldCheck, Sparkles, Users, XCircle } from 'lucide-react'
+
+const sampleRecipients = [
+  { name: 'Land Claimants — Aba South', count: 1284, description: 'Active claimants with verified phone numbers' },
+  { name: 'Pending Deeds Registration', count: 347, description: 'Applicants awaiting registration updates' },
+  { name: 'Custom recipient list', count: 0, description: 'Paste or upload phone numbers for a one-off campaign' },
+]
+
+const history = [
+  { id: 'SMS-2026-0911-004', title: 'Registration window reminder', audience: 'Pending Deeds Registration', sent: '11 Sep 2026, 09:42', total: 347, delivered: 331, failed: 16, status: 'Completed' },
+  { id: 'SMS-2026-0910-003', title: 'Aba South claimant update', audience: 'Land Claimants — Aba South', sent: '10 Sep 2026, 14:18', total: 1284, delivered: 1258, failed: 26, status: 'Completed' },
+  { id: 'SMS-2026-0909-002', title: 'System maintenance notice', audience: 'All verified contacts', sent: '09 Sep 2026, 17:30', total: 2189, delivered: 2076, failed: 113, status: 'Completed' },
+  { id: 'SMS-2026-0908-001', title: 'Instrument capture follow-up', audience: 'Pending Deeds Registration', sent: '08 Sep 2026, 10:05', total: 347, delivered: 342, failed: 5, status: 'Completed' },
+]
+
+export default function BulkSmsPage() {
+  const [audience, setAudience] = useState(sampleRecipients[0].name)
+  const [message, setMessage] = useState('')
+  const [senderId, setSenderId] = useState('ALAES')
+  const [schedule, setSchedule] = useState('now')
+  const [historySearch, setHistorySearch] = useState('')
+  const [notice, setNotice] = useState('')
+  const selectedAudience = sampleRecipients.find((item) => item.name === audience) ?? sampleRecipients[0]
+  const filteredHistory = useMemo(() => history.filter((item) => `${item.title} ${item.audience} ${item.id}`.toLowerCase().includes(historySearch.toLowerCase())), [historySearch])
+  const characterCount = message.length
+  const segments = Math.max(1, Math.ceil(characterCount / 160))
+
+  function announce(action: string) {
+    setNotice(`${action} is ready for provider integration. This preview did not send a live SMS.`)
+  }
+
+  return (
+    <AppShell>
+      <main className="min-h-screen bg-muted/20 px-4 py-6 md:px-8">
+        <div className="mx-auto flex max-w-[1500px] flex-col gap-6">
+          <header className="flex flex-col gap-4 border-b border-border/70 pb-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><Radio className="size-4" /> System communications</div>
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground">Bulk SMS</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Compose, schedule, and monitor operational messages sent to verified ALAES contacts.</p>
+            </div>
+            <div className="flex flex-wrap gap-2"><Button variant="outline" onClick={() => announce('Refresh')}><RefreshCcw className="mr-2 size-4" />Refresh status</Button><Button onClick={() => announce('New campaign')}><Plus className="mr-2 size-4" />New campaign</Button></div>
+          </header>
+
+          {notice && <div role="status" className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm text-foreground"><CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />{notice}<button className="ml-auto text-muted-foreground" onClick={() => setNotice('')} aria-label="Dismiss notification"><XCircle className="size-4" /></button></div>}
+
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {([{ label: 'Available contacts', value: '2,189', caption: '91.8% verified', icon: Users }, { label: 'Delivered this month', value: '8,406', caption: '+12.4% vs Aug', icon: CheckCircle2 }, { label: 'Messages sent', value: '8,721', caption: '315 segments', icon: Send }, { label: 'Provider health', value: 'Operational', caption: 'Last checked 2 min ago', icon: ShieldCheck }]).map(({ label, value, caption, icon: Icon }) => <Card key={label}><CardContent className="flex items-start justify-between p-5"><div><p className="text-sm text-muted-foreground">{label}</p><p className="mt-2 text-2xl font-semibold tracking-tight">{value}</p><p className="mt-1 text-xs text-muted-foreground">{caption}</p></div><div className="rounded-lg bg-primary/10 p-2.5 text-primary"><Icon className="size-5" /></div></CardContent></Card>)}
+          </section>
+
+          <Tabs defaultValue="compose" className="space-y-5">
+            <TabsList><TabsTrigger value="compose"><MessageSquareText className="mr-2 size-4" />Compose campaign</TabsTrigger><TabsTrigger value="history"><History className="mr-2 size-4" />Delivery history</TabsTrigger><TabsTrigger value="health"><BarChart3 className="mr-2 size-4" />Provider health</TabsTrigger></TabsList>
+            <TabsContent value="compose" className="space-y-5">
+              <div className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(340px,0.7fr)]">
+                <Card><CardHeader><CardTitle className="flex items-center gap-2"><Send className="size-5 text-primary" />Create campaign</CardTitle></CardHeader><CardContent className="space-y-5">
+                  <div className="grid gap-4 md:grid-cols-2"><label className="space-y-2 text-sm font-medium">Recipient audience<Select value={audience} onValueChange={(value) => value && setAudience(value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{sampleRecipients.map((item) => <SelectItem key={item.name} value={item.name}>{item.name}</SelectItem>)}</SelectContent></Select></label><label className="space-y-2 text-sm font-medium">Sender ID<Input value={senderId} maxLength={11} onChange={(event: ChangeEvent<HTMLInputElement>) => setSenderId(event.target.value.toUpperCase())} /><span className="text-xs font-normal text-muted-foreground">Up to 11 characters. Approved sender IDs only.</span></label></div>
+                  <label className="block space-y-2 text-sm font-medium">Message content<Textarea value={message} onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setMessage(event.target.value)} maxLength={480} placeholder="Write a clear service update for recipients..." className="min-h-36 resize-y" /><span className="flex justify-between text-xs font-normal text-muted-foreground"><span>Keep messages concise and include a contact channel where needed.</span><span>{characterCount}/480 · {segments} segment{segments === 1 ? '' : 's'}</span></span></label>
+                  <div className="rounded-lg border border-border bg-muted/30 p-4"><div className="mb-3 flex items-center gap-2 text-sm font-medium"><Clock3 className="size-4 text-primary" />Delivery timing</div><div className="flex flex-wrap gap-2"><Button type="button" size="sm" variant={schedule === 'now' ? 'default' : 'outline'} onClick={() => setSchedule('now')}>Send now</Button><Button type="button" size="sm" variant={schedule === 'schedule' ? 'default' : 'outline'} onClick={() => setSchedule('schedule')}>Schedule for later</Button></div>{schedule === 'schedule' && <div className="mt-4 grid gap-3 sm:grid-cols-2"><Input type="date" defaultValue="2026-09-11" /><Input type="time" defaultValue="10:00" /></div>}</div>
+                  <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between"><p className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4 text-primary" />All sends are recorded in the audit history.</p><Button disabled={!message.trim() || selectedAudience.count === 0} onClick={() => announce(schedule === 'now' ? 'Send campaign' : 'Schedule campaign')}><Send className="mr-2 size-4" />{schedule === 'now' ? 'Send campaign' : 'Schedule campaign'}</Button></div>
+                </CardContent></Card>
+                <div className="space-y-5"><Card><CardHeader><CardTitle className="text-base">Campaign summary</CardTitle></CardHeader><CardContent className="space-y-4"><div className="flex items-center justify-between"><span className="text-sm text-muted-foreground">Recipients</span><span className="font-semibold">{selectedAudience.count.toLocaleString()}</span></div><div className="flex items-center justify-between"><span className="text-sm text-muted-foreground">Estimated segments</span><span className="font-semibold">{(selectedAudience.count * segments).toLocaleString()}</span></div><div className="flex items-center justify-between"><span className="text-sm text-muted-foreground">Estimated cost</span><span className="font-semibold">Not available</span></div><div className="border-t border-border pt-4 text-xs leading-5 text-muted-foreground">{selectedAudience.description}. The live provider will validate numbers and return delivery receipts when connected.</div></CardContent></Card><Card><CardHeader><CardTitle className="flex items-center gap-2 text-base"><Sparkles className="size-4 text-primary" />Message checklist</CardTitle></CardHeader><CardContent className="space-y-3 text-sm">{[{ label: 'Message added', done: Boolean(message.trim()) }, { label: 'Audience selected', done: selectedAudience.count > 0 }, { label: 'Sender ID valid', done: senderId.length >= 3 }].map(({ label, done }) => <div key={label} className="flex items-center gap-2">{done ? <CheckCircle2 className="size-4 text-emerald-600" /> : <AlertCircle className="size-4 text-amber-600" />}<span>{label}</span></div>)}</CardContent></Card></div>
+              </div>
+            </TabsContent>
+            <TabsContent value="history"><Card><CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><CardTitle>Delivery history</CardTitle><p className="mt-1 text-sm text-muted-foreground">Review campaigns and delivery outcomes.</p></div><div className="relative w-full md:max-w-xs"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input value={historySearch} onChange={(event: ChangeEvent<HTMLInputElement>) => setHistorySearch(event.target.value)} placeholder="Search campaigns" className="pl-9" /></div></CardHeader><CardContent><div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground"><tr><th className="pb-3 pr-4">Campaign</th><th className="pb-3 pr-4">Audience</th><th className="pb-3 pr-4">Sent</th><th className="pb-3 pr-4">Delivery</th><th className="pb-3">Status</th></tr></thead><tbody className="divide-y divide-border">{filteredHistory.map((item) => <tr key={item.id}><td className="py-4 pr-4"><p className="font-medium">{item.title}</p><p className="mt-1 text-xs text-muted-foreground">{item.id}</p></td><td className="py-4 pr-4 text-muted-foreground">{item.audience}</td><td className="py-4 pr-4 text-muted-foreground">{item.sent}</td><td className="py-4 pr-4"><p className="font-medium">{item.delivered.toLocaleString()} delivered</p><p className="mt-1 text-xs text-muted-foreground">{item.failed} failed of {item.total.toLocaleString()}</p></td><td className="py-4"><Badge variant="secondary"><CheckCircle2 className="mr-1 size-3" />{item.status}</Badge></td></tr>)}</tbody></table></div>{filteredHistory.length === 0 && <div className="py-12 text-center text-sm text-muted-foreground">No campaigns match your search.</div>}</CardContent></Card></TabsContent>
+            <TabsContent value="health"><div className="grid gap-5 lg:grid-cols-2"><Card><CardHeader><CardTitle className="flex items-center gap-2"><ShieldCheck className="size-5 text-primary" />Provider status</CardTitle></CardHeader><CardContent className="space-y-5"><div className="flex items-center justify-between rounded-lg border border-emerald-500/25 bg-emerald-500/5 p-4"><div className="flex items-center gap-3"><span className="size-2.5 rounded-full bg-emerald-500" /><div><p className="font-medium">Bulk SMS provider operational</p><p className="text-sm text-muted-foreground">Requests are being accepted.</p></div></div><Badge variant="secondary">Operational</Badge></div>{[{ label: 'API response time', value: '2.4s', percent: 76 }, { label: 'Delivery acknowledgement', value: '96.8%', percent: 96.8 }, { label: 'Verified phone coverage', value: '91.8%', percent: 91.8 }].map(({ label, value, percent }) => <div key={label}><div className="mb-2 flex justify-between text-sm"><span>{label}</span><span className="font-medium">{value}</span></div><Progress value={percent} /></div>)}</CardContent></Card><Card><CardHeader><CardTitle className="flex items-center gap-2"><FileText className="size-5 text-primary" />Compliance and safeguards</CardTitle></CardHeader><CardContent className="space-y-4 text-sm leading-6 text-muted-foreground"><p className="flex gap-3"><ShieldCheck className="mt-1 size-4 shrink-0 text-primary" />Only verified phone numbers are eligible for operational campaigns.</p><p className="flex gap-3"><Phone className="mt-1 size-4 shrink-0 text-primary" />Every request is logged with sender, audience, message, and timestamp.</p><p className="flex gap-3"><AlertCircle className="mt-1 size-4 shrink-0 text-amber-600" />Provider receipts and live cost estimates will appear after API integration.</p></CardContent></Card></div></TabsContent>
+          </Tabs>
+        </div>
+      </main>
+    </AppShell>
+  )
+}
