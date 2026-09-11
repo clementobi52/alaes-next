@@ -15,18 +15,40 @@ function normalizePhone(value: string) {
 }
 
 async function sendSms(phone: string, code: string) {
-  const apiUrl = process.env.BULK_SMS_NG_API_URL
-  const username = process.env.BULK_SMS_NG_USERNAME
+  const configuredUrl = process.env.BULK_SMS_NG_API_URL?.trim()
+  const apiUrl = configuredUrl?.startsWith('BULK_SMS_NG_API_URL=')
+    ? configuredUrl.slice('BULK_SMS_NG_API_URL='.length)
+    : configuredUrl || 'https://account.bulk-sms.ng/api/promotional/send'
+  const email = process.env.BULK_SMS_NG_EMAIL ?? process.env.BULK_SMS_NG_USERNAME
   const password = process.env.BULK_SMS_NG_PASSWORD
-  const sender = process.env.BULK_SMS_NG_SENDER ?? 'ALAES'
-  if (!apiUrl || !username || !password) throw new Error('Bulk SMS service is not configured.')
+  const sender = (process.env.BULK_SMS_NG_SENDER ?? 'ALAES').slice(0, 11)
+  if (!email || !password) throw new Error('Bulk SMS service is not configured.')
+
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ username, password, sender, recipient: phone, message: `Your ALAES sign-in code is ${code}. It expires in 10 minutes.` }),
+    body: JSON.stringify({
+      email,
+      password,
+      message: `Your ALAES sign-in code is ${code}. It expires in 10 minutes.`,
+      recipient: phone,
+      senderid: sender,
+      smsgateway: '1',
+    }),
     cache: 'no-store',
   })
-  if (!response.ok) throw new Error(`Bulk SMS request failed with ${response.status}`)
+  const responseBody = (await response.text()).trim()
+  if (responseBody === '' && (response.ok || response.status === 500)) return
+  if (!response.ok) throw new Error(`Bulk SMS request failed with ${response.status}: ${responseBody.slice(0, 200)}`)
+  try {
+    const result = JSON.parse(responseBody) as { status?: string; statusCode?: string; message?: string }
+    if (String(result.status).toLowerCase() !== 'success' && result.statusCode !== '600' && result.statusCode !== '609') {
+      throw new Error(result.message ?? `Bulk SMS rejected with code ${result.statusCode ?? 'unknown'}`)
+    }
+  } catch (error) {
+    if (error instanceof SyntaxError) throw new Error(`Bulk SMS returned an invalid response: ${responseBody.slice(0, 200)}`)
+    throw error
+  }
 }
 
 export async function POST(request: Request) {
