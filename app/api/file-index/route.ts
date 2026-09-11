@@ -11,8 +11,10 @@ const fallbackRecords = [
   { id: 'fallback-2', fileNumber: 'LUAC/AB/02894/UM', filePrefix: 'LUAC/AB', serialNo: 2894, schedule: 'UM', trackingId: 'TRK-AB-2026-02894', createdAt: null },
 ]
 
-export async function GET() {
-  if (!isDbConfigured()) return NextResponse.json({ records: fallbackRecords, persisted: false, fallback: true })
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const search = searchParams.get('search')?.trim().toLowerCase() ?? ''
+  if (!isDbConfigured()) return NextResponse.json({ records: search ? fallbackRecords.filter((record) => `${record.fileNumber} ${record.filePrefix} ${record.schedule}`.toLowerCase().includes(search)) : fallbackRecords, persisted: false, fallback: true })
   try {
     const { recordset } = await query(`SELECT Id AS id, Schedule AS schedule, FilePrefix AS filePrefix, SerialNo AS serialNo, FileNumber AS fileNumber, TrackingId AS trackingId, CreatedAt AS createdAt FROM dbo.FileIndexRecords ORDER BY CreatedAt DESC`)
     return NextResponse.json({ records: recordset, persisted: true, fallback: false })
