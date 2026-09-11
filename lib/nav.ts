@@ -228,7 +228,7 @@ export const NAV: NavModule[] = [
         children: [
           { label: 'Official (for filing purpose)', href: '/legal-search/official' },
           { label: 'On-Premise', href: '/legal-search/on-premise' },
-          { label: 'Legal Search Reports' },
+          { label: 'Legal Search Reports', href: '/legal-search/reports' },
         ],
       },
       { label: 'Transaction Token Control', href: '/legal-search/token-control' },
