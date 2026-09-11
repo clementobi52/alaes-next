@@ -90,7 +90,7 @@ export const NAV: NavModule[] = [
     label: 'Digital File Archive',
     icon: Archive,
     children: [
-      { label: 'File Digital Library - Doc-WARE' },
+      { label: 'File Digital Library - Doc-WARE', href: '/digital-file-archive' },
       { label: 'DMS Update', children: [{ label: 'Scan More', href: '/dms/update?mode=scan' }, { label: 'Type More', href: '/dms/update?mode=type' }] },
     ],
   },
@@ -114,7 +114,10 @@ export const NAV: NavModule[] = [
       { label: 'Allocation', children: leaves('Governors List', 'Commissioners List') },
       {
         label: 'Resettlement/Compensation',
-        children: leaves('Governors List', 'Commissioners List'),
+        children: [
+          { label: 'Governors List', href: '/programmes/resettlement-compensation/governors-list' },
+          { label: 'Commissioners List', href: '/programmes/resettlement-compensation/commissioners-list' },
+        ],
       },
       { label: 'Recertification' },
       { label: 'Conversion/Regularization' },
@@ -129,10 +132,11 @@ export const NAV: NavModule[] = [
       },
       {
         label: 'Valuation for Compensation',
-        children: leaves(
-          'Monetary Compensation',
-          'Field Data Capture (Web & Mobile App)',
-        ),
+        children: [
+          { label: 'Monetary Compensation', href: '/programmes/valuation-for-compensation/monetary-compensation' },
+          { label: 'Land for Land', href: '/programmes/valuation-for-compensation/land-for-land' },
+          { label: 'Field Data Capture (Web & Mobile App)' },
+        ],
       },
       {
         label: 'Land Property Enumeration',
@@ -156,10 +160,10 @@ export const NAV: NavModule[] = [
     label: 'ALAES REV-M',
     icon: Database,
     children: [
-      { label: 'Billing', children: leaves('Automated Billing', 'Legacy Billing') },
-      { label: 'Generate Receipt' },
-      { label: 'Land Use Charge (LUC)' },
-      { label: 'Transaction Token Control' },
+      { label: 'Billing', href: '/rev-m', children: [{ label: 'Automated Billing', href: '/rev-m?view=automated' }, { label: 'Legacy Billing', href: '/rev-m?view=legacy' }] },
+      { label: 'Generate Receipt', href: '/rev-m?view=receipt' },
+      { label: 'Land Use Charge (LUC)', href: '/rev-m?view=luc' },
+      { label: 'Transaction Token Control', href: '/rev-m?view=tokens' },
     ],
   },
 
@@ -224,7 +228,7 @@ export const NAV: NavModule[] = [
         children: [
           { label: 'Official (for filing purpose)', href: '/legal-search/official' },
           { label: 'On-Premise', href: '/legal-search/on-premise' },
-          { label: 'Legal Search Reports' },
+          { label: 'Legal Search Reports', href: '/legal-search/reports' },
         ],
       },
       { label: 'Transaction Token Control', href: '/legal-search/token-control' },
@@ -263,34 +267,37 @@ export const NAV: NavModule[] = [
           { label: 'Generate New FileNo (MLSFileNo)', href: '/land/generate-new-fileno' },
           { label: 'New Applications (Existing OP)', href: '/land/applications/existing-op' },
           { label: 'Bill' },
-          { label: 'Capture/Manage an Existing File' },
-          { label: 'Land File Commissioning', href: '/land/commissioning' },
+          { label: 'Capture/Manage an Existing File', href: '/land/dms/file-indexing-assistant' },
           { label: 'File Decommissioning' },
         ],
       },
       {
         label: 'Letter of Grant (RofO)',
-        children: [{ label: 'Land Recommendation' }, { label: 'RofO', href: '/land/rofo' }, { label: 'Re-grant Files' }],
+        children: [
+          { label: 'Land Recommendation' },
+          { label: 'RofO', href: '/land/rofo' },
+          { label: 'Re-grant Files' },
+        ],
       },
       {
         label: 'File History',
         children: [
           { label: 'History View' },
           { label: 'Related Files' },
-          { label: 'File Search', children: leaves('Scans') },
+          { label: 'File Search', children: [{ label: 'Scans', href: '/dms/scanning' }] },
         ],
       },
       { label: 'Problem Files' },
       {
         label: 'Digital Archive',
-        children: leaves(
-          'File Tracker Dashboard',
-          'File Tracker (Archive)',
-          'Quick Search',
-          'Log a File',
-          'File Digital Library – Doc-WARE',
-          'DMS Update',
-        ),
+        children: [
+          { label: 'File Tracker Dashboard', href: '/file-tracking' },
+          { label: 'File Tracker (Archive)', href: '/file-tracking?view=archive' },
+          { label: 'Quick Search', href: '/file-tracking?view=search' },
+          { label: 'Log a File', href: '/file-tracking?view=log' },
+          { label: 'File Digital Library – Doc-WARE' },
+          { label: 'DMS Update', href: '/dms/update?mode=scan' },
+        ],
       },
       {
         label: 'Parcel/Title Management',
@@ -300,19 +307,19 @@ export const NAV: NavModule[] = [
           { label: 'Temporary File' },
           {
             label: 'Parcel Update - New',
-            children: leaves(
-              'Plot Subdivision',
-              'Plot Merger',
-              'Plot Extension',
-              'Plot Separation',
-              'Parcel Update - Legacy',
-            ),
+            children: [
+              { label: 'Plot Subdivision' },
+              { label: 'Plot Merger' },
+              { label: 'Plot Extension' },
+              { label: 'Plot Separation' },
+            ],
           },
+          { label: 'Parcel Update - Legacy' },
           { label: 'Title Status Update' },
         ],
       },
       { label: 'EDMS Update' },
-      { label: 'LAAS Portal', children: [{ label: 'Applications', href: '/laas-admin' }, { label: 'Applicants', href: '/laas-admin?view=applicants' }] },
+      { label: 'LAAS Portal', href: '/laas-admin' },
     ],
   },
 

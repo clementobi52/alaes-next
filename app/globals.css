@@ -1,10 +1,35 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+.receipt-paper { max-width: 8.27in; margin: 0 auto; background: #fff; color: #111; padding: 0.16in; font-family: Arial, Helvetica, sans-serif; }
+.receipt-section { border-bottom: 2px dashed #999; padding-bottom: 0.14in; margin-bottom: 0.14in; font-size: 10px; }
+.receipt-section:last-child { border-bottom: 0; margin-bottom: 0; }
+.receipt-header { display: grid; grid-template-columns: 64px 1fr 112px; align-items: center; gap: 12px; border-bottom: 1px solid #222; padding-bottom: 6px; }
+.receipt-seal { display: block; width: 56px; height: 56px; object-fit: contain; }
+.receipt-logo { display: block; width: 48px; height: 48px; object-fit: contain; }
+.receipt-barcode { width: 96px; height: 20px; overflow: hidden; background: #000; color: #fff; font-size: 12px; line-height: 20px; letter-spacing: -2px; }
+.receipt-info { display: grid; grid-template-columns: repeat(3, 1fr); margin: 8px 0; border: 1px solid #222; }
+.receipt-info span { border-right: 1px solid #222; border-bottom: 1px solid #222; padding: 4px; }
+.receipt-body { display: grid; gap: 4px; padding: 8px 0; }
+.receipt-signatures { display: grid; grid-template-columns: 120px 1fr 1fr; align-items: end; gap: 16px; margin-top: 8px; text-align: center; font-size: 8px; }
+.receipt-amount { border: 1px solid #222; background: #fafafa; padding: 4px; font-size: 9px; font-weight: 700; }
+.receipt-line { display: block; margin-bottom: 4px; border-bottom: 1px dotted #222; }
+td:has(button[aria-label^="Actions for"]) { position: relative !important; overflow: visible !important; }
+td:has(button[aria-label^="Actions for"]) > div.absolute { min-width: 13rem; }
+section:has(button[aria-label^="Actions for"]) { overflow: visible !important; }
+
+
 @media print {
-  @page { size: landscape; margin: 0.2in; }
+  @page { size: A4 portrait; margin: 0.2in; }
   @page phs-slip { size: portrait; margin: 0.35in; }
   html, body { background: white !important; height: auto !important; overflow: visible !important; }
+
+  /* Receipt printing must exclude the ALAES shell, tabs, controls, and side panels. */
+  body:has(.receipt-printable) * { visibility: hidden !important; }
+  body:has(.receipt-printable) .receipt-printable,
+  body:has(.receipt-printable) .receipt-printable * { visibility: visible !important; }
+  body:has(.receipt-printable) .receipt-printable { position: fixed !important; inset: 0 !important; z-index: 2147483647 !important; display: block !important; width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; }
+  body:has(.receipt-printable) .receipt-printable .receipt-paper { display: block !important; max-width: none !important; width: 100% !important; border: 0 !important; box-shadow: none !important; padding: 0.2in !important; color: #000 !important; background: #fff !important; }
 
   /* The printable report renders through a portal at document.body. Hide the entire
      app (display:none, so it occupies NO space and leaves no blank pages) and print

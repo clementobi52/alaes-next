@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { Camera, FileText } from 'lucide-react'
+import { AppShell } from '@/components/app-shell'
 
 const demoFiles = ['LUAC/AB/3518/AB', 'LUAC/AB/2894/UM', 'LUM/2893', 'LABA/2892', 'LUM/OH/2891']
 
@@ -15,7 +16,11 @@ export default function DmsUpdatePage() {
   const [saved, setSaved] = useState(false)
 
   return (
-    <main className="flex flex-col gap-6">
+    <AppShell
+      title={mode === 'scan' ? 'Scan More' : 'Type More Pages'}
+      subtitle="DMS · Document Management System"
+    >
+    <div className="flex flex-col gap-6">
       <header>
         <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">DMS Update</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">{mode === 'scan' ? 'Scan More' : 'More Pages'}</h1>
@@ -32,6 +37,7 @@ export default function DmsUpdatePage() {
         {mode === 'scan' && <button type="button" disabled={!pages.length} onClick={() => setSaved(true)} className="mt-5 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50">Add Pages to File</button>}
         {saved && <p className="mt-4 text-sm font-medium text-primary">Additional pages queued for {fileNumber}.</p>}
       </section>
-    </main>
+    </div>
+    </AppShell>
   )
 }
