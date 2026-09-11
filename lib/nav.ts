@@ -264,6 +264,7 @@ export const NAV: NavModule[] = [
         label: 'Land',
         children: [
           { label: 'Allocation List' },
+          { label: 'Land Claimant List', href: '/land/claimants' },
           { label: 'Generate New FileNo (MLSFileNo)', href: '/land/generate-new-fileno' },
           { label: 'New Applications (Existing OP)', href: '/land/applications/existing-op' },
           { label: 'Bill' },
