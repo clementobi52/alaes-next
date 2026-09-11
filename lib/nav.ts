@@ -183,7 +183,10 @@ export const NAV: NavModule[] = [
         label: 'Deeds Registration',
         children: [
           { label: 'Instrument Capture (New Records)', href: '/deeds-registration/instrument-capture' },
+          { label: 'Print Deed of Assignment Details', href: '/deeds-registration/instrument-capture/print' },
           { label: 'Instrument Registration (New Registration)', href: '/deeds-registration/instrument-registration' },
+          { label: 'Print Registration Confirmation', href: '/deeds-registration/instrument-registration/confirmation' },
+          { label: 'Print Confirmation Copies', href: '/deeds-registration/instrument-registration/confirmation-copies' },
           { label: 'Instrument Registration Reports' },
           { label: 'Deeds Batch Registration', href: '/deeds-registration/batch-registration' },
         ],
@@ -269,6 +272,7 @@ export const NAV: NavModule[] = [
           { label: 'New Applications (Existing OP)', href: '/land/applications/existing-op' },
           { label: 'Bill' },
           { label: 'Capture/Manage an Existing File', href: '/land/dms/file-indexing-assistant' },
+          { label: 'File Commissioning Sheet', href: '/land/commissioning/print' },
           { label: 'File Decommissioning' },
         ],
       },
