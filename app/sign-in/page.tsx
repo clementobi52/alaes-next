@@ -32,7 +32,7 @@ export default function SignInLandingPage() {
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-transparent to-slate-950/70" />
 
       <header className="relative z-10 flex items-center justify-between px-6 py-6 sm:px-10 lg:px-16">
-        <div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-lg bg-primary font-bold text-primary-foreground shadow-lg">A</div><span className="text-sm font-semibold tracking-[0.18em]">ALAES</span></div>
+        <Link href="/sign-in" aria-label="ALAES home" className="flex items-center gap-3"><Image src="/images/alaes-logo.png" alt="ALAES" width={164} height={48} className="h-10 w-auto object-contain drop-shadow-lg" priority /></Link>
         <Link href="/sign-in/login" className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90"><LogIn className="size-4" /> Login</Link>
       </header>
 
