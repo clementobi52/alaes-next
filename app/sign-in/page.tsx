@@ -10,6 +10,7 @@ const slides = [
   { src: '/landing/abia-secretariat.jpeg', alt: 'Abia State Secretariat entrance', title: 'Land services, connected', copy: 'Bring applications, records and approvals into one transparent workspace.' },
   { src: '/landing/abia-gis-office.jpeg', alt: 'ABIA GIS Project Office building', title: 'Records you can rely on', copy: 'Protect the history of land with secure, searchable and auditable records.' },
   { src: '/landing/lands-headquarters.jpeg', alt: 'Ministry of Lands headquarters building', title: 'Decisions grounded in evidence', copy: 'Coordinate survey, valuation and planning teams with shared information.' },
+  { src: '/landing/abia-landmark.jpeg', alt: 'Abia State landmark tower welcoming visitors to God’s Own State', title: 'Welcome to Abia', copy: 'Building trusted land services for a stronger, more connected state.' },
 ]
 
 export default function SignInLandingPage() {
