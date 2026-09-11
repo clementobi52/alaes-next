@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { FormEvent, useState } from 'react'
 import { ArrowRight, CheckCircle2, Mail, ShieldCheck, UserRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -44,7 +45,7 @@ export default function SignInPage() {
         <section className="flex min-h-screen items-center justify-center p-5 sm:p-8 lg:p-12">
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-7 shadow-xl sm:p-10">
             <div className="mb-8 flex flex-col items-center text-center">
-              <div className="mb-5 grid size-24 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-lg"><span className="text-4xl font-bold">A</span></div>
+              <div className="mb-5 grid size-24 place-items-center rounded-2xl border border-border bg-background p-3 shadow-lg"><Image src="/images/alaes-mark.png" alt="ALAES logo mark" width={512} height={512} className="size-full object-contain" priority /></div>
               <h1 className="text-2xl font-bold tracking-tight">Welcome to ALAES</h1>
               <p className="mt-1 text-sm text-muted-foreground">Abia Land Administration Enterprise System</p>
             </div>
@@ -66,7 +67,7 @@ export default function SignInPage() {
         </section>
         <section className="hidden min-h-screen overflow-hidden bg-muted/50 px-5 py-8 md:block lg:px-8 xl:px-12" aria-label="ALAES platform information">
           <div className="sign-in-info-scroll mx-auto max-w-3xl">
-            <div className="mb-6 flex justify-center"><div className="grid size-28 place-items-center rounded-xl border border-border bg-card text-6xl font-bold text-primary shadow-sm">A</div></div>
+            <div className="mb-6 flex justify-center"><Image src="/images/alaes-mark.png" alt="ALAES logo mark" width={512} height={512} className="size-28 object-contain drop-shadow-sm" /></div>
             <div className="mb-8 text-center"><h2 className="text-4xl font-bold tracking-tight text-foreground">ALAES</h2><h3 className="mt-2 text-2xl font-semibold text-foreground">Abia Land Administration Enterprise System</h3><p className="mt-3 text-lg font-medium italic text-primary">Powering a smart, secure &amp; integrated future for land governance in Abia State.</p></div>
             <div className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm"><p className="leading-7 text-muted-foreground">ALAES is the digital backbone for Abia State land administration, bringing land records, deeds registration, legal search, document management and property services into one connected workspace.</p></div>
             <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-6 shadow-sm"><h3 className="mb-3 text-center text-xl font-semibold">ALAES – Interoperable, Intelligent, and Future-Proof</h3><p className="leading-7 text-muted-foreground">By bringing together digital records, automated workflows and secure departmental collaboration, ALAES creates a statewide land governance ecosystem for smarter decisions and better service delivery.</p><p className="mt-3 leading-7 text-muted-foreground">Whether teams are registering titles, performing legal searches, managing encumbrances or resolving land disputes, every department works from synchronized data and auditable processes.</p></div>
