@@ -6,11 +6,10 @@ import { useEffect, useState } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight, LogIn } from 'lucide-react'
 
 const slides = [
-  { src: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image.png-O5jLIM4ShGWw0Fz1LxTPHKZnYW48UB.jpeg', alt: 'Ministry of Land and Physical Planning office entrance', title: 'A smarter future for land administration', copy: 'Trusted digital services for people, professionals and institutions across Abia State.' },
-  { src: '/landing/land-office-1.png', alt: 'Modern land ministry office exterior', title: 'Land services, connected', copy: 'Bring applications, records and approvals into one transparent workspace.' },
-  { src: '/landing/land-office-2.png', alt: 'Land registry records office', title: 'Records you can rely on', copy: 'Protect the history of land with secure, searchable and auditable records.' },
-  { src: '/landing/land-office-3.png', alt: 'Land surveyors reviewing a site plan', title: 'Decisions grounded in evidence', copy: 'Coordinate survey, valuation and planning teams with shared information.' },
-  { src: '/landing/land-office-4.png', alt: 'Planned Nigerian city neighborhood', title: 'Building Abia together', copy: 'Support clear ownership, responsible development and better public service.' },
+  { src: '/landing/abia-ministry-land.jpeg', alt: 'Ministry of Land and Housing building in Umuahia', title: 'A smarter future for land administration', copy: 'Trusted digital services for people, professionals and institutions across Abia State.' },
+  { src: '/landing/abia-secretariat.jpeg', alt: 'Abia State Secretariat entrance', title: 'Land services, connected', copy: 'Bring applications, records and approvals into one transparent workspace.' },
+  { src: '/landing/abia-gis-office.jpeg', alt: 'ABIA GIS Project Office building', title: 'Records you can rely on', copy: 'Protect the history of land with secure, searchable and auditable records.' },
+  { src: '/landing/lands-headquarters.jpeg', alt: 'Ministry of Lands headquarters building', title: 'Decisions grounded in evidence', copy: 'Coordinate survey, valuation and planning teams with shared information.' },
 ]
 
 export default function SignInLandingPage() {
