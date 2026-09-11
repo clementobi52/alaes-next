@@ -5,15 +5,15 @@ import { AppShell } from '@/components/app-shell'
 import { BadgeCheck, Check, ChevronLeft, ChevronRight, Database, Download, FilePlus2, FileText, Landmark, List, MoreVertical, Printer, Search, Trash2 } from 'lucide-react'
 
 const records = [
-  ['24/24/72', 'OP Direct Allocation', '5:21 PM', 'Sep 09, 2026', 'TEMP-143856', 'Abia State Government', 'TASIU YAKUBU KANAWA'],
-  ['200/200/286', 'OP Resettlement', '5:19 PM', 'Sep 09, 2026', 'TEMP-143853', 'Abia State Government', 'IBRAHIM HAMISU & USMAN IDRIS'],
-  ['199/199/286', 'OP Resettlement', '5:16 PM', 'Sep 09, 2026', 'TEMP-143850', 'Abia State Government', 'LABARAN ABUBAKAR'],
-  ['198/198/286', 'OP Resettlement', '5:15 PM', 'Sep 09, 2026', 'TEMP-143847', 'Abia State Government', 'ISAH IBRAHIM'],
-  ['23/23/72', 'OP Direct Allocation', '5:13 PM', 'Sep 09, 2026', 'TEMP-143844', 'Abia State Government', 'SAIDU ABDULLAHI S YAKI'],
-  ['197/197/286', 'OP Resettlement', '5:09 PM', 'Sep 09, 2026', 'TEMP-143832', 'Abia State Government', 'ISMAIL ABDULLAHI'],
-  ['196/196/286', 'OP Resettlement', '5:07 PM', 'Sep 09, 2026', 'TEMP-143829', 'Abia State Government', 'MANSIR MUHAMMAD'],
-  ['195/195/286', 'OP Resettlement', '5:06 PM', 'Sep 09, 2026', 'TEMP-143826', 'Abia State Government', 'MAGAJI MAMUDA'],
-  ['194/194/286', 'OP Resettlement', '5:05 PM', 'Sep 09, 2026', 'TEMP-143824', 'Abia State Government', 'IBRAHIM GWAZAYE'],
+  ['24/24/72', 'OP Direct Allocation', '5:21 PM', 'Sep 09, 2026', 'TEMP-143856', 'Abia State Government', 'Chinedu Okafor'],
+  ['200/200/286', 'OP Resettlement', '5:19 PM', 'Sep 09, 2026', 'TEMP-143853', 'Abia State Government', 'Ifeanyi Nwosu & Emeka Eze'],
+  ['199/199/286', 'OP Resettlement', '5:16 PM', 'Sep 09, 2026', 'TEMP-143850', 'Abia State Government', 'Chukwuemeka Nnamani'],
+  ['198/198/286', 'OP Resettlement', '5:15 PM', 'Sep 09, 2026', 'TEMP-143847', 'Abia State Government', 'Obinna Umeh'],
+  ['23/23/72', 'OP Direct Allocation', '5:13 PM', 'Sep 09, 2026', 'TEMP-143844', 'Abia State Government', 'Nkemjika Eze'],
+  ['197/197/286', 'OP Resettlement', '5:09 PM', 'Sep 09, 2026', 'TEMP-143832', 'Abia State Government', 'Amarachi Okoye'],
+  ['196/196/286', 'OP Resettlement', '5:07 PM', 'Sep 09, 2026', 'TEMP-143829', 'Abia State Government', 'Somtochukwu Obi'],
+  ['195/195/286', 'OP Resettlement', '5:06 PM', 'Sep 09, 2026', 'TEMP-143826', 'Abia State Government', 'Adaeze Mba'],
+  ['194/194/286', 'OP Resettlement', '5:05 PM', 'Sep 09, 2026', 'TEMP-143824', 'Abia State Government', 'Kelechi Udeh'],
 ]
 
 const headers = ['Reg Particulars', 'Instrument Type', 'Reg Time', 'Reg Date', 'Captured Time', 'Captured Date', 'Filenо', 'Status', 'Party 1', 'Party 2', 'LGA', 'District', 'Plot Number', 'Plot Size', 'PropID', 'Action']

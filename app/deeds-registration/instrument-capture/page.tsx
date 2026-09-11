@@ -5,9 +5,9 @@ import { AppShell } from '@/components/app-shell'
 import { ArrowUp, Check, FilePlus2, MoreHorizontal, Plus, Search, X } from 'lucide-react'
 
 const instruments = [
-  { file: 'LUAC/AB/3518/AB', grantor: 'Abia State Ministry of Lands', grantee: 'Amina Okafor', type: 'Deed of Assignment', date: '2026-09-08', plot: 'Plot 15, Aba GRA', status: 'Verified' },
-  { file: 'LUAC/AB/3517/UM', grantor: 'Chukwuemeka Nwosu', grantee: 'Uche Properties Ltd', type: 'Deed of Mortgage', date: '2026-09-06', plot: 'Plot 22, Umuahia Layout', status: 'Pending' },
-  { file: 'LUM/2893', grantor: 'Ifeoma Eze', grantee: 'Daniel Eze', type: 'Deed of Lease', date: '2026-09-02', plot: 'Block 4, Umuahia', status: 'Verified' },
+  { file: 'LUAC/AB/3518/AB', grantor: 'Abia State Ministry of Lands', grantee: 'Adaeze Okafor', type: 'Deed of Assignment', date: '2026-09-08', plot: 'Plot 15, Aba GRA', status: 'Verified' },
+  { file: 'LUAC/AB/3517/UM', grantor: 'Ikenna Nwosu', grantee: 'Ogechi Properties Ltd', type: 'Deed of Mortgage', date: '2026-09-06', plot: 'Plot 22, Umuahia Layout', status: 'Pending' },
+  { file: 'LUM/2893', grantor: 'Ifeoma Eze', grantee: 'Chinedu Eze', type: 'Deed of Lease', date: '2026-09-02', plot: 'Block 4, Umuahia', status: 'Verified' },
 ]
 const instrumentTypes = [
   ['Power of Attorney', 'Grantor', 'Grantee'], ['Irrevocable Power of Attorney', 'Grantor', 'Grantee'], ['Deed of Mortgage', 'Mortgagor', 'Mortgagee'], ['Tripartite Mortgage', 'Mortgagor', 'Mortgagee'], ['Deed of Assignment', 'Assignor', 'Assignee'], ['Deed of Lease', 'Lessor', 'Lessee'], ['Deed of Sub-Lease', 'Sub-Lessor', 'Sub-Lessee'], ['Deed of Sub-Division', 'Subdivider', 'Beneficiary'], ['Deed of Merger', 'Merging Party', 'Receiving Party'], ['Deed of Surrender', 'Surrenderer', 'Recipient'], ['Deed of Assent', 'Executor/Administrator', 'Beneficiary'], ['Deed of Release', 'Releasor', 'Releasee'],
