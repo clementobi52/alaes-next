@@ -18,6 +18,25 @@ td:has(button[aria-label^="Actions for"]) { position: relative !important; overf
 td:has(button[aria-label^="Actions for"]) > div.absolute { min-width: 13rem; }
 section:has(button[aria-label^="Actions for"]) { overflow: visible !important; }
 
+@keyframes sign-in-information-scroll {
+  0%, 12% { transform: translateY(0); }
+  88%, 100% { transform: translateY(-38%); }
+}
+
+.sign-in-info-scroll {
+  animation: sign-in-information-scroll 32s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.sign-in-info-scroll:hover,
+.sign-in-info-scroll:focus-within {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sign-in-info-scroll { animation: none; }
+}
+
 
 @media print {
   @page { size: A4 portrait; margin: 0.2in; }

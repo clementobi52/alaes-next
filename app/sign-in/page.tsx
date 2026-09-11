@@ -48,8 +48,8 @@ export default function SignInPage() {
             <p className="mt-7 text-center text-sm text-muted-foreground">Don&apos;t have an account? <button type="button" className="font-medium text-primary hover:underline">Contact administrator</button></p>
           </div>
         </section>
-        <section className="hidden min-h-screen overflow-y-auto bg-background px-8 py-12 lg:block xl:px-16">
-          <div className="mx-auto max-w-2xl">
+        <section className="hidden min-h-screen overflow-hidden bg-background px-8 py-12 lg:block xl:px-16" aria-label="ALAES platform information">
+          <div className="sign-in-info-scroll mx-auto max-w-2xl">
             <div className="mb-8 flex justify-center"><div className="grid size-24 place-items-center rounded-2xl border border-primary/15 bg-primary/10 text-5xl font-bold text-primary">A</div></div>
             <div className="mb-8 text-center"><h2 className="text-4xl font-bold tracking-tight">ALAES</h2><h3 className="mt-2 text-2xl font-semibold">Abia Land Administration Enterprise System</h3><p className="mt-4 text-base font-medium italic text-primary">Secure, transparent and integrated land governance for Abia State.</p></div>
             <div className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-sm"><p className="leading-7 text-muted-foreground">ALAES is the digital backbone for Abia State land administration, bringing land records, deeds registration, legal search, document management and property services into one connected workspace.</p></div>
