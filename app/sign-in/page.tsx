@@ -13,6 +13,7 @@ export default function SignInPage() {
   const [username, setUsername] = useState('')
   const [userId, setUserId] = useState('')
   const [maskedPhone, setMaskedPhone] = useState('')
+  const [deliveryMessage, setDeliveryMessage] = useState('')
   const [code, setCode] = useState('')
 
   async function handleRequestCode(event: FormEvent<HTMLFormElement>) {
@@ -23,7 +24,7 @@ export default function SignInPage() {
       const response = await fetch('/api/auth/request-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) })
       const result = await response.json()
       if (!response.ok) { setError(result.error ?? 'Unable to send your code.'); return }
-      setUserId(result.userId); setMaskedPhone(result.maskedPhone); setStep('code')
+      setUserId(result.userId); setMaskedPhone(result.maskedPhone); setDeliveryMessage(result.message ?? 'A sign-in code was sent by SMS.'); setStep('code')
     } catch { setError('Unable to connect to the SMS service.') } finally { setLoading(false) }
   }
 
@@ -53,7 +54,7 @@ export default function SignInPage() {
               <label className="flex items-center gap-2 text-sm text-muted-foreground"><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} className="size-4 accent-primary" />Remember this device</label>
               <Button type="submit" disabled={loading} className="h-11 w-full font-semibold">{loading ? 'Sending demo code…' : 'Get sign-in code'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
             </form> : <form className="flex flex-col gap-5" onSubmit={handleVerifyCode}>
-              <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-6 text-muted-foreground">A sign-in code was sent by SMS to the phone ending in <strong className="text-foreground">{maskedPhone.slice(-4)}</strong>.</div>
+              <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-6 text-muted-foreground"><strong className="text-foreground">{deliveryMessage.includes('scheduled') ? 'Your code is scheduled for delivery.' : 'Your sign-in code was sent by SMS.'}</strong> The registered phone ends in <strong className="text-foreground">{maskedPhone.slice(-4)}</strong>.</div>
               <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="code">Sign-in code<input id="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Enter 6-digit code" className="h-11 w-full rounded-lg border border-input bg-background px-3 text-center text-lg tracking-[0.35em] outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></label>
               <Button type="submit" className="h-11 w-full font-semibold">Verify and continue <ArrowRight data-icon="inline-end" /></Button>
               <button type="button" onClick={() => { setStep('phone'); setCode(''); setError('') }} className="text-sm font-medium text-primary hover:underline">Use a different account</button>

@@ -18,6 +18,8 @@ function normalizePhone(value: string) {
 }
 
 async function sendSms(phone: string, code: string) {
+  type SmsResult = { deferred: boolean; message?: string }
+
   const configuredUrl = process.env.BULK_SMS_NG_API_URL?.trim()
   const apiUrl = configuredUrl?.startsWith('BULK_SMS_NG_API_URL=')
     ? configuredUrl.slice('BULK_SMS_NG_API_URL='.length)
@@ -49,6 +51,7 @@ async function sendSms(phone: string, code: string) {
     if (String(result.status).toLowerCase() !== 'success' && result.statusCode !== '600' && result.statusCode !== '609') {
       throw new Error(result.message ?? `Bulk SMS rejected with code ${result.statusCode ?? 'unknown'}`)
     }
+    return { deferred: result.statusCode === '609' || Boolean((result as { deferred?: boolean }).deferred), message: result.message }
   } catch (error) {
     if (error instanceof SyntaxError) throw new Error(`Bulk SMS returned an invalid response: ${responseBody.slice(0, 200)}`)
     throw error
@@ -69,9 +72,15 @@ export async function POST(request: Request) {
     if (!user?.phone_number) return NextResponse.json({ error: 'No phone number is registered for this user.' }, { status: 404 })
     const phone = normalizePhone(user.phone_number)
     const code = crypto.randomInt(100000, 1000000).toString()
-    await sendSms(phone, code)
+    const smsResult = await sendSms(phone, code)
     codes.set(String(user.id), { code, expiresAt: Date.now() + 10 * 60 * 1000, attempts: 0 })
-    return NextResponse.json({ ok: true, userId: String(user.id), maskedPhone: `******${phone.slice(-4)}` })
+    return NextResponse.json({
+      ok: true,
+      userId: String(user.id),
+      maskedPhone: `******${phone.slice(-4)}`,
+      delivery: smsResult.deferred ? 'scheduled' : 'sent',
+      message: smsResult.message,
+    })
   } catch (error) {
     console.error('[v0] SMS code request failed', error)
     return NextResponse.json({ error: 'Unable to send the sign-in code.' }, { status: 502 })
