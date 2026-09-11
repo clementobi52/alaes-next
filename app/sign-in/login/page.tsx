@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { FormEvent, useState } from 'react'
-import { ArrowRight, CheckCircle2, Mail, ShieldCheck, UserRound } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, UserRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function SignInPage() {
@@ -10,33 +10,20 @@ export default function SignInPage() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [step, setStep] = useState<'phone' | 'code'>('phone')
   const [username, setUsername] = useState('')
-  const [userId, setUserId] = useState('')
-  const [maskedPhone, setMaskedPhone] = useState('')
-  const [deliveryMessage, setDeliveryMessage] = useState('')
-  const [code, setCode] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
-  async function handleRequestCode(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!username.trim()) { setError('Enter your username or email.'); return }
+    if (!username.trim() || !password) { setError('Enter your username and password.'); return }
     setLoading(true); setError(''); setSubmitted(false)
     try {
-      const response = await fetch('/api/auth/request-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) })
+      const response = await fetch('/api/auth/sign-in', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) })
       const result = await response.json()
-      if (!response.ok) { setError(result.error ?? 'Unable to send your code.'); return }
-      setUserId(result.userId); setMaskedPhone(result.maskedPhone); setDeliveryMessage(result.message ?? 'A sign-in code was sent by SMS.'); setStep('code')
-    } catch { setError('Unable to connect to the SMS service.') } finally { setLoading(false) }
-  }
-
-  async function handleVerifyCode(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setLoading(true); setError('')
-    try {
-      const response = await fetch('/api/auth/verify-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, code }) })
-      const result = await response.json()
-      if (!response.ok) { setError(result.error ?? 'Unable to verify the code.'); return }
+      if (!response.ok) { setError(result.error ?? 'Unable to sign in.'); return }
       setSubmitted(true)
-    } catch { setError('Unable to verify your sign-in code.') } finally { setLoading(false) }
+    } catch { setError('Unable to connect to the sign-in service.') } finally { setLoading(false) }
   }
 
   return (
@@ -49,17 +36,12 @@ export default function SignInPage() {
               <h1 className="text-2xl font-bold tracking-tight">Welcome to ALAES</h1>
               <p className="mt-1 text-sm text-muted-foreground">Abia Land Administration Enterprise System</p>
             </div>
-            {step === 'phone' ? <form className="flex flex-col gap-5" onSubmit={handleRequestCode}>
-              <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-6 text-muted-foreground">Enter your username or email. We&apos;ll send a one-time sign-in code to the phone number registered in your account.</div>
+            <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
               <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="username">Username or email<span className="relative"><UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="username" type="text" autoComplete="username" required value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Enter your username or email" className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></span></label>
+              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="password">Password<span className="relative"><LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" /><input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter your password" className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-11 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /><button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground" aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button></span></label>
               <label className="flex items-center gap-2 text-sm text-muted-foreground"><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} className="size-4 accent-primary" />Remember this device</label>
-              <Button type="submit" disabled={loading} className="h-11 w-full font-semibold">{loading ? 'Sending demo code…' : 'Get sign-in code'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
-            </form> : <form className="flex flex-col gap-5" onSubmit={handleVerifyCode}>
-              <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-6 text-muted-foreground"><strong className="text-foreground">{deliveryMessage.includes('scheduled') ? 'Your code is scheduled for delivery.' : 'Your sign-in code was sent by SMS.'}</strong> The registered phone ends in <strong className="text-foreground">{maskedPhone.slice(-4)}</strong>.</div>
-              <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="code">Sign-in code<input id="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Enter 6-digit code" className="h-11 w-full rounded-lg border border-input bg-background px-3 text-center text-lg tracking-[0.35em] outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" /></label>
-              <Button type="submit" className="h-11 w-full font-semibold">Verify and continue <ArrowRight data-icon="inline-end" /></Button>
-              <button type="button" onClick={() => { setStep('phone'); setCode(''); setError('') }} className="text-sm font-medium text-primary hover:underline">Use a different account</button>
-            </form>}
+              <Button type="submit" disabled={loading} className="h-11 w-full font-semibold">{loading ? 'Signing in…' : 'Sign in'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
+            </form>
             {error && <p role="alert" className="mt-5 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
             {submitted && <p role="status" className="mt-5 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Demo sign-in successful.</p>}
             <p className="mt-7 text-center text-sm text-muted-foreground">Don&apos;t have an account? <button type="button" className="font-medium text-primary hover:underline">Contact administrator</button></p>
