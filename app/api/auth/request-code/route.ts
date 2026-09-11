@@ -45,7 +45,8 @@ async function sendSms(phone: string, code: string) {
   const responseBody = (await response.text()).trim()
   console.log('[v0] Bulk SMS provider response:', { status: response.status, body: responseBody.slice(0, 500) })
   if (!response.ok) throw new Error(`Bulk SMS request failed with ${response.status}: ${responseBody.slice(0, 200)}`)
-  if (responseBody === '') throw new Error('Bulk SMS provider returned an empty response.')
+  // Bulk-SMS.ng can accept a message and return HTTP 200 with an empty body.
+  if (responseBody === '') return { deferred: false, message: 'Your sign-in code was accepted for delivery by SMS.' }
   try {
     const result = JSON.parse(responseBody) as { status?: string; statusCode?: string; message?: string }
     if (String(result.status).toLowerCase() !== 'success' && result.statusCode !== '600' && result.statusCode !== '609') {
