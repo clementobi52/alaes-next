@@ -1,0 +1,18 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import { AppShell } from '@/components/app-shell'
+import { Download, MoreHorizontal, Plus, Search } from 'lucide-react'
+
+const rows = [
+  ['COM/AB/014', 'Osisioma Industrial Expansion', 'Osisioma Ngwa', '418', '₦142.6m', 'Awaiting valuation'],
+  ['COM/AB/015', 'Aba–Port Harcourt Road', 'Obingwa', '276', '₦91.4m', 'Ready for payment'],
+  ['COM/AB/016', 'Ohafia Market Renewal', 'Ohafia', '153', '₦48.7m', 'Approved'],
+  ['COM/AB/017', 'Umuahia Drainage Works', 'Umuahia South', '96', '₦22.1m', 'In review'],
+]
+export default function CommissionersListPage() {
+  const [query, setQuery] = useState('')
+  const [status, setStatus] = useState('All')
+  const filtered = useMemo(() => rows.filter((r) => (status === 'All' || r[5] === status) && r.join(' ').toLowerCase().includes(query.toLowerCase())), [query, status])
+  return <AppShell title="Commissioners List" subtitle="Resettlement / Compensation · departmental processing"><div className="flex flex-col gap-6"><section className="grid gap-4 sm:grid-cols-4">{[['Active cases', '18'], ['Beneficiaries', '943'], ['Valuation total', '₦304.8m'], ['Ready for payment', '5']].map(([label, value]) => <div key={label} className="rounded-xl border border-border bg-card p-5"><p className="text-sm text-muted-foreground">{label}</p><p className="mt-2 text-3xl font-semibold">{value}</p></div>)}</section><section className="rounded-xl border border-border bg-card"><div className="flex flex-col gap-4 border-b border-border p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold">Commissioner&apos;s compensation register</h2><p className="text-sm text-muted-foreground">Departmental cases moving through valuation and payment.</p></div><div className="flex gap-2"><button className="inline-flex items-center gap-2 rounded-lg border border-input px-4 py-2 text-sm"><Download className="size-4" />Export</button><button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"><Plus className="size-4" />New case</button></div></div><div className="flex flex-wrap gap-3"><label className="relative flex-1"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input value={query} onChange={(e) => setQuery(e.target.value)} className="w-full rounded-lg border border-input bg-background py-2 pl-9 pr-3 text-sm" placeholder="Search project, LGA, or reference..." /></label><select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm"><option>All</option><option>Awaiting valuation</option><option>Ready for payment</option><option>Approved</option><option>In review</option></select></div></div><div className="overflow-x-auto"><table className="w-full min-w-[900px] text-left text-sm"><thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground"><tr>{['Reference', 'Project', 'LGA', 'Beneficiaries', 'Estimated value', 'Status', 'Action'].map((h) => <th key={h} className="px-5 py-3 font-medium">{h}</th>)}</tr></thead><tbody className="divide-y divide-border">{filtered.map((r) => <tr key={r[0]} className="hover:bg-muted/20">{r.slice(0, 6).map((cell, i) => <td key={i} className="px-5 py-4">{i === 5 ? <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">{cell}</span> : cell}</td>)}<td className="px-5 py-4"><button aria-label={`Actions for ${r[0]}`} className="rounded-md p-2 hover:bg-muted"><MoreHorizontal className="size-4" /></button></td></tr>)}</tbody></table></div></section></div></AppShell>
+}

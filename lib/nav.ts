@@ -114,7 +114,10 @@ export const NAV: NavModule[] = [
       { label: 'Allocation', children: leaves('Governors List', 'Commissioners List') },
       {
         label: 'Resettlement/Compensation',
-        children: leaves('Governors List', 'Commissioners List'),
+        children: [
+          { label: 'Governors List', href: '/programmes/resettlement-compensation/governors-list' },
+          { label: 'Commissioners List', href: '/programmes/resettlement-compensation/commissioners-list' },
+        ],
       },
       { label: 'Recertification' },
       { label: 'Conversion/Regularization' },
