@@ -47,7 +47,7 @@ export default function FileIndexingAssistantPage() {
     }
     void loadFiles()
   }, [query])
-  const visibleFiles = useMemo(() => files.filter((file) => `${file.number} ${file.name}`.toLowerCase().includes(query.toLowerCase())), [files, query])
+  const visibleFiles = useMemo(() => files.filter((file) => `${file.number} ${file.name} ${file.type}`.toLowerCase().includes(query.toLowerCase())), [files, query])
   const toggle = (id: string) => setSelected((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id])
   const selectAll = () => setSelected(selected.length === visibleFiles.length ? [] : visibleFiles.map((file) => file.id))
   const beginIndexing = () => { setActiveTab('digital-index'); setProgress(68) }

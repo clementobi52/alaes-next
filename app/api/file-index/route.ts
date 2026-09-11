@@ -16,7 +16,14 @@ export async function GET(request: Request) {
   const search = searchParams.get('search')?.trim().toLowerCase() ?? ''
   if (!isDbConfigured()) return NextResponse.json({ records: search ? fallbackRecords.filter((record) => `${record.fileNumber} ${record.filePrefix} ${record.schedule}`.toLowerCase().includes(search)) : fallbackRecords, persisted: false, fallback: true })
   try {
-    const { recordset } = await query(`SELECT Id AS id, Schedule AS schedule, FilePrefix AS filePrefix, SerialNo AS serialNo, FileNumber AS fileNumber, TrackingId AS trackingId, CreatedAt AS createdAt FROM dbo.FileIndexRecords ORDER BY CreatedAt DESC`)
+    const { recordset } = await query(`
+      SELECT Id AS id, Schedule AS schedule, FilePrefix AS filePrefix, SerialNo AS serialNo,
+        FileNumber AS fileNumber, TrackingId AS trackingId, CreatedAt AS createdAt, UpdatedAt AS updatedAt
+      FROM dbo.FileIndexRecords
+      WHERE @search = '' OR FileNumber LIKE @pattern OR FilePrefix LIKE @pattern
+        OR Schedule LIKE @pattern OR TrackingId LIKE @pattern
+      ORDER BY CreatedAt DESC
+    `, { search, pattern: `%${search}%` })
     return NextResponse.json({ records: recordset, persisted: true, fallback: false })
   } catch (error) {
     console.error('[v0] file index fetch failed', error)
