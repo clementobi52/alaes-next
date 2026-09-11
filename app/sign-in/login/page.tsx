@@ -1,11 +1,13 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import { ArrowRight, CheckCircle2, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, UserRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function SignInPage() {
+  const router = useRouter()
   const [remember, setRemember] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -23,6 +25,8 @@ export default function SignInPage() {
       const result = await response.json()
       if (!response.ok) { setError(result.error ?? 'Unable to sign in.'); return }
       setSubmitted(true)
+      router.push('/')
+      router.refresh()
     } catch { setError('Unable to connect to the sign-in service.') } finally { setLoading(false) }
   }
 
@@ -43,7 +47,7 @@ export default function SignInPage() {
               <Button type="submit" disabled={loading} className="h-11 w-full font-semibold">{loading ? 'Signing in…' : 'Sign in'} {!loading && <ArrowRight data-icon="inline-end" />}</Button>
             </form>
             {error && <p role="alert" className="mt-5 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
-            {submitted && <p role="status" className="mt-5 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Demo sign-in successful.</p>}
+            {submitted && <p role="status" className="mt-5 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">Sign-in successful. Redirecting to your dashboard…</p>}
             <p className="mt-7 text-center text-sm text-muted-foreground">Don&apos;t have an account? <button type="button" className="font-medium text-primary hover:underline">Contact administrator</button></p>
           </div>
         </section>
